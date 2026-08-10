@@ -83,6 +83,38 @@ function initWhyUsStack(section) {
 			navItems.forEach((el) => el.classList.remove("active"));
 		};
 	});
+
+	// Below 992px there's no pin and the cards are ordinary in-flow blocks
+	// (whyus.css) — Orisa's stack-and-highlight effect genuinely doesn't
+	// translate to a phone (it needs vertical scroll room a short viewport
+	// doesn't have), which is why the desktop branch above stays gated. But
+	// leaving mobile with nothing at all is what read as no effect —
+	// same fix as services.js/testimonials.js already use for their own
+	// desktop-only pins: each card gets its own plain scroll-in reveal
+	// instead, once, as it actually arrives on screen.
+	mm.add("(max-width: 991px)", () => {
+		gsap.set(cards, { clearProps: "opacity,transform" });
+		const tweens = Array.from(cards).map((card) =>
+			gsap.from(card, {
+				autoAlpha: 0,
+				y: 40,
+				duration: 0.9,
+				ease: "power2.out",
+				scrollTrigger: {
+					trigger: card,
+					start: "top 88%",
+					once: true,
+				},
+			}),
+		);
+		return () => {
+			tweens.forEach((tween) => {
+				tween.scrollTrigger?.kill();
+				tween.kill();
+			});
+			gsap.set(cards, { clearProps: "all" });
+		};
+	});
 }
 
 // Splits each .text-scale-anim heading into per-word / per-letter spans, then

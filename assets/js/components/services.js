@@ -108,6 +108,41 @@ function initServices() {
 		});
 	});
 
+	// Mobile's own version of the row "coming alive" — desktop does it with
+	// the resting-dim / hover-bright opacity swap (services.css), which has
+	// no equivalent here: there's no hover on touch, and tapping a
+	// tabindex="0" row does not satisfy :focus-visible on most mobile
+	// browsers (that pseudo-class deliberately excludes pointer input), so
+	// without this every row would sit at the CSS resting 0.3 opacity
+	// forever with no way to reach full brightness — services.css's own
+	// mobile block sets the plain (no-JS) opacity: 1 fallback for exactly
+	// that reason. Reveals index+title+text together, once, the row's OWN
+	// scroll-in moment rather than something a pointer has to trigger — the
+	// same idea as the per-row thumb reveal just above, just for the text
+	// half of the row instead of the photo half.
+	const mmMobile = gsap.matchMedia();
+	mmMobile.add("(max-width: 991px)", () => {
+		DOM.items.forEach((item) => {
+			const targets = [
+				item.querySelector(".services_item_index"),
+				item.querySelector(".services_item_title"),
+				item.querySelector(".services_item_text"),
+			].filter(Boolean);
+			if (!targets.length) return;
+			gsap.from(targets, {
+				autoAlpha: 0,
+				y: 20,
+				duration: 0.8,
+				ease: "power2.out",
+				scrollTrigger: {
+					trigger: item,
+					start: "top 88%",
+					once: true,
+				},
+			});
+		});
+	});
+
 	// Only worth pinning where there's a taller sibling column to scroll past
 	// — same 992px cutoff hero-stack.js/about-stack.js use elsewhere on this
 	// page (the template gated its own version at 1199px; 992 is what the

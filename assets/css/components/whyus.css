@@ -489,9 +489,28 @@
 	.whyus_heading {
 		font-size: 2rem;
 	}
-	/* Filler with no room to be filler in a single-column layout. */
+	/* Was display: none — "filler with no room to be filler" was true of
+	   Orisa's OWN positioning for it (180px padding-top + a -100px pull,
+	   both tuned to clear five nav rows that are also display: none at this
+	   width, .whyus_nav above), not of the mark itself: reveal.js's
+	   initSvgBreak (the three-piece break-apart-on-scroll) was never gated
+	   to desktop the way the pin above is, it just had nothing to animate
+	   here because the CSS hid its wrapper outright — "δεν υπάρχει το logo
+	   που σπάει σε 3 κομμάτια στο κινητό" was this rule, not a missing
+	   effect. .whyus_side is a single grid column now (.whyus_nav gone,
+	   nothing left inside it but this), so the mark gets its own plain
+	   centred spot above the card list instead of the desktop numbers-column
+	   offset math that doesn't apply once there's no numbers column left to
+	   offset against. */
 	.whyus_decor {
-		display: none;
+		display: flex;
+		justify-content: center;
+		padding: 0 0 2.5rem;
+	}
+	.whyus_decor_mark {
+		width: 130px;
+		height: 161px;
+		transform: none;
 	}
 }
 @media screen and (max-width: 767px) {

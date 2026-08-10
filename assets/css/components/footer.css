@@ -405,8 +405,32 @@
 	}
 }
 @media screen and (max-width: 991px) {
+	/* footer.js pulls <main> up by exactly footer.offsetHeight to reveal
+	   this — not the viewport's height, the FOOTER's own natural content
+	   height. Desktop's content (128px "Let's Talk", a wide two-column top
+	   row) comfortably runs taller than any desktop viewport, so that was
+	   never visible there, but this section's whole content measures well
+	   under a phone's own viewport height once every element above shrinks
+	   to its own mobile size — confirmed at 740px of content against an
+	   844px viewport (a fairly typical phone). The reveal still only ever
+	   pulls <main> up by that shorter 740px, so scrolling to the very end
+	   permanently left a ~100px dead gap of plain background above the logo,
+	   not a transient scroll position you could scroll past — there's no
+	   more page left to scroll once .footer_placeholder (sized to match)
+	   runs out. min-height here is what actually fixes it: once the
+	   footer's own box can't be shorter than the viewport, footer.offsetHeight
+	   is never less than it either, so main always gets pulled up exactly
+	   far enough and the content starts flush at the top with nothing dead
+	   above it — any leftover room shows as ordinary breathing space below
+	   the last row instead, which reads as a normal footer rather than a
+	   gap that looks broken. dvh, not vh — vh includes the mobile browser's
+	   own address bar in its 100%, which is what "100vh" traditionally
+	   over-counts by; the vh line stays only as the fallback for browsers
+	   without dvh support. */
 	.footer_area {
 		padding-top: 4rem;
+		min-height: 100vh;
+		min-height: 100dvh;
 	}
 	.footer_top {
 		grid-template-columns: 1fr;
@@ -426,6 +450,18 @@
 	.footer_connect {
 		font-size: 3.25rem;
 		letter-spacing: -1px;
+	}
+	/* One clean column, not the desktop wrap — .footer_tags's flex-wrap
+	   (above) packs however many tags fit per line at the CURRENT width,
+	   which for these five labels' actual lengths meant two on the first
+	   row and one apiece after: an uneven, width-dependent ragged edge
+	   ("δεν είναι ομοιόμορφο") rather than a real column, and which two
+	   happened to pair up shifted from one phone width to the next. A
+	   single column reads as one deliberate list at any width instead. */
+	.footer_tags {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.875rem;
 	}
 }
 @media screen and (max-width: 767px) {

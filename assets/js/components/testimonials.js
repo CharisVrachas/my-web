@@ -71,27 +71,90 @@ function initTestimonials() {
 
 	const badge = section.querySelector("[data-testimonials-badge]");
 	const badgeText = section.querySelector("[data-testimonials-badge-text]");
-	if (badge && !prefersReducedMotion) {
-		gsap.to(badge, {
-			scale: 25,
-			rotation: 180,
-			scrollTrigger: {
-				trigger: badge,
-				start: "top 60%",
-				end: "bottom 0%",
-				scrub: 1,
+
+	// Gated to desktop only now — mobile got a plain reveal instead (below).
+	// The 25x/rotate-180 scrub was mapped to `badge`'s own untransformed
+	// height (the 141px badge.svg, "top 60%" to "bottom 0%"): on desktop's
+	// slower wheel-driven scroll that narrow window still renders enough
+	// in-between frames to read as a zoom, but a phone's touch-flick can
+	// cross that whole ~141px in one or two frames, or overshoot past
+	// "end" entirely on the very gesture that was supposed to start it —
+	// either way, whatever scale scrub happened to land on stays exactly
+	// there since it never gets more scroll to keep resolving against. Not
+	// stuck so much as never given the room to move on a phone in the
+	// first place — same underlying cause as it sitting frozen mid-grown
+	// ("κολλήσει... από πίσω") and as it never visibly starting at all
+	// ("δεν κάνει το εφε"), depending where a given flick happened to land.
+	// A narrow viewport can't be "swallowed" by scaling a 141px mark the
+	// way a wide one can either — the badge would need an even bigger
+	// multiple to cover a tall phone screen, so the effect doesn't really
+	// translate down to this size regardless of the scroll-distance fix.
+	if ((badge || badgeText) && !prefersReducedMotion) {
+		gsap.matchMedia().add(
+			{
+				desktop: "(min-width: 768px)",
+				mobile: "(max-width: 767px)",
 			},
-		});
-	}
-	if (badgeText && !prefersReducedMotion) {
-		gsap.to(badgeText, {
-			scale: 8,
-			scrollTrigger: {
-				trigger: badgeText,
-				start: "top 70%",
-				end: "bottom 0%",
-				scrub: 1,
+			(context) => {
+				const { desktop } = context.conditions;
+				const tweens = [];
+
+				if (desktop) {
+					if (badge) {
+						tweens.push(
+							gsap.to(badge, {
+								scale: 25,
+								rotation: 180,
+								scrollTrigger: {
+									trigger: badge,
+									start: "top 60%",
+									end: "bottom 0%",
+									scrub: 1,
+								},
+							}),
+						);
+					}
+					if (badgeText) {
+						tweens.push(
+							gsap.to(badgeText, {
+								scale: 8,
+								scrollTrigger: {
+									trigger: badgeText,
+									start: "top 70%",
+									end: "bottom 0%",
+									scrub: 1,
+								},
+							}),
+						);
+					}
+				} else if (badge) {
+					// One guaranteed, non-scrubbed arrival — plays fully in a fixed
+					// 0.9s regardless of how fast the scroll gesture that triggered
+					// it was, the same `once: true` technique services.js's own
+					// mobile row-reveal uses for exactly this reason.
+					tweens.push(
+						gsap.from(badge, {
+							scale: 0.75,
+							opacity: 0,
+							duration: 0.9,
+							ease: "power2.out",
+							scrollTrigger: {
+								trigger: badge,
+								start: "top 90%",
+								once: true,
+							},
+						}),
+					);
+				}
+
+				return () => {
+					tweens.forEach((tween) => {
+						tween.scrollTrigger?.kill();
+						tween.kill();
+					});
+					gsap.set([badge, badgeText].filter(Boolean), { clearProps: "all" });
+				};
 			},
-		});
+		);
 	}
 }

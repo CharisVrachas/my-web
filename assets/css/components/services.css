@@ -227,12 +227,42 @@
 		grid-template-columns: 1fr;
 		gap: 2rem;
 	}
-	/* No second column of independent height left to scroll past below 992px,
-	   so services.js never creates the pin in the first place (see its
-	   matchMedia gate) — .services_media just sits in normal flow here,
-	   nothing to override. */
-	.services_media_stack {
-		height: 440px;
+	/* .services_media (the pinned/hover-swapped image column) is gone below
+	   this width, not just un-pinned. It was staying in normal flow, frozen
+	   on the first service's photo forever — services.js only ever swaps it
+	   on mouseenter/focus, neither of which a touch tap fires, so on a phone
+	   it was a large, static, oddly-cropped image sitting above the list
+	   with no way to ever change or mean anything ("άκυρη πάνω πάνω,
+	   ακεντράριστο, χωρίς εφε"). Each row already carries its OWN photo
+	   (.services_item_thumb) with its own scroll-in reveal (services.js) —
+	   that's the real mobile equivalent of the desktop hover-swap, not a
+	   frozen duplicate of row one's image glued above everything. */
+	.services_media {
+		display: none;
+	}
+	/* Desktop's resting dim (0.3 opacity) + hover-only brightening
+	   (@media (hover: hover), above) has no mobile equivalent — touch has no
+	   hover, and tapping a row's tabindex="0" div does not satisfy
+	   :focus-visible on most mobile browsers (that pseudo-class deliberately
+	   excludes pointer interaction), so every row was stuck permanently dim
+	   with no path to full opacity. services.js now runs its own
+	   matchMedia("(max-width: 991px)") branch that scroll-reveals each row's
+	   index/title/text together as it enters the viewport (autoAlpha 0→1),
+	   the same "effect on scroll" the thumb already had — this opacity: 1
+	   here is just the two lines' resting/idle CANVAS state before that
+	   tween's initial autoAlpha: 0 takes over (GSAP's inline style always
+	   wins the cascade once it runs); no-JS fallback shows them plainly
+	   visible rather than stuck at 0.3. text's max-height goes from the
+	   desktop hover-only 0→100px cap to permanently open — there is no
+	   hover state left to expand it into on mobile, so the collapsed
+	   default would otherwise hide the copy forever. */
+	.services_item_index,
+	.services_item_title {
+		opacity: 1;
+	}
+	.services_item_text {
+		max-height: none;
+		opacity: 1;
 	}
 	/* Orisa's own narrow-screen tracks. */
 	.services_item {
@@ -258,9 +288,6 @@
 	}
 }
 @media screen and (max-width: 479px) {
-	.services_media_stack {
-		height: 300px;
-	}
 	.services_item_title {
 		font-size: 32px;
 		line-height: 32px;

@@ -53,8 +53,15 @@
 		padding-left: 10px;
 	}
 }
-/* Below this width the inline links collapse into the burger menu. */
-@media screen and (max-width: 479px) {
+/* Below this width the inline links collapse into the burger menu. 767px,
+   not 479px — this used to only kick in on narrow phones, leaving anything
+   from ~480px up to 767px (larger phones, small tablets in portrait) showing
+   the full About/Services/…/Contact row squeezed in next to the mark-only
+   logo (which already swaps in at this same 767px elsewhere, Navbar.astro's
+   <source media="(max-width: 767px)">) — the two breakpoints not matching
+   was the bug. Now both change together: below 767px you get the compact
+   mark AND the hamburger-only nav, never the mark with a crowded full row. */
+@media screen and (max-width: 767px) {
 	.nav[data-collapse="tiny"] .nav-menu {
 		display: none;
 	}
@@ -415,7 +422,13 @@
 	transition: opacity 0.3s ease;
 }
 
-@media screen and (max-width: 479px) {
+/* 767px to match the block above — see that comment. Also now hides
+   .navbar_mobile_link (FAQ), which .hide-mobile alone never covered: FAQ
+   used its own class specifically so it could keep showing next to the
+   MENU button below this width, but that is the exact thing reported —
+   at phone widths ONLY the hamburger should remain, no stray fifth link
+   sitting next to it. */
+@media screen and (max-width: 767px) {
 	.u-navbar {
 		mix-blend-mode: normal;
 		display: block;
@@ -424,7 +437,8 @@
 	.navbar_nav {
 		flex-flow: row-reverse;
 	}
-	.hide-mobile {
+	.hide-mobile,
+	.navbar_mobile_link {
 		display: none;
 	}
 	.u-menu-btn {
@@ -433,9 +447,6 @@
 	.navbar_container {
 		padding-left: 0.5rem;
 		padding-right: 0.5rem;
-	}
-	.navbar_mobile_link.u-link {
-		padding: 0.5rem 0.5rem 0.375rem;
 	}
 	/* Compact mode's absolute top-right placement is a desktop-row concern —
 	   at this width .navbar_nav is already row-reverse (the rule above), so
