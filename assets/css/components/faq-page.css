@@ -1,0 +1,249 @@
+/* Styles for the /faq page only — FaqAccordion.astro, ported from Orisa's
+   faqs/sec-3.html (four topic groups, each a title column beside its own
+   accordion). FaqHero.astro reuses services-page.css's .sv_hero* classes
+   instead of duplicating them — see that file's header comment.
+
+   Class prefix is fq_ (FAQ). Numbers that carry real meaning — the 30px
+   number circle, the accordion item padding — are Orisa's own (compiled
+   main.css:6915-7010). Palette and px-not-rem: same reasoning as every other
+   page-specific stylesheet here. */
+
+/* ===== The stacking deck ===================================================
+   Same two fixes as .sv_offer_card/.as_card in services-page.css/
+   about-page.css, for the same reasons: background on the full 100vh card,
+   not the inner box, or a shrinking card leaves the next one showing through
+   at its edges; wrapper for .container, not the grid itself, or its clearfix
+   pseudo-elements become real grid items. */
+.fq_stack {
+	background-color: var(--vv-charcoal);
+}
+.fq_deck {
+	position: relative;
+}
+.fq_card {
+	min-height: 100vh;
+	width: 100%;
+	top: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	align-items: center;
+	padding: 100px 0;
+	background-color: var(--vv-charcoal);
+	border-top: 1px solid rgba(184, 154, 107, 0.15);
+}
+/* min-width: 992px — matching faq-page.js's own matchMedia gate; same bug,
+   same fix as services-page.css/about-page.css (see the long version of this
+   comment there). */
+@media screen and (min-width: 992px) {
+	.fq_card:not(:first-child) {
+		position: absolute;
+	}
+}
+.fq_card > .container {
+	width: 100%;
+}
+.fq_card_inner {
+	display: grid;
+	grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
+	gap: 3rem;
+	max-width: 1320px;
+	margin-inline: auto;
+}
+.fq_card_head {
+	position: relative;
+}
+.fq_number {
+	margin-bottom: 12px;
+}
+/* Dimmed-then-revealed, plain CSS transition — see faq-page.js's own
+   comment for why this replaced a GSAP/SplitText version that only ever
+   worked reliably for the first card. .is-revealed is one class, added
+   once to .fq_deck by a single plain ScrollTrigger with nothing pinned or
+   scrubbed about it; every .fq_title shares this exact rule, so all four
+   are guaranteed to look identical rather than depending on separate
+   per-card bookkeeping that could go right for one and wrong for the
+   others. */
+.fq_title {
+	margin: 0 0 1rem;
+	color: var(--vv-off-white);
+	font-family: "Playfair Display", Georgia, serif;
+	font-size: clamp(28px, 2.8vw, 42px);
+	font-weight: 400;
+	line-height: 1.1;
+	opacity: 0.3;
+	transform: translateX(-7px);
+	transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fq_deck.is-revealed .fq_title {
+	opacity: 1;
+	transform: translateX(0);
+}
+@media (prefers-reduced-motion: reduce) {
+	.fq_title {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+}
+.fq_subtitle {
+	margin: 0;
+	color: var(--vv-off-white);
+	opacity: 0.7;
+	font-size: 1rem;
+	line-height: 1.55;
+	max-width: 22rem;
+}
+
+/* ===== Accordion ===========================================================
+   Item surface is a solid, lifted card (#333c4b, matching WhyUs/testimonial/
+   pricing cards) rather than Orisa's flat neutral-50 — its own version has no
+   real border, this one gets one for definition against the deck's own
+   charcoal-on-charcoal card (Orisa's light page has a natural contrast this
+   one doesn't). */
+.fq_item {
+	background-color: #333c4b;
+	border: 1px solid rgba(184, 154, 107, 0.2);
+	border-radius: 16px;
+	padding: 6px 24px;
+	margin-bottom: 14px;
+}
+.fq_item:last-child {
+	margin-bottom: 0;
+}
+.fq_item_header {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	width: 100%;
+	padding: 15px 0;
+	background: none;
+	border: 0;
+	text-align: left;
+	cursor: pointer;
+	appearance: none;
+	color: inherit;
+	font: inherit;
+}
+.fq_item_number {
+	flex-shrink: 0;
+	display: flex;
+	width: 30px;
+	height: 30px;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	background-color: var(--vv-gold);
+	color: var(--vv-charcoal);
+	font-size: 14px;
+	font-weight: 700;
+}
+.fq_item_question {
+	flex: 1 1 auto;
+	color: var(--vv-off-white);
+	font-size: 1.25rem;
+	font-weight: 600;
+	line-height: 1.3;
+}
+/* The +/− toggle — two bars forming a plus; the vertical one fades/rotates
+   away on open, leaving the horizontal bar as a minus. Orisa's own version is
+   a Font Awesome glyph swap (::before/::after content, "\f068"/"\f067");
+   every icon elsewhere on this site is an inline SVG or a plain CSS shape,
+   never an icon font, so this follows that instead of pulling in Font
+   Awesome for one element. */
+.fq_item_toggle {
+	position: relative;
+	flex-shrink: 0;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	border: 1px solid rgba(184, 154, 107, 0.4);
+}
+.fq_item_toggle_bar {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	background-color: var(--vv-gold);
+	transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.fq_item_toggle_bar--h {
+	width: 12px;
+	height: 1.5px;
+	transform: translate(-50%, -50%);
+}
+.fq_item_toggle_bar--v {
+	width: 1.5px;
+	height: 12px;
+	transform: translate(-50%, -50%);
+}
+.fq_item_header[aria-expanded="true"] .fq_item_toggle_bar--v {
+	transform: translate(-50%, -50%) rotate(90deg);
+	opacity: 0;
+}
+
+/* The open/close animation itself: grid-template-rows 0fr → 1fr on a single-
+   cell grid, with the actual content in a min-height: 0 child. This is the
+   standard CSS-only "height: auto" transition trick — it needs no JS-measured
+   pixel height (the way Bootstrap's own .collapsing class does it) and still
+   animates smoothly to whatever height the content actually needs. */
+.fq_item_panel {
+	display: grid;
+	grid-template-rows: 0fr;
+	transition: grid-template-rows 0.4s ease;
+}
+.fq_item_panel.is-open {
+	grid-template-rows: 1fr;
+}
+.fq_item_panel_inner {
+	overflow: hidden;
+	min-height: 0;
+}
+.fq_item_panel_inner p {
+	margin: 0;
+	padding: 4px 0 20px 46px;
+	color: var(--vv-off-white);
+	opacity: 0.7;
+	font-size: 0.9375rem;
+	line-height: 1.6;
+}
+/* min(220px, 28vh) cap, own scrollbar past that — ≥992px only (see the
+   media query below): this deck is pinned by faq-page.js for the whole time
+   a topic is current, with each .fq_card locked to the viewport for that
+   stretch. There's no page scroll left to reveal anything a card grows
+   past the viewport's own bottom edge with — it doesn't scroll into view
+   later, it's just gone until the pin releases. That was fine with Orisa's
+   one-line placeholder answers; the real copy runs 2-4 sentences, and on a
+   shorter viewport (a laptop's actual innerHeight, browser chrome already
+   subtracted) an open item's answer could push the card's content taller
+   than the 100vh it has to work with — the cut-off text this fixes. Capping
+   the panel's own height and letting IT scroll internally means the card
+   itself never exceeds what the pin has room for, regardless of how long a
+   given answer is or how short the viewport gets; in the common case the
+   cap is taller than the text needs, so nothing looks any different. Not
+   applied below 992px: the deck isn't pinned there (faq-page.js's own
+   matchMedia gate), the page scrolls normally, and a real answer is short
+   enough that this would just add a pointless inner scrollbar. */
+@media screen and (min-width: 992px) {
+	.fq_item_panel_inner {
+		max-height: min(220px, 28vh);
+		overflow-y: auto;
+	}
+}
+
+@media screen and (max-width: 991px) {
+	.fq_card_inner {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.5rem;
+	}
+	.fq_card {
+		padding: 70px 0;
+	}
+}
+@media screen and (max-width: 767px) {
+	.fq_item_question {
+		font-size: 1.0625rem;
+	}
+	.fq_item_panel_inner p {
+		padding-left: 0;
+	}
+}

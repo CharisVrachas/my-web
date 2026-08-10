@@ -1,0 +1,874 @@
+html {
+	-webkit-text-size-adjust: 100%;
+	-ms-text-size-adjust: 100%;
+	font-family: sans-serif;
+}
+body {
+	margin: 0;
+}
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+menu,
+nav,
+section,
+summary {
+	display: block;
+}
+audio,
+canvas,
+progress,
+video {
+	vertical-align: baseline;
+	display: inline-block;
+}
+audio:not([controls]) {
+	height: 0;
+	display: none;
+}
+[hidden],
+template {
+	display: none;
+}
+a {
+	background-color: #0000;
+}
+a:active,
+a:hover {
+	outline: 0;
+}
+abbr[title] {
+	border-bottom: 1px dotted;
+}
+b,
+strong {
+	font-weight: bold;
+}
+dfn {
+	font-style: italic;
+}
+h1 {
+	margin: 0.67em 0;
+	font-size: 2em;
+}
+mark {
+	color: #000;
+	background: #ff0;
+}
+small {
+	font-size: 80%;
+}
+sub,
+sup {
+	vertical-align: baseline;
+	font-size: 75%;
+	line-height: 0;
+	position: relative;
+}
+sup {
+	top: -0.5em;
+}
+sub {
+	bottom: -0.25em;
+}
+img {
+	border: 0;
+}
+svg:not(:root) {
+	overflow: hidden;
+}
+hr {
+	box-sizing: content-box;
+	height: 0;
+}
+pre {
+	overflow: auto;
+}
+code,
+kbd,
+pre,
+samp {
+	font-family: monospace;
+	font-size: 1em;
+}
+button,
+input,
+optgroup,
+select,
+textarea {
+	color: inherit;
+	font: inherit;
+	margin: 0;
+}
+button {
+	overflow: visible;
+}
+button,
+select {
+	text-transform: none;
+}
+button,
+html input[type="button"],
+input[type="reset"] {
+	-webkit-appearance: button;
+	cursor: pointer;
+}
+button[disabled],
+html input[disabled] {
+	cursor: default;
+}
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+	border: 0;
+	padding: 0;
+}
+input {
+	line-height: normal;
+}
+input[type="checkbox"],
+input[type="radio"] {
+	box-sizing: border-box;
+	padding: 0;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+	height: auto;
+}
+input[type="search"] {
+	-webkit-appearance: none;
+}
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+	-webkit-appearance: none;
+}
+legend {
+	border: 0;
+	padding: 0;
+}
+textarea {
+	overflow: auto;
+}
+optgroup {
+	font-weight: bold;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+td,
+th {
+	padding: 0;
+}
+* {
+	box-sizing: border-box;
+}
+html {
+	height: 100%;
+}
+body {
+	color: #333;
+	background-color: #fff;
+	min-height: 100%;
+	margin: 0;
+	font-family: Arial, sans-serif;
+	font-size: 14px;
+	line-height: 20px;
+}
+img {
+	vertical-align: middle;
+	max-width: 100%;
+	display: inline-block;
+}
+html.is-touch * {
+	background-attachment: scroll !important;
+}
+.inline-block {
+	max-width: 100%;
+	display: inline-block;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin-bottom: 10px;
+	font-weight: bold;
+}
+h1 {
+	margin-top: 20px;
+	font-size: 38px;
+	line-height: 44px;
+}
+h2 {
+	margin-top: 20px;
+	font-size: 32px;
+	line-height: 36px;
+}
+h3 {
+	margin-top: 20px;
+	font-size: 24px;
+	line-height: 30px;
+}
+h4 {
+	margin-top: 10px;
+	font-size: 18px;
+	line-height: 24px;
+}
+h5 {
+	margin-top: 10px;
+	font-size: 14px;
+	line-height: 20px;
+}
+h6 {
+	margin-top: 10px;
+	font-size: 12px;
+	line-height: 18px;
+}
+p {
+	margin-top: 0;
+	margin-bottom: 10px;
+}
+blockquote {
+	border-left: 5px solid #e2e2e2;
+	margin: 0 0 10px;
+	padding: 10px 20px;
+	font-size: 18px;
+	line-height: 22px;
+}
+figure {
+	margin: 0 0 10px;
+}
+ul,
+ol {
+	margin-top: 0;
+	margin-bottom: 10px;
+	padding-left: 40px;
+}
+.embed:before,
+.embed:after {
+	content: " ";
+	grid-area: 1 / 1 / 2 / 2;
+	display: table;
+}
+.embed:after {
+	clear: both;
+}
+fieldset {
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+button,
+[type="button"],
+[type="reset"] {
+	cursor: pointer;
+	-webkit-appearance: button;
+	border: 0;
+}
+label {
+	margin-bottom: 5px;
+	font-weight: bold;
+	display: block;
+}
+.container {
+	max-width: 940px;
+	margin-left: auto;
+	margin-right: auto;
+}
+.container:before,
+.container:after {
+	content: " ";
+	grid-area: 1 / 1 / 2 / 2;
+	display: table;
+}
+.container:after {
+	clear: both;
+}
+@media screen and (max-width: 991px) {
+	.container {
+		max-width: 728px;
+	}
+}
+@media screen and (max-width: 479px) {
+	.container {
+		max-width: none;
+	}
+}
+@keyframes spin {
+	0% {
+		transform: rotate(0);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}
+/* Jost and Playfair Display replace Review and Feature Display site-wide —
+   both self-hosted (same convention as the fonts they replace: a local
+   woff2 in this folder, not a live Google Fonts <link>, so the page has no
+   external font request at runtime and nothing changes about how
+   font-display: block/document.fonts.ready already work in app.js).
+
+   Both files are the actual VARIABLE fonts Google serves for these
+   families, not a set of per-weight statics — confirmed by fetching every
+   weight's own @font-face from fonts.googleapis.com/css2 and finding they
+   all point at the identical file; the browser selects the specific weight
+   off the file's own wght axis at render time. One file, one @font-face
+   rule, `font-weight` as a RANGE (not the fixed single number a static font
+   needs) is what actually declares that — this is why Review's own 3
+   separate rules (300/400/900, one static file apiece) collapse into 1
+   here rather than 3. Any weight inside the declared range now renders
+   natively; nowhere in this codebase needs the "600 would be synthesised,
+   only 300/400/900 are real files" caveat Review's own comments carried,
+   though those comments haven't all been rewritten — they're now stricter
+   than the truth, not wrong in the risky direction. */
+@font-face {
+	font-family: Jost;
+	src: url("../fonts/jost-variable.woff2") format("woff2");
+	font-weight: 300 900;
+	font-style: normal;
+	font-display: block;
+}
+@font-face {
+	font-family: Playfair Display;
+	src: url("../fonts/playfairdisplay-variable.woff2") format("woff2");
+	font-weight: 400 900;
+	font-style: normal;
+	font-display: block;
+}
+/* ==========================================================================
+   MINOS HOST — design tokens
+
+   The template shipped with one accent colour doing two incompatible jobs:
+   filling whole screens AND setting type on the light page. Gold cannot do
+   the second — it measures 2.39:1 on the off-white, which fails at any size.
+   So the accent is split in two:
+
+     --vv-charcoal  dark surfaces, and all type on the light page   10.89:1
+     --vv-gold      accent — type ONLY on charcoal or on photographs 4.56:1
+
+   Never set gold type on --vv-off-white. Anything gold on a light background
+   has to be decorative (rules, marks, the logo), never something to read.
+   ========================================================================== */
+:root {
+	/* Palette */
+	--vv-off-white: #f5f2ed; /* page + type on dark              */
+	--vv-charcoal: #2e3644; /* type on light, dark surfaces     */
+	--vv-gold: #b89a6b; /* accent — legible only on charcoal */
+	--vv-gray: #5c6572; /* muted type — 4.9:1 on off-white  */
+
+	/* Viewport unit fix (set from JS in assets/js/head.js) */
+	--vh: 1vh;
+}
+.layout-hflex {
+	flex-direction: row;
+	align-items: flex-start;
+	display: flex;
+}
+.layout-blockcontainer {
+	max-width: 940px;
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+}
+@media screen and (max-width: 991px) {
+	.layout-blockcontainer {
+		max-width: 728px;
+	}
+}
+@media screen and (max-width: 767px) {
+	.layout-blockcontainer {
+		max-width: none;
+	}
+}
+body {
+	background-color: var(--vv-off-white);
+	color: var(--vv-charcoal);
+	letter-spacing: 0.025rem;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.2;
+}
+h1 {
+	letter-spacing: -0.031rem;
+	text-transform: uppercase;
+	margin-top: 0;
+	margin-bottom: 0;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 8.7rem;
+	font-weight: 900;
+	line-height: 0.8;
+}
+h2 {
+	margin-top: 0;
+	margin-bottom: 0;
+	font-family: "Playfair Display", Georgia, serif;
+	font-size: 6rem;
+	font-weight: 400;
+	line-height: 1;
+}
+h3 {
+	margin-top: 0;
+	margin-bottom: 0;
+	font-size: 2rem;
+	font-weight: 700;
+	line-height: 1.2;
+}
+h4 {
+	margin-top: 0;
+	margin-bottom: 0;
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1.4;
+}
+h5 {
+	margin-top: 0;
+	margin-bottom: 0;
+	font-size: 1.25rem;
+	font-weight: 700;
+	line-height: 1.5;
+}
+h6 {
+	margin-top: 0;
+	margin-bottom: 0;
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.5;
+}
+p {
+	margin-bottom: 0;
+}
+a {
+	color: #2d62ff;
+}
+ul,
+ol {
+	margin-top: 0;
+	margin-bottom: 0;
+	padding-left: 1.5rem;
+}
+li {
+	margin-bottom: 0.25rem;
+}
+img {
+	max-width: 100%;
+	display: inline-block;
+}
+label {
+	margin-bottom: 0.25rem;
+	font-weight: 500;
+}
+blockquote {
+	border-left: 0.25rem solid var(--vv-gold);
+	margin-bottom: 0;
+	padding: 0 1.25rem;
+	font-size: 1.25rem;
+	line-height: 1.5;
+}
+figure {
+	margin-top: 2rem;
+	margin-bottom: 2rem;
+}
+figcaption {
+	text-align: center;
+	margin-top: 0.25rem;
+}
+/* 3.25rem, not the original 4rem — trimmed site-wide for the same reason as
+   every other title-sized rule touched in this pass (see the components
+   that use it: About's own heading at desktop widths, Testimonials'
+   "What owners say", neither of which carries a local override, so both
+   move together with this one number). Left as a shared base-class value
+   rather than duplicated per component specifically so the two stay
+   uniform automatically instead of needing to be hand-matched. */
+.u-h3-review {
+	letter-spacing: 0;
+	text-transform: uppercase;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 3.25rem;
+	font-weight: 900;
+	line-height: 90%;
+}
+.u-p2 {
+	letter-spacing: 0;
+	text-transform: uppercase;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 0.625rem;
+	font-weight: 400;
+	line-height: 120%;
+}
+/* 4.75rem, not the original 6rem — same trim as .u-h3-review above. Only
+   Definitions ("Owners"/"Chania") actually renders at this raw value; Films
+   and Services both carry their own local font-size that wins the cascade
+   (5.2vw and 50px/42px/32px respectively, both fonttools-verified against
+   real text widths — see films.css/services.css — so this change can't
+   touch either). hero-stack.js measures this class's own painted width at
+   runtime rather than assuming a fixed number, so Definitions' layout math
+   adjusts to the smaller size on its own; nothing there needed updating to
+   match. */
+.u-h2-feature {
+	letter-spacing: 0;
+	font-family: "Playfair Display", Georgia, serif;
+	font-size: 4.75rem;
+	font-weight: 400;
+	line-height: 100%;
+}
+.space-between {
+	justify-content: space-between;
+}
+.u-container {
+	width: 100%;
+	max-width: none;
+	padding-left: 2rem;
+	padding-right: 2rem;
+}
+.u-p1 {
+	text-align: justify;
+	letter-spacing: 0.025rem;
+	text-transform: uppercase;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 120%;
+}
+.u-btn-ellipse {
+	text-align: center;
+	letter-spacing: 0;
+	text-transform: uppercase;
+	cursor: pointer;
+	border-radius: 50%;
+	padding: 0.75rem 1rem;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 0.75rem;
+	font-weight: 900;
+	line-height: 90%;
+	text-decoration: none;
+	transition:
+		color 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+		background-color 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+/* Charcoal pill, gold label. The template had this the other way round — a
+   light pill with accent type — which gold cannot carry. */
+.u-btn-ellipse.primary {
+	z-index: 2;
+	background-color: var(--vv-charcoal);
+	color: var(--vv-gold);
+	text-decoration: none;
+	position: relative;
+}
+.u-btn-ellipse.primary:hover {
+	background-color: var(--vv-gold);
+	color: var(--vv-charcoal);
+}
+.u-btn-ellipse.red {
+	background-color: var(--vv-gold);
+	color: var(--vv-charcoal);
+}
+.u-btn-ellipse.red:hover,
+.u-btn-ellipse.black {
+	background-color: var(--vv-charcoal);
+	color: var(--vv-gold);
+}
+.u-btn-ellipse.black:hover {
+	background-color: var(--vv-gold);
+	color: var(--vv-charcoal);
+}
+.vv_decor,
+.film_decor {
+	justify-content: space-between;
+	align-items: center;
+}
+/* Off-white, not gold. These ride over the hero photograph, whose sky sits at
+   about 36% grey — gold measures 2.51:1 against it and washes out. Reserving
+   gold for the mark alone also makes the mark count for more. Any future light
+   section needs its own rule setting these to --vv-charcoal. */
+.u-link {
+	color: var(--vv-off-white);
+	letter-spacing: 0.025rem;
+	text-transform: uppercase;
+	cursor: pointer;
+	padding-top: 0.25rem;
+	padding-bottom: 0.125rem;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 120%;
+	text-decoration: none;
+	transition: opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.u-link:hover {
+	opacity: 0.5;
+}
+.footer_shop_decor {
+	z-index: 1;
+	justify-content: space-between;
+	align-items: center;
+	width: 11.9375rem;
+	position: absolute;
+	inset: auto auto 0.625rem;
+}
+.u-body {
+	background-color: var(--vv-charcoal);
+}
+.code-embed {
+	margin-bottom: 0;
+	display: none;
+}
+.hero_stack_wrapper,
+.about_stack_wrapper {
+	flex-flow: column;
+	grid-template-rows: auto;
+	grid-template-columns: 1fr;
+	grid-auto-columns: 1fr;
+	display: block;
+	overflow: hidden;
+}
+.about_logo.difference {
+	color: var(--vv-gold);
+	mix-blend-mode: difference;
+}
+.about_logo.difference.mobile {
+	display: none;
+}
+.about_logo.color_burn {
+	z-index: 2;
+	opacity: 1;
+	color: #888;
+	mix-blend-mode: color-burn;
+	position: absolute;
+	inset: 0%;
+}
+.about_decor.first {
+	bottom: 2rem;
+	left: 2rem;
+}
+.about_decor.second {
+	bottom: 2rem;
+	right: 2rem;
+}
+@media screen and (max-width: 991px) {
+	h1 {
+		letter-spacing: 0;
+		line-height: 0.9;
+	}
+	.u-p2 {
+		padding-left: 0;
+	}
+	.u-h2-feature {
+		font-size: 4rem;
+	}
+	.u-btn-ellipse.primary:hover {
+		background-color: var(--vv-charcoal);
+		color: var(--vv-gold);
+	}
+	.u-btn-ellipse.black:hover {
+		background-color: var(--vv-charcoal);
+		color: var(--vv-gold);
+	}
+	.u-link:hover {
+		color: var(--vv-gold);
+		mix-blend-mode: normal;
+	}
+	.about_stack_wrapper {
+		display: block;
+	}
+	.about_logo.difference {
+		display: none;
+	}
+	.about_logo.difference.mobile {
+		display: block;
+	}
+}
+@media screen and (max-width: 767px) {
+	h1 {
+		font-size: 2.5rem;
+	}
+	h2 {
+		font-size: 2rem;
+	}
+	h3 {
+		font-size: 1.5rem;
+	}
+	h4 {
+		font-size: 1.25rem;
+	}
+	h5 {
+		font-size: 1rem;
+	}
+	h6 {
+		font-size: 0.875rem;
+	}
+	.u-h3-review {
+		font-size: 1.5rem;
+	}
+}
+@media screen and (max-width: 479px) {
+	.u-h2-feature {
+		font-size: 3rem;
+	}
+	.u-container {
+		padding-left: 1rem;
+		padding-right: 1rem;
+	}
+	.about_decor.first {
+		bottom: 1rem;
+		left: 1rem;
+	}
+	.about_decor.second {
+		bottom: 1rem;
+		right: 1rem;
+	}
+}
+/* Stacked scroll layers: every child occupies the same grid cell so the
+   pinned sections can be cross-faded / clip-pathed on top of each other. */
+.stack-layer,
+.history_step_v1,
+#hist-imgs,
+#hist-steps-inner,
+#hist-conclusion {
+	grid-area: 1 / 1 / 2 / 2;
+}
+
+/* Fluid root font size — the whole template scales from this one value. */
+html {
+	font-size: 3.25rem;
+}
+@media screen and (max-width: 5120px) {
+	html {
+		font-size: calc(0.75rem + 0.78125vw);
+	}
+}
+@media screen and (max-width: 3840px) {
+	html {
+		font-size: 1.09375vw;
+	}
+}
+@media screen and (max-width: 2560px) {
+	html {
+		font-size: calc(0.25rem + 0.9375vw);
+	}
+}
+@media screen and (max-width: 1920px) {
+	html {
+		font-size: calc(-0.625rem + 1.6666666667vw);
+	}
+}
+@media screen and (max-width: 1680px) {
+	html {
+		font-size: calc(0.25rem + 0.8333333333vw);
+	}
+}
+@media screen and (max-width: 1440px) {
+	html {
+		font-size: 1rem;
+	}
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+	transition: background-color 5000000s ease-in-out 0s;
+	color: #f5f2ed !important;
+	-webkit-text-fill-color: #f5f2ed !important;
+}
+::selection {
+	background-color: var(--vv-gold);
+	color: var(--vv-charcoal);
+}
+body {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+*:focus-visible {
+	outline: 0.0625rem solid rgba(255, 255, 255, 0.5);
+	outline-offset: 0.125rem;
+}
+body ::-webkit-scrollbar,
+body::-webkit-scrollbar {
+	display: none;
+}
+body {
+	-ms-overflow-style: none;
+}
+html {
+	scrollbar-width: none;
+}
+.hero_stack_wrapper {
+	display: grid;
+}
+@media screen and (min-width: 992px) {
+	.about_stack_wrapper {
+		display: grid;
+	}
+}
+html,
+body {
+	overscroll-behavior-y: none;
+}
+@media screen and (max-width: 767px) {
+	html,
+	body {
+		overflow-x: clip;
+	}
+}
+[data-film="1"],
+[data-film="2"] {
+	will-change: clip-path;
+}
+.history_conclusion_p,
+.about_p {
+	text-align-last: center;
+}
+
+/* ==========================================================================
+   Visibility utilities — these are never overridden anywhere else.
+   ========================================================================== */
+/* Always hidden */
+.hide {
+	display: none !important;
+}
+/* Hidden on Desktop only (>= 992px) */
+@media screen and (min-width: 992px) {
+	.hide-desktop {
+		display: none !important;
+	}
+}
+/* Hidden on Desktop + all Mobile */
+@media screen and (min-width: 992px), screen and (max-width: 767px) {
+	.hide-desktop-mobile {
+		display: none !important;
+	}
+}
+/* Hidden on Desktop + Tablet */
+@media screen and (min-width: 768px) {
+	.hide-desktop-tablet {
+		display: none !important;
+	}
+}
+/* Hidden on Tablet only (768–991px) */
+@media screen and (min-width: 768px) and (max-width: 991px) {
+	.hide-tablet {
+		display: none !important;
+	}
+}
+/* Hidden on all Mobile (<= 767px) */
+@media screen and (max-width: 767px) {
+	.hide-mobile-all {
+		display: none !important;
+	}
+}
+/* Hidden on Tablet + Mobile (<= 991px) */
+@media screen and (max-width: 991px) {
+	.hide-all-adaptives {
+		display: none !important;
+	}
+}

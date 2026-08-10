@@ -1,0 +1,477 @@
+.layout-vflex {
+	flex-direction: column;
+	align-items: flex-start;
+	display: flex;
+}
+.section_pillars {
+	z-index: 4;
+	flex-direction: column;
+	/* Inert as far as vertical position goes: .pillars_container, the only
+	   child, is height: 100% — it already fills this box regardless of what
+	   justify-content says here. The centering that actually matters is
+	   .pillars_container's own, below. */
+	justify-content: center;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	position: relative;
+	/* Apertura didn't need this: its navbar was a ~2rem SVG wordmark, and this
+	   section centers its content with no top clearance of its own. The current
+	   navbar's logo runs up to 8rem plus a 1rem offset — tall enough that the
+	   first pillar row rendered underneath it. 9rem clears that across the whole
+	   desktop fluid-type range (checked from 992px up); the ≤991px rule below
+	   already carries its own padding-top and overrides this. */
+	padding-top: 9rem;
+	/* No background video. Apertura's own was an agency placeholder clip with
+	   "APERTURE STUDIO — PLACEHOLDER" burned into the frame, in their red.
+	   There's no Minos Host footage to put in its place, so this is flat
+	   charcoal instead — the same treatment as Definitions and About. */
+	background-color: var(--vv-charcoal);
+}
+/* Soft gold glow, drifting as you scroll — animated in about-stack.js. Pure
+   decoration: sits behind .pillars_container, which needs the explicit
+   z-index below to unambiguously paint above an absolutely positioned sibling
+   sharing the same stacking context. */
+.pillars_glow {
+	z-index: 0;
+	pointer-events: none;
+	position: absolute;
+	inset: 0;
+	will-change: transform;
+}
+/* The actual gradient lives on a pseudo-element, not .pillars_glow itself, so
+   it can carry its own perpetual CSS animation without fighting the parent's
+   scroll-driven GSAP transform — both apply to different boxes, so they
+   compose (drift-and-pulse on top of the scroll offset) instead of one
+   overwriting the other's `transform`. Always playing, independent of scroll;
+   the scroll tween in about-stack.js rides on top of it via the parent. */
+.pillars_glow::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	/* 0.22 measured out at only 1.42:1 contrast against the charcoal even at the
+	   gradient's own centre — invisible in practice. 0.55 is 2.41:1 at centre,
+	   an actually-visible soft glow rather than a technically-present one.
+
+	   Sized to fade out cleanly, not to be clipped: .section_pillars is
+	   revealed through a hard clip-path polygon (about-stack.js's cross-fade
+	   mask), which has no feathering at all, so any soft light that reaches
+	   that edge gets sliced by a visible straight line instead of fading —
+	   the "cut" this replaces. Giving .pillars_glow overflow room (inset:
+	   -15%, the previous approach) does nothing against that: the mask clips
+	   at the section's own bounds regardless of how far the glow's box
+	   extends past them. The actual fix is to keep the light itself small
+	   enough that it's already invisible well before it could ever reach the
+	   mask's edge — 25vmin fading out by 60% is fully faded ~15vmin from
+	   centre, comfortably inside a quarter-screen's clearance from every edge
+	   on any realistic desktop window (checked 1920×1080 down to a
+	   near-square 900×700). vmin, not vw: sizing off the SMALLER of width/
+	   height is what keeps this safe on short/squarish windows too, not just
+	   wide ones. */
+	background: radial-gradient(25vmin 25vmin at 35% 40%, rgba(184, 154, 107, 0.55), transparent 60%);
+	animation: pillars-glow-drift 16s ease-in-out infinite;
+}
+@keyframes pillars-glow-drift {
+	0% {
+		transform: translate(-2%, -2%) scale(1) rotate(0deg);
+	}
+	50% {
+		transform: translate(3%, 4%) scale(1.15) rotate(8deg);
+	}
+	100% {
+		transform: translate(-2%, -2%) scale(1) rotate(0deg);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.pillars_glow::before {
+		animation: none;
+	}
+}
+.pillars_container {
+	z-index: 1;
+	grid-row-gap: 1rem;
+	flex-flow: column;
+	align-items: center;
+	/* flex-end, not center: height: 100% here doesn't fill with content — the
+	   title/grid/fifth group is shorter than that box, and centering left an
+	   unpredictable amount of empty charcoal below it (more on a tall
+	   viewport, less on a short one), stacking on TOP of .section_brands's own
+	   padding-top below. That stacked slack is why the Pillars→Brands gap kept
+	   reading bigger than Brands→Services even after the two paddings were
+	   made numerically equal (brands.css) — Services has no equivalent
+	   centering on its side, so nothing was ever adding to it there.
+	   Bottom-aligning here removes the slack entirely: Brands' own
+	   padding-top becomes the WHOLE gap, the same way Brands' padding-bottom
+	   already is on the Brands→Services side. */
+	justify-content: flex-end;
+	height: 100%;
+	display: flex;
+	position: relative;
+}
+/* Same face as the pillar words below ("Villas" etc.), centred above them. */
+.pillars_title {
+	color: var(--vv-gold);
+	text-align: center;
+	letter-spacing: 0;
+	text-transform: uppercase;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 2.5vw;
+	font-weight: 900;
+	line-height: 90%;
+}
+.pillar_content {
+	grid-column-gap: 1rem;
+	grid-row-gap: 1rem;
+	pointer-events: none;
+	color: var(--vv-off-white);
+	text-align: justify;
+	letter-spacing: 0.025rem;
+	text-transform: uppercase;
+	justify-content: space-between;
+	align-items: flex-start;
+	font-size: 0.75rem;
+	line-height: 120%;
+	transition: opacity 0.3s cubic-bezier(0.86, 0, 0.07, 1);
+	position: relative;
+}
+.pillar_content.pillar_content_first,
+.pillar_content.pillar_content_second,
+.pillar_content.pillar_content_third,
+.pillar_content.pillar_content_forth {
+	width: 100%;
+	max-width: 24rem;
+	inset: auto;
+}
+.heading-h2-review {
+	text-align: justify;
+	letter-spacing: 0;
+	text-transform: uppercase;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 6rem;
+	font-weight: 900;
+	line-height: 90%;
+}
+/* Shrunk again, from 4.5vw — this is what pulls the 5th item ("Partner") up
+   toward the middle: it shortens both rows' own height, and the interlace
+   offsets below are font-size-relative, so they close up with it. Re-measured
+   at 3.5vw: the widest row pair (Rentals + Hosts) runs to 40.4vw, well inside
+   the ~95vw usable width. Re-measure with fonttools before raising this if the
+   words change. */
+.pillar_heading {
+	font-size: 3.5vw;
+	display: flex;
+}
+.pillar_heading.heading-h2-review {
+	z-index: 2;
+	justify-content: space-between;
+	align-items: baseline;
+	position: relative;
+}
+.pillar_heading.reverse {
+	flex-flow: row-reverse;
+}
+/* Static gold, matching Apertura's own use of its accent here — no hover state
+   on this element in their CSS either. The background behind this is flat
+   charcoal rather than red-toned footage, so gold reads the same way it does
+   everywhere else on charcoal. */
+/* cursor: default, not pointer — same call as WhyUs's "What we do" eyebrow
+   (whyus.css): these have a hover effect (the gold sweep, below) but go
+   nowhere, so a hand cursor promised a click that doesn't do anything. */
+.pillar_heading_wrapper {
+	color: var(--vv-gold);
+	cursor: default;
+	padding-bottom: 0.375rem;
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+	overflow: hidden;
+}
+.pillar_heading_wrapper.right {
+	margin-left: auto;
+}
+/* Real CSS Grid, not flex-wrap — this is the fix for the row breaking wrong.
+   flex-wrap decides how many items fit per line from their NATURAL widths
+   against the CURRENT viewport, which is exactly what went wrong: at some
+   widths it wrapped 1-then-3 instead of 2-and-2, and the interlace paragraphs
+   below — which assume row 1 is Villas+Remote and row 2 is Rentals+Hosts —
+   landed on whatever was actually in each row, colliding. Two explicit
+   columns place items by DOM order (1,2 → row 1; 3,4 → row 2) regardless of
+   word length or viewport, so the row split can't happen any other way. */
+.pillars_wrapper {
+	/* Reused below to size and space the interlaced paragraphs. */
+	--pillar-para-w: 16vw;
+	--pillar-para-gap: 1.5vw;
+	z-index: 3;
+	grid-template-columns: 1fr 1fr;
+	column-gap: 0px;
+	/* 0, matching Apertura: the interlace works BECAUSE the two rows sit flush
+	   against each other — see the comment on the paragraph offsets below. */
+	row-gap: 0px;
+	pointer-events: auto;
+	align-items: center;
+	width: 100%;
+	/* auto, not 100%: this is one of three stacked children of .pillars_container
+	   now (title above, the 5th item below), not the section's sole content. */
+	height: auto;
+	/* Computed, not eyeballed: at the 3.5vw heading size the deepest interlaced
+	   paragraph (row 2's) bottoms out ~10.85vw below the wrapper's own top —
+	   recalibrated against the actual rendered line count, not the more
+	   conservative estimate used before this was tightened — while the
+	   wrapper's own flow-height (the two heading rows only — the paragraphs
+	   are absolute, so they don't count toward it) is only ~6.3vw. This is that
+	   gap plus a small margin, so .pillars_fifth below can never land on top of
+	   it. Rescale if .pillar_heading's font-size changes again — see the
+	   comment on the interlace offsets themselves for the same dependency. */
+	padding-bottom: 5.1vw;
+	display: grid;
+	position: relative;
+}
+.pillar {
+	display: flex;
+	position: relative;
+}
+.pillar.right {
+	justify-self: end;
+}
+.pillar.left {
+	justify-self: start;
+}
+/* Matches Apertura exactly: no script anywhere ever grows this past width: 0,
+   and their CSS has no :hover rule for it either. It is inert decorative
+   markup as shipped — not a bug, not something to wire up. */
+.pillar_heading_rectangle {
+	z-index: 1;
+	background-color: var(--vv-gold);
+	width: 0%;
+	position: absolute;
+	inset: 0% auto 0% 0%;
+}
+@media screen and (max-width: 991px) {
+	/* padding-bottom: 0, not 4rem — cancels so Brands' own mobile padding-top
+	   (3rem, brands.css) is the whole Pillars→Brands gap, matching the same
+	   ownership rule as every other boundary in this chain. */
+	.section_pillars {
+		height: auto;
+		min-height: calc(var(--vh) * 100);
+		padding-top: 4rem;
+		padding-bottom: 0;
+		overflow: hidden;
+	}
+	.pillar_content {
+		width: 15.9375rem;
+		position: relative;
+		inset: 0;
+	}
+	.pillar_content.pillar_content_first {
+		width: 15.9375rem;
+		top: 0;
+		left: 0;
+	}
+	.pillar_content.pillar_content_second {
+		width: 15.9375rem;
+		top: 0;
+		right: 0;
+	}
+	.pillar_content.pillar_content_third {
+		width: 15.9375rem;
+		top: 0;
+		left: 0;
+	}
+	.pillar_content.pillar_content_forth {
+		width: 15.9375rem;
+		top: 0;
+		right: 0;
+	}
+	.pillar_heading {
+		font-size: 4rem;
+	}
+	.pillars_title {
+		font-size: 2.25rem;
+	}
+	.pillar_heading.reverse {
+		flex-flow: row;
+	}
+	.pillar_heading_wrapper.right {
+		margin-left: 0;
+	}
+	.pillars_wrapper {
+		/* Back to flex here: the desktop base is now CSS Grid (two fixed
+		   columns), which mobile's single-column flex-flow: column below
+		   doesn't apply to unless display is switched back explicitly. */
+		display: flex;
+		grid-column-gap: 2rem;
+		grid-row-gap: 2rem;
+		flex-flow: column;
+		justify-content: center;
+		align-items: center;
+		padding-bottom: 0;
+	}
+	.pillar {
+		grid-column-gap: 1rem;
+		grid-row-gap: 1rem;
+		max-width: none;
+		flex-flow: column;
+		justify-content: flex-start;
+		align-items: center;
+	}
+	.pillar.right {
+		align-items: center;
+		margin-left: 0;
+	}
+	.pillar.left {
+		margin-right: 0;
+	}
+	.pillar_content_num {
+		display: none;
+	}
+}
+@media screen and (max-width: 767px) {
+	.heading-h2-review {
+		font-size: 2rem;
+	}
+	.pillar {
+		grid-column-gap: 0.5rem;
+		grid-row-gap: 0.5rem;
+	}
+}
+@media screen and (max-width: 479px) {
+	.pillar_heading {
+		font-size: 2rem;
+	}
+	.pillars_title {
+		font-size: 1.5rem;
+	}
+}
+@media screen and (min-width: 992px) {
+	/* Scoped to .pillars_container (not .pillars_wrapper) and listing
+	   .pillars_fifth alongside .pillar in both the trigger and the target, so
+	   hovering the 5th item dims the other four's body copy the same way
+	   hovering any of the four dims the rest — one hover group of five, not
+	   four-plus-one.
+
+	   .pillars_fifth .pillar_heading_wrapper:hover as the container-level
+	   trigger, not .pillars_fifth:hover — pointer-events: none on
+	   .pillars_fifth_body (above) stops the PARAGRAPH itself from being a
+	   hover target, but that was never actually what let hovering its text
+	   trigger this: the four interlaced .pillar_content blocks are
+	   position: absolute, which takes them OUT of their own .pillar's
+	   layout box entirely, so that box only ever covers the heading —
+	   hovering that (visually overlapping, but geometrically elsewhere)
+	   text was never inside a .pillar's own hoverable area to begin with.
+	   .pillars_fifth_body, never part of the interlace, stays in NORMAL
+	   flow — it genuinely extends .pillars_fifth's own box down to cover
+	   it, pointer-events or not, which is what actually let hovering it
+	   count as hovering the container. Checking the heading wrapper
+	   specifically, rather than the container as a whole, is what limits
+	   the trigger to the title the way the other four already were by
+	   their layout, not by this rule.
+
+	   A plain descendant selector here, not :has(.pillar_heading_wrapper
+	   :hover) — :has() cannot contain another :has(), and this whole
+	   selector already sits inside the CONTAINER's own :has(...) below.
+	   Nesting it there the first time made the entire rule invalid CSS —
+	   not just the 5th item's own part of it, the whole selector list,
+	   which is why hovering stopped dimming anything at all afterward.
+	   :not(:has(...)) two lines down is fine; it's :has() nested directly
+	   inside :has() that's disallowed, not :has() inside :not(). */
+	.pillars_container:has(.pillar:hover, .pillars_fifth .pillar_heading_wrapper:hover)
+		.pillar:not(:hover)
+		.pillar_content,
+	.pillars_container:has(.pillar:hover, .pillars_fifth .pillar_heading_wrapper:hover)
+		.pillars_fifth:not(:has(.pillar_heading_wrapper:hover))
+		.pillars_fifth_body {
+		opacity: 0.5 !important;
+	}
+	.pillar:hover .pillar_content,
+	.pillars_fifth:has(.pillar_heading_wrapper:hover) .pillars_fifth_body {
+		opacity: 1 !important;
+	}
+
+	/* Apertura's own interlace, same technique: absolute paragraphs at vw offsets
+	   so the top-row and bottom-row pair share one visual band instead of each
+	   sitting under its own heading. Re-measured here for Villas/Rentals/Remote/
+	   Hosts, the same way the previous Guests/Cleaning/Upkeep/Listings pass was —
+	   never copied wholesale, because these offsets are tuned to specific words.
+
+	   Why it lines up: grid-row-gap above is 0, so row 2 (Rentals/Hosts) starts
+	   flush against row 1's (Villas/Remote) own box — .pillar_content is
+	   absolute, so that box is exactly the heading's height, nothing more.
+	   `top` is font-size-relative (2.25x / 1.29x the heading size) — not
+	   word-width-relative, since line height depends only on font-size — so
+	   these two numbers were rescaled, not re-measured, each time the heading
+	   shrank (6vw → 4.5vw → 3.5vw).
+
+	   Horizontal: first/third stay anchored at their own outer edge (0.5rem);
+	   second/forth are pushed in by their own known width — never the heading's
+	   — so they can never depend on how long the words are. */
+	.pillar_content.pillar_content_first,
+	.pillar_content.pillar_content_third {
+		width: var(--pillar-para-w);
+		position: absolute;
+		top: 7.9vw;
+	}
+	.pillar_content.pillar_content_first {
+		left: 0.5rem;
+	}
+	.pillar_content.pillar_content_third {
+		right: 0.5rem;
+	}
+	.pillar_content.pillar_content_second,
+	.pillar_content.pillar_content_forth {
+		width: var(--pillar-para-w);
+		position: absolute;
+		top: 4.5vw;
+	}
+	.pillar_content.pillar_content_second {
+		left: calc(var(--pillar-para-w) + var(--pillar-para-gap));
+	}
+	.pillar_content.pillar_content_forth {
+		right: calc(var(--pillar-para-w) + var(--pillar-para-gap));
+	}
+}
+@media (max-width: 991px) and (min-width: 0px) {
+	.pillar_content p {
+		text-align-last: center;
+	}
+}
+/* Not part of the interlace — that layout only works in matched left/right
+   pairs, and five don't pair evenly. Sits below the grid instead: centred,
+   plain. .pillars_wrapper's own padding-bottom already clears the deepest
+   interlaced paragraph with margin to spare (see that comment) — this is a
+   small additional gap for visual separation, not load-bearing. */
+.pillars_fifth {
+	margin-top: 0.25vw;
+	cursor: default;
+	flex-flow: column;
+	align-items: center;
+	display: flex;
+}
+.pillars_fifth .pillar_heading_wrapper {
+	padding-left: 0;
+	padding-right: 0;
+}
+.pillars_fifth .pillar_heading {
+	justify-content: center;
+	grid-column-gap: 0.75rem;
+}
+/* pointer-events: none — matching .pillar_content (above), which the other
+   four items' own body copy already has. Without it, hovering the 5th
+   item's TEXT (not just its title) also matched .pillars_fifth:hover and
+   triggered the dim-the-rest effect — the four interlaced paragraphs never
+   could, because pointer-events: none makes them transparent to hover,
+   passing it through to whichever .pillar actually sits underneath, so only
+   hovering THEIR titles ever triggered anything. This is what makes the
+   5th item behave the same way: hovering its own body copy no longer
+   counts, only its title does. */
+.pillars_fifth_body {
+	pointer-events: none;
+	color: var(--vv-off-white);
+	text-align: center;
+	letter-spacing: 0.025rem;
+	text-transform: uppercase;
+	max-width: 28rem;
+	margin-top: 0.75rem;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 0.75rem;
+	line-height: 120%;
+	transition: opacity 0.3s cubic-bezier(0.86, 0, 0.07, 1);
+}

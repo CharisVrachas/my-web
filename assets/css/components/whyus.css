@@ -1,0 +1,504 @@
+/* Ported from Orisa's .sec-4-home-3 / .navigation-sec4home3 / .scroll-section
+   (compiled main.css lines ~724-746 and ~6674-6695). Its own numbers are kept
+   verbatim — the 10px nav row padding, the 60px number column, the 0.3s nav
+   transition, the 100vh card min-height, the 16px card radius — because those
+   are what make the stack read the way it does on index-3.html. Only the
+   palette is Minos's: Orisa runs this section light (neutral-50 cards on a
+   white page), which would punch a hole in the dark half of this page, so the
+   same contrast relationship is rebuilt on charcoal — see the design-tokens
+   comment in base.css for why gold can't carry body type here. */
+/* padding-top: 0 for the same reason as always: the EARLIER section's
+   padding-bottom creates a boundary gap, and the following section's
+   padding-top cancels to 0 so the two don't stack (brands.css/services.css
+   run the same rule). This was padding-top: 6rem before, which sat on top of
+   Services' own padding-bottom: 6rem and doubled the Services→WhyUs gap to
+   12rem against every other boundary's 6rem — the first mismatch this
+   replaced.
+
+   padding-bottom: 0, NOT 6rem, on the OTHER side — this section is the one
+   exception to "the earlier section's padding-bottom owns the gap": what
+   follows isn't .section_testimonials directly, it's .testimonials_panel
+   nested inside it, which already carries its own padding: 6rem 0
+   (testimonials.css) for its own internal breathing room. Giving this 6rem
+   too stacked a SECOND 6rem on top of the panel's own, doubling THIS gap to
+   12rem the same way the Services one was doubled — same bug, different
+   pair of rules. The panel's own top padding is what now plays the role
+   every other section's incoming padding-top normally cancels out. */
+.section_whyus {
+	position: relative;
+	background-color: var(--vv-charcoal);
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+/* ===== Eyebrow ("What we do") =====
+   Removed — same pass as .sv_hero_head .sv_eyebrow (services-page.css) and
+   .ct_eyebrow (contact-page.css), the "X ↗" label site-wide. display: none
+   here rather than pulled from WhyUs.astro; the rule below it is what
+   actually takes it off the page. */
+.whyus_eyebrow {
+	display: none;
+	align-items: center;
+	gap: 4px;
+	color: var(--vv-gold);
+	letter-spacing: 0.025rem;
+	text-transform: uppercase;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.2;
+	margin-bottom: 10px;
+	cursor: default;
+}
+.whyus_eyebrow_label {
+	position: relative;
+	z-index: 1;
+	overflow: hidden;
+	display: inline-block;
+}
+.whyus_eyebrow_text.text-1 {
+	position: relative;
+	display: block;
+	transition: 0.3s;
+}
+.whyus_eyebrow_text.text-2 {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	display: block;
+	transition: 0.3s;
+}
+.whyus_eyebrow:hover .whyus_eyebrow_text.text-1 {
+	transform: translateY(-150%);
+}
+.whyus_eyebrow:hover .whyus_eyebrow_text.text-2 {
+	top: 50%;
+	transform: translateY(-50%);
+}
+.whyus_eyebrow_icon {
+	position: relative;
+	overflow: hidden;
+	width: 16px;
+	height: 16px;
+	display: inline-flex;
+	margin-left: 4px;
+}
+.whyus_eyebrow_icon svg {
+	position: absolute;
+	bottom: -1px;
+	left: 1px;
+	transform: translateY(-2px);
+	transition: all 0.2s ease-out;
+}
+.whyus_eyebrow_icon .icon-2 {
+	left: -12px;
+	bottom: -12px;
+	transform: translate(0, 0);
+	opacity: 0;
+}
+.whyus_eyebrow:hover .whyus_eyebrow_icon .icon-1 {
+	transform: translate(16px, -16px);
+}
+.whyus_eyebrow:hover .whyus_eyebrow_icon .icon-2 {
+	opacity: 1;
+	visibility: visible;
+	transform: translate(13px, -13px);
+}
+@media (prefers-reduced-motion: reduce) {
+	.whyus_eyebrow_text,
+	.whyus_eyebrow_icon svg {
+		transition: none;
+	}
+}
+
+/* ===== Heading row ===== */
+.whyus_head {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 2rem;
+	align-items: end;
+	padding-bottom: 3rem;
+}
+.whyus_heading {
+	color: var(--vv-off-white);
+	font-family: "Playfair Display", Georgia, serif;
+	/* 2.5rem, not 3rem — trimmed to match About's own heading and
+	   Testimonials' "What owners say" (both now 3.25rem in Review Wide
+	   Black, a heavier uppercase display face; Feature Display here reads
+	   bigger at the same rem for the same reason its own font-size was
+	   already smaller than u-h3-review's before this pass). */
+	font-size: 2.5rem;
+	font-weight: 400;
+	line-height: 1.1;
+	letter-spacing: 0;
+	max-width: 48rem;
+	margin: 0;
+}
+/* ===== Orisa's .at-btn-group — circle / pill / circle =====
+   The whole trick is in the first and third children. At rest child 1 is at
+   half scale and pulled -52px into the pill, so it reads as a single button
+   with one trailing circle; on hover the two swap roles, and because both
+   the scale and the negative margin animate, the arrow looks like it hops
+   from one end to the other. Orisa's numbers exactly (0.5 scale, 52px).
+
+   Colours are Minos's: Orisa builds these in #1D1D1D on a light page, which
+   on charcoal would be a near-invisible pill. Gold fill with charcoal type is
+   the same figure/ground relationship the other way up — and it is the one
+   pairing that clears contrast on this background (see base.css). */
+.whyus_head_aside {
+	display: flex;
+	width: fit-content;
+	flex-shrink: 0;
+	margin-left: auto;
+}
+.whyus_head_aside > *:nth-child(1) {
+	transform: scale3d(0.5, 0.5, 1);
+	margin-inline-end: -52px;
+}
+.whyus_head_aside > *:nth-child(2),
+.whyus_head_aside > *:nth-child(3) {
+	transform: scale3d(1, 1, 1);
+}
+.whyus_head_aside:hover > *:nth-child(1) {
+	transform: scale3d(1, 1, 1);
+	margin-inline-end: 0;
+}
+.whyus_head_aside:hover > *:nth-child(3) {
+	transform: scale3d(0.5, 0.5, 1);
+	margin-inline-start: -52px;
+}
+.whyus_btn,
+.whyus_btn_circle {
+	background-color: var(--vv-gold);
+	color: var(--vv-charcoal);
+	text-decoration: none;
+	transition:
+		transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+		margin 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+/* position/z-index are Orisa's `.at-btn.z-index-1` on this element, and they
+   are load-bearing: the circle that tucks -52px into the pill on hover has to
+   pass BEHIND it. Without this the pill and the circle share a stacking
+   context in DOM order, the circle wins, and it sits on top of the label —
+   clipping "What we handle" to "What we handl" mid-hover. */
+.whyus_btn {
+	position: relative;
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 17px 25px;
+	border-radius: 50px;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 0.875rem;
+	font-weight: 900;
+	line-height: 1;
+	letter-spacing: 0;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+.whyus_btn_circle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 50px;
+	height: 50px;
+	border-radius: 100%;
+	flex-shrink: 0;
+}
+
+/* ===== The three-piece mark =====
+   Orisa positions faces 1 and 3 absolutely against face 2, which stays in
+   flow — that is what assembles them into a cube. The translateY(-100px) is
+   its own way of pulling the group up into the space beside the nav — and it
+   is the reason padding-top has to be measured against it, not picked on its
+   own: 4rem (~64-88px depending on root size) minus that 100px pull-up came
+   out NEGATIVE, so the mark sat 12-36px ABOVE where the nav list ends,
+   overlapping [05]'s own row instead of clearing it. 180px keeps a real 80px
+   of daylight below the last nav row after the -100px is subtracted back out
+   — both numbers are flat px (not rem), specifically so this stays correct
+   at any root font-size instead of drifting the way the mixed-unit version
+   above did.
+
+   .whyus_decor sits in normal flow BELOW all five .whyus_nav rows already —
+   there's no navbar above it to clear the way an earlier pass assumed. */
+.whyus_decor {
+	padding-top: 180px;
+	padding-left: 3rem;
+	color: var(--vv-off-white);
+}
+.whyus_decor_mark {
+	position: relative;
+	width: 150px;
+	height: 186px;
+	transform: translateY(-100px);
+}
+/* Unlike the cube's three DIFFERENTLY-SHAPED faces (each hand-positioned to
+   its own left/top offset so the three distinct rhombi tiled into one
+   silhouette), these three pieces are all the SAME 449×558 canvas — each
+   mostly transparent outside its own third (see the markup comment) — so
+   they can just stack exactly on top of one another. One rule covers all
+   three instead of the cube's per-child left/top pair. */
+.whyus_decor_mark > svg {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+}
+.whyus_decor_mark > svg image {
+	width: 100%;
+	height: 100%;
+}
+
+/* ===== Pinned body: nav left, stacking cards right =====
+   Orisa's col-xxl-3 / col-lg-8 + offset-xxl-1 pair, as a two-track grid. */
+.whyus_body {
+	display: grid;
+	grid-template-columns: minmax(0, 25%) minmax(0, 1fr);
+	gap: 4rem;
+	align-items: start;
+}
+
+/* ===== The numbered nav ===== */
+.whyus_nav {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.whyus_nav_item {
+	padding: 10px 0;
+	border-bottom: 1px solid rgba(184, 154, 107, 0.2);
+	transition: all 0.3s ease;
+}
+.whyus_nav_content {
+	display: flex;
+	align-items: center;
+	color: var(--vv-off-white);
+}
+/* flex: 0 0 60px on the number and flex: 1 on the label, exactly as Orisa
+   sizes them — the arrow then takes only what it needs at the end. */
+.whyus_nav_num {
+	flex: 0 0 60px;
+	opacity: 0.5;
+}
+.whyus_nav_label {
+	flex: 1;
+	margin: 0;
+	text-align: left;
+}
+.whyus_nav_content svg {
+	opacity: 0;
+	transition: all 0.3s ease;
+	flex-shrink: 0;
+}
+/* .active is set from whyus.js, off the pinned timeline's progress — not a
+   :hover state. Gold-on-charcoal rather than Orisa's neutral-100 fill, which
+   would be invisible here. */
+.whyus_nav_item.active {
+	background-color: rgba(184, 154, 107, 0.14);
+}
+.whyus_nav_item.active .whyus_nav_content {
+	margin: 0 16px;
+	transition: all 0.3s ease;
+	color: var(--vv-gold);
+}
+.whyus_nav_item.active svg {
+	opacity: 1;
+}
+
+/* ===== The card stack =====
+   Orisa's .scroll-section .wrapper / .list / .item, unchanged: every card
+   after the first is absolutely positioned on top of the first, so they all
+   occupy the same box and whyus.js can slide them in over one another. The
+   first stays in flow and is what gives the column its height. */
+.whyus_stack {
+	position: relative;
+}
+.whyus_stack_list {
+	position: relative;
+	height: 100%;
+}
+.whyus_card {
+	min-height: 100vh;
+	width: 100%;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: auto;
+}
+.whyus_card:first-child {
+	min-height: 100%;
+	height: 100%;
+}
+/* min-width: 992px — matching whyus.js's own matchMedia gate on the pin/
+   yPercent JS that positions cards 2+ once this applies. Below that width
+   the JS never runs, but this rule applied regardless: cards 2+ went
+   absolute with no transform ever set on them, so they sat exactly on top of
+   card 1 instead of flowing normally down the page on mobile. Same bug,
+   found later and independently in services-page.css/about-page.css/
+   faq-page.css, all three copied from this file's own pattern — fixed here
+   too now that the root cause is known, rather than leaving the original
+   carrying the bug its own copies were caught for. */
+@media screen and (min-width: 992px) {
+	.whyus_card:not(:first-child) {
+		position: absolute;
+	}
+}
+/* Orisa's .container.bg-neutral-50.rounded-4 — a lifted, OPAQUE panel against
+   the page. Solid is not optional here the way it might be elsewhere: every
+   card but the first is position: absolute (see .whyus_card above), stacked
+   directly on top of the one before it, and whyus.js never hides the card
+   underneath — it only scales it down. Full opacity is what actually hides
+   it. A first pass here used rgba(245, 242, 237, 0.04) — 4% — matching a
+   "glass" treatment used elsewhere on this page; on a card that has to
+   fully occlude another card, that reads as both cards' text superimposed
+   the moment the next one slides in. */
+/* max-width caps this at roughly Orisa's own .container ceiling (1140-1320px
+   across its breakpoint ladder) — without it the card fills 100% of
+   .whyus_stack's column, which on a wide desktop is most of the viewport
+   width and, since the grid's other dimensions scale off that, pulled the
+   whole card noticeably bigger than Orisa's own (measured: 1143×446 there,
+   1286×644 here before this pass — width AND height both over). */
+.whyus_card_inner {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: 2rem;
+	align-items: center;
+	max-width: 72rem;
+	padding: 0.75rem;
+	border-radius: 16px;
+	border: 1px solid rgba(184, 154, 107, 0.2);
+	background-color: #333c4b;
+}
+.whyus_card_copy {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	height: 100%;
+	padding: 2.25rem;
+}
+.whyus_card_icon {
+	padding-bottom: 20px;
+	color: var(--vv-gold);
+}
+.whyus_card_icon svg {
+	display: block;
+}
+.whyus_card_title {
+	display: block;
+	color: var(--vv-off-white);
+	font-family: "Playfair Display", Georgia, serif;
+	font-size: 1.75rem;
+	font-weight: 400;
+	line-height: 1.15;
+	margin-bottom: 1.5rem;
+}
+/* Sentence case, not this page's usual uppercase micro-copy — Orisa's own
+   list here (.ps-3.neutral-950, plain <li>s, no font-size/line-height
+   override of its own) is default body text, and uppercase at this width
+   was the real reason the card ran taller than Orisa's: every bullet long
+   enough to read as a full sentence wrapped to two lines instead of one
+   once the letters were forced wider by text-transform, and five doubled
+   lines compounds fast. Sentence case is also just more readable at this
+   length — the uppercase voice elsewhere on this page (Pillars, the eyebrow
+   labels) is short 1-3 word tags, not run-on sentences. */
+.whyus_card_list {
+	color: var(--vv-off-white);
+	font-size: 0.8125rem;
+	line-height: 1.5;
+	margin: 0 0 1rem;
+	padding-left: 1.1rem;
+}
+.whyus_card_list li::marker {
+	color: var(--vv-gold);
+}
+.whyus_card_media {
+	border-radius: 12px;
+	overflow: hidden;
+	align-self: stretch;
+}
+.whyus_card_media img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* text-scale-anim: whyus.js splits the title into per-letter spans and scales
+   the hovered letter (plus its two neighbours) vertically. These two rules
+   are all the CSS that effect needs — Orisa's are identical. */
+.text-scale-anim {
+	white-space: pre-wrap;
+	transform-origin: top left;
+}
+.at-word-span,
+.at-letter-span {
+	display: inline-block;
+}
+
+@media screen and (max-width: 1199px) {
+	.whyus_body {
+		grid-template-columns: minmax(0, 30%) minmax(0, 1fr);
+		gap: 2rem;
+	}
+	.whyus_card_copy {
+		padding: 2rem;
+	}
+}
+@media screen and (max-width: 991px) {
+	/* padding-top: 0 cancels Services' own padding-bottom: 3rem; padding-bottom
+	   is 0, NOT 3rem, for the same reason as the desktop rule above: what
+	   follows is .testimonials_panel (testimonials.css), which already carries
+	   its own padding: 3rem 0 at this width. A real 3rem here would double
+	   that gap to 6rem the same way the desktop one doubled to 12rem. */
+	.section_whyus {
+		padding-top: 0;
+		padding-bottom: 0;
+	}
+	/* Below the pin's own breakpoint (see whyus.js) nothing is pinned and
+	   nothing stacks: the cards go back to being ordinary blocks in flow, so
+	   the absolute positioning and the 100vh floor both have to come off or
+	   they'd pile on top of each other with no script to separate them. */
+	.whyus_body {
+		grid-template-columns: 1fr;
+	}
+	.whyus_nav {
+		display: none;
+	}
+	.whyus_card,
+	.whyus_card:first-child {
+		position: relative;
+		min-height: 0;
+		height: auto;
+		margin-bottom: 1.5rem;
+	}
+	.whyus_card_inner {
+		grid-template-columns: 1fr;
+	}
+	.whyus_card_media {
+		max-height: 16rem;
+	}
+	.whyus_head {
+		grid-template-columns: 1fr;
+		align-items: start;
+	}
+	.whyus_head_aside {
+		margin-left: 0;
+	}
+	.whyus_heading {
+		font-size: 2rem;
+	}
+	/* Filler with no room to be filler in a single-column layout. */
+	.whyus_decor {
+		display: none;
+	}
+}
+@media screen and (max-width: 767px) {
+	.whyus_card_copy {
+		padding: 1.5rem;
+	}
+	.whyus_card_title {
+		font-size: 1.375rem;
+	}
+}

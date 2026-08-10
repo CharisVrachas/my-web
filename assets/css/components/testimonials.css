@@ -1,0 +1,281 @@
+/* Ported from Orisa's .testimonial-cart-wrap / .testimonial-top / .swiper-btn-*
+   (compiled main.css lines ~271-300 and ~6545-6670). Its numbers are kept
+   verbatim — the 16px card radius, the 85px avatar at 16px radius, the 45px
+   gap under the top row, the 80px gap above the author, the 57px rule that
+   grows to 100px, the plate offset 12px below the card at 90% width, the
+   125px blur on the glow — because those proportions are the card.
+
+   Palette is Minos's. Orisa builds this on neutral-700/800 greys inside a
+   bg-black panel; here the panel is charcoal (the section it sits in) and the
+   card is one step lifted off it, with gold where Orisa used its orange. */
+/* padding-top: 0, cancelling WhyUs's own padding-bottom: 6rem — same
+   ownership rule as every other boundary in this chain (see the comment on
+   .section_whyus). padding-bottom stays a real 6rem: this is currently the
+   last section on the page, so there's no next section's padding-top for it
+   to double up against. */
+.section_testimonials {
+	position: relative;
+	background-color: var(--vv-charcoal);
+	padding-top: 0;
+	padding-bottom: 6rem;
+	overflow: hidden;
+}
+/* Orisa wraps this in .bg-black.rounded-5 inset from the page edge — a panel
+   floating on the background rather than a full-bleed band. Same here, one
+   step darker than the charcoal around it. */
+.testimonials_panel {
+	background-color: #232a35;
+	border-radius: 2rem;
+	margin: 0 0.75rem;
+	padding: 6rem 0;
+}
+.testimonials_head {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-bottom: 3rem;
+}
+/* Orisa's .fill-primary.mb-20 — the mark sits above the heading in its accent
+   colour. Gold here, inherited by the paths through currentColor. */
+.testimonials_mark {
+	display: block;
+	margin-bottom: 20px;
+}
+/* 209×260 native (navbar/gold-mark.png) scaled down to roughly the old SVG
+   mark's footprint — height, not width, drives the size, since this mark is
+   portrait like the full logo it's cropped from, not square like Orisa's. */
+.testimonials_mark img {
+	display: block;
+	height: 42px;
+	width: auto;
+}
+.testimonials_heading {
+	color: var(--vv-off-white);
+	margin-bottom: 0.625rem;
+	line-height: 1;
+}
+.testimonials_sub {
+	color: var(--vv-off-white);
+	text-align: left;
+	max-width: 28rem;
+	margin: 0;
+	opacity: 0.7;
+}
+
+/* ===== Prev / next ===== */
+.testimonials_nav {
+	display: flex;
+	gap: 10px;
+	flex-shrink: 0;
+}
+.testimonials_btn {
+	display: flex;
+	width: 50px;
+	height: 50px;
+	justify-content: center;
+	align-items: center;
+	border-radius: 100px;
+	border: 1px solid rgba(184, 154, 107, 0.35);
+	background-color: rgba(245, 242, 237, 0.04);
+	color: var(--vv-off-white);
+	cursor: pointer;
+	padding: 0;
+	transition: all 0.3s ease-in-out;
+}
+.testimonials_btn:hover {
+	border-color: var(--vv-gold);
+	background-color: rgba(184, 154, 107, 0.18);
+	color: var(--vv-gold);
+}
+
+/* ===== The card ===== */
+.testimonials_slider {
+	padding-bottom: 12px;
+	overflow: hidden;
+}
+/* Solid, not the rgba(245,242,237,0.04) "glass" tint an earlier pass used
+   here — same bug as WhyUs's card originally had (see whyus.css), and the
+   same fix. This card sits directly on top of .testimonial_plate, offset
+   just 12px down (below), and at 4% opacity the plate's own edge and
+   background showed straight through — a thin double-outline right where
+   the card's bottom border should have read as one clean line, which is
+   what "σαν σπασμένες" (looks cracked) in testing was actually pointing at.
+   #333c4b is the same solid surface WhyUs's stacking cards use, for the same
+   reason and the same result. */
+.testimonial_card {
+	position: relative;
+	height: 100%;
+	border-radius: 16px;
+	border: 1px solid rgba(184, 154, 107, 0.2);
+	background-color: #333c4b;
+	padding: 2rem;
+}
+/* The "second card" peeking out below, which is what gives the stack its
+   depth. z-index -2 puts it behind the card; its ::after (the glow) sits at
+   -1, i.e. between the plate and the card. Solid for the same reason as the
+   card above — this is what the card's bottom edge actually hides against. */
+.testimonial_plate {
+	position: absolute;
+	bottom: -12px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 90%;
+	height: 50px;
+	background-color: #333c4b;
+	border-radius: 16px;
+	border: 1px solid rgba(184, 154, 107, 0.2);
+	z-index: -2;
+	overflow: hidden;
+	transition: all 0.3s ease;
+}
+.testimonial_plate::after {
+	content: "";
+	position: absolute;
+	bottom: -12px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 0;
+	height: 0;
+	background-color: var(--vv-gold);
+	filter: blur(125px);
+	opacity: 0;
+	z-index: -1;
+	transition: all 0.5s ease;
+}
+/* Two triggers for the glow, exactly as Orisa has it: hovering any card, and
+   being the centred/active slide. */
+.testimonial_card:hover .testimonial_plate::after,
+.swiper-slide-active .testimonial_plate::after {
+	opacity: 1;
+	width: 99px;
+	height: 99px;
+	transition: all 0.3s ease;
+}
+.testimonial_card:hover .testimonial_author::before {
+	width: 100px;
+	background-color: var(--vv-gold);
+	transition: all 0.3s ease;
+}
+
+/* No .testimonial_top / .testimonial_avatar / .testimonial_logo — that row
+   (headshot + booking-platform logo) came out with the markup; see the
+   comment at the top of Testimonials.astro. .testimonial_quote now sits
+   directly on the card's own padding, no compensating margin needed. */
+/* Orisa clamps the quote to four lines so every card in a row is the same
+   height regardless of how much someone wrote. */
+.testimonial_quote {
+	color: var(--vv-off-white);
+	font-family: "Playfair Display", Georgia, serif;
+	font-size: 1.5rem;
+	font-weight: 400;
+	line-height: 1.3;
+	margin: 0;
+	display: -webkit-box;
+	-webkit-line-clamp: 4;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-height: 6em;
+}
+.testimonial_stars {
+	margin-top: 1rem;
+}
+.testimonial_stars svg {
+	display: block;
+}
+.testimonial_author {
+	position: relative;
+	margin-top: 80px;
+}
+.testimonial_author::before {
+	content: "";
+	position: absolute;
+	top: -20px;
+	left: 0;
+	width: 57px;
+	height: 1px;
+	background-color: var(--vv-gray);
+	transition: all 0.3s ease;
+}
+.testimonial_author_name {
+	color: var(--vv-off-white);
+	letter-spacing: 0.025rem;
+	text-transform: uppercase;
+	font-size: 1rem;
+	font-weight: 400;
+	margin: 0;
+}
+.testimonial_author_role,
+.testimonial_author_place {
+	color: var(--vv-off-white);
+	letter-spacing: 0.025rem;
+	text-transform: uppercase;
+	font-size: 0.75rem;
+	line-height: 1.4;
+	margin: 0;
+	opacity: 0.5;
+}
+
+/* ===== The zooming badge ===== */
+.testimonials_badge_wrap {
+	text-align: center;
+	padding-top: 50px;
+}
+.testimonials_badge {
+	position: relative;
+	display: inline-block;
+	text-decoration: none;
+}
+.testimonials_badge_img {
+	display: block;
+	/* The badge scales 25x from here, so its transform origin has to be its
+	   own centre or it flies off to one side as it grows. */
+	transform-origin: center center;
+}
+.testimonials_badge_text {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	color: var(--vv-charcoal);
+	letter-spacing: 0.025rem;
+	text-transform: uppercase;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 0.75rem;
+	font-weight: 900;
+	line-height: 1.1;
+	text-align: center;
+	transform-origin: center center;
+	pointer-events: none;
+}
+
+@media screen and (max-width: 991px) {
+	/* padding-top: 0 cancels WhyUs's own padding-bottom: 3rem. */
+	.section_testimonials {
+		padding-top: 0;
+		padding-bottom: 3rem;
+	}
+	.testimonials_panel {
+		padding: 3rem 0;
+		border-radius: 1.5rem;
+	}
+	.testimonials_head {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 1.5rem;
+	}
+	.testimonial_card {
+		padding: 1.5rem;
+	}
+	.testimonial_author {
+		margin-top: 2.5rem;
+	}
+	.testimonial_quote {
+		font-size: 1.25rem;
+	}
+}

@@ -1,0 +1,441 @@
+/* Ported from Orisa's footer-2 partial (compiled main.css: .footer-fixed-bottom
+   ~1981, .at-footer-area/.mp-footer-style ~3676-3830, .at-hero-social ~4458,
+   .at-title-anim ~2497). Dimensions are its own measured px throughout —
+   681px footer height, 160px/-11px "Let's Talk", 30px logo, 14px social pills,
+   22px nav links — not re-derived, for the same reason as every other ported
+   section: this page's root font-size is fluid, so rem drifts. Only the
+   palette, the logo, and the copy are Minos's. */
+
+/* #smooth-content needs a real stacking order of its own here, above the
+   footer's z-index: 1 below — without it, .footer_fixed (position: fixed,
+   painted straight onto the page) and #smooth-content (a plain div with no
+   z-index, stacking at auto) fall back to DOM order, and #smooth-content
+   comes BEFORE .footer_fixed as siblings of #smooth-wrapper (see
+   index.astro). That put the footer on top at every scroll position, not
+   just the revealed one — visible straight through the hero at the very top
+   of the page, not just behind the placeholder at the bottom. Orisa's own
+   markup carries the equivalent of this already (`class="z-index-3"` on its
+   #smooth-content, services-1.html) — this was the one part of that div's
+   setup that didn't get carried over with it. 3 clears the footer's 1 with
+   room to spare and stays well under the navbar's 1000 (navbar.css).
+
+   pointer-events: none here, auto again on <main> below — this is the fix
+   for the revealed footer being unclickable. #smooth-content is one
+   continuous block from <main>'s start to .footer_placeholder's end; that
+   OUTER box's own hit area doesn't shrink when footer.js pulls <main> up by
+   a separate transform of its own (a child's transform never changes its
+   parent's box) — so past the reveal point, #smooth-content's own
+   (invisible, unpainted) box still physically covers the exact screen
+   rectangle the footer is now sitting in, and being above it at z-index: 3
+   was enough to swallow every click there before it ever reached
+   .footer_fixed underneath. Nothing was wrong with the footer's own CSS.
+   Disabling pointer-events on the container and re-enabling it on <main>
+   keeps every other click on the page working exactly as before (children
+   still resolve hits normally once a parent re-enables it) while removing
+   just that dead zone. */
+#smooth-content {
+	position: relative;
+	z-index: 3;
+	pointer-events: none;
+}
+#smooth-content main {
+	pointer-events: auto;
+}
+
+/* position: fixed + will-change: transform is what lets footer.js pull <main>
+   up over this without ever moving the footer itself — it just sits still
+   at the bottom of the viewport the whole time, and the illusion is entirely
+   in main sliding away to reveal it. z-index: 1 keeps it above the page's own
+   background but below the fixed navbar (which sets its own, higher, in
+   navbar.css) — the navbar should never disappear under a revealed footer. */
+.footer_fixed {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: 100%;
+	z-index: 1;
+	transform-origin: center bottom;
+	will-change: transform;
+}
+.footer_area {
+	position: relative;
+	z-index: 1;
+	background-color: var(--vv-charcoal);
+	padding-top: 120px;
+}
+
+/* ===== Top row: brand+contact / nav =====
+   Two columns, not three — .footer_social_wrap (Instagram/Facebook/
+   WhatsApp/Airbnb) was the third; removed along with its markup
+   (Footer.astro) rather than left as an empty grid track, which would
+   have opened a big dead gap where it used to sit. */
+.footer_top {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: 3rem;
+	padding-bottom: 3rem;
+}
+/* Column, not a wrapping row. Orisa's own markup is `d-flex flex-wrap
+   align-items-start gap-5` (footer-2.html:8) — a row in principle, but at
+   the width its own demo runs at, the contact block wraps onto its own line
+   under the logo, which is what the finished footer actually looks like.
+   Stacking it outright gets that same result at every width instead of only
+   below whatever breakpoint the wrap happens to kick in at. */
+.footer_brand {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 40px;
+}
+.footer_logo {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	text-decoration: none;
+	color: var(--vv-off-white);
+}
+.footer_logo img {
+	display: block;
+	width: 30px;
+	height: auto;
+}
+.footer_contact {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+.footer_contact_line {
+	margin: 0;
+	color: var(--vv-off-white);
+}
+.footer_contact_line a {
+	color: inherit;
+	text-decoration: none;
+}
+.footer_contact_line a:hover {
+	color: var(--vv-gold);
+}
+
+/* Stretches across its own third of .footer_top rather than shrink-wrapping
+   to the text. justify-self: center sized this to its content, so the two
+   columns ended up ~100px apart and "Services"/"Contact" nearly touched;
+   Orisa's are two `col-6` halves of a `col-lg-4` (footer-2.html:27-38), i.e.
+   each a real ~250px column, which is the separation its footer shows. */
+.footer_nav {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+}
+.footer_nav_col {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+/* The underline-in / arrow-out hover is Orisa's .alt-footer-link-item a:
+   two background gradients (0×1px each) double as an underline that grows
+   in from the right on hover, and a diagonal-arrow ::before slides in from
+   further right at the same time — one hover, two things converging on the
+   link's end. */
+.footer_nav_col a {
+	position: relative;
+	display: inline-block;
+	color: var(--vv-off-white);
+	opacity: 0.7;
+	font-size: 22px;
+	letter-spacing: -0.02em;
+	line-height: 1;
+	text-decoration: none;
+	background-image:
+		linear-gradient(currentColor, currentColor),
+		linear-gradient(currentColor, currentColor);
+	background-size:
+		0 1px,
+		0 1px;
+	background-position:
+		100% 100%,
+		0 100%;
+	background-repeat: no-repeat;
+	transition:
+		background-size 0.3s linear,
+		opacity 0.4s ease;
+}
+.footer_nav_col a::before {
+	content: "";
+	position: absolute;
+	left: 100%;
+	top: 50%;
+	width: 14px;
+	height: 13px;
+	margin-left: 14px;
+	opacity: 0;
+	background-color: var(--vv-gold);
+	-webkit-mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="13" viewBox="0 0 14 13" fill="none"><path d="M11.0037 3.41421L2.39712 12.0208L0.98291 10.6066L9.5895 2H2.00373V0H13.0037V11H11.0037V3.41421Z" fill="black"/></svg>')
+		no-repeat center / contain;
+	mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="13" viewBox="0 0 14 13" fill="none"><path d="M11.0037 3.41421L2.39712 12.0208L0.98291 10.6066L9.5895 2H2.00373V0H13.0037V11H11.0037V3.41421Z" fill="black"/></svg>')
+		no-repeat center / contain;
+	transform: translate(-15px, -40%);
+	transition: all 0.5s ease;
+}
+.footer_nav_col a:hover {
+	opacity: 1;
+	background-size:
+		0 1px,
+		100% 1px;
+	color: var(--vv-off-white);
+}
+.footer_nav_col a:hover::before {
+	opacity: 1;
+	transform: translate(-50%, -50%);
+}
+
+/* No .footer_social_wrap/.footer_follow_label/.footer_social any more —
+   Instagram/Facebook/WhatsApp/Airbnb were TODO placeholders (href="#"),
+   pulled per request the same way the hamburger menu's own copy already
+   was (Navbar.astro/navbar.css). */
+
+/* ===== Divider + bottom ===== */
+.footer_divider {
+	border-top: 1px solid rgba(184, 154, 107, 0.2);
+	padding: 40px 0;
+}
+.footer_bottom_row {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 2rem;
+}
+.footer_copyright {
+	display: block;
+	color: var(--vv-off-white);
+	opacity: 0.5;
+	margin-bottom: 0;
+}
+.footer_connect_wrap {
+	overflow: hidden;
+}
+/* 128px / -9px — trimmed ~20% from Orisa's original 160px/-11px (see the
+   file-level comment for where that pair came from) as part of shrinking
+   titles site-wide; letter-spacing scaled down with it to keep the same
+   proportion (-11px was ~6.9% of 160px, -9px is the same share of 128px) so
+   the tracking doesn't read looser than before relative to the letterforms.
+   Feature Display, not the Review Wide Black u-h1-review carries elsewhere:
+   at this size in Review's 900 weight the title read as inert signage;
+   Feature Display's 400 weight keeps it legible as something to hover,
+   which is the point of data-title-flip below. */
+.footer_connect {
+	margin: 0;
+	color: var(--vv-off-white);
+	font-family: "Playfair Display", Georgia, serif;
+	font-size: 128px;
+	font-weight: 400;
+	letter-spacing: -9px;
+	line-height: 1.1;
+	cursor: default;
+}
+/* The hover effect itself: each .char's real glyph sits still, with a
+   duplicate drawn one line-height below it via text-shadow. On hover of the
+   WHOLE title (not per letter — this is simpler than WhyUs's per-letter
+   text-scale-anim, and it's what Orisa actually ships here), every letter
+   slides up together, staggered by --char so they peel into place left to
+   right rather than snapping at once. */
+.footer_connect .char {
+	display: inline-block;
+	text-shadow: 0 1.1em var(--vv-gold);
+	transition:
+		translate 0.3s cubic-bezier(0.625, 0.05, 0, 1),
+		text-shadow 0.1s 0.15s ease;
+}
+.footer_connect:hover .char {
+	text-shadow: 0 1.1em currentColor;
+	translate: 0 -1.1em 0;
+	transition:
+		translate 0.5s calc((var(--char) - 1) * 0.024s) cubic-bezier(0.625, 0.05, 0, 1),
+		text-shadow 0.175s calc((var(--char) - 1) * 0.024s + 0.225s) ease;
+}
+@media (prefers-reduced-motion: reduce) {
+	.footer_connect .char {
+		transition: none;
+	}
+}
+
+.footer_hours {
+	flex-shrink: 0;
+	text-align: right;
+	color: var(--vv-off-white);
+}
+.footer_hours_label {
+	display: block;
+	opacity: 0.5;
+	margin-bottom: 0.25rem;
+}
+.footer_hours_value {
+	margin: 0;
+	font-family: "Playfair Display", Georgia, serif;
+	font-size: 1.5rem;
+	font-weight: 400;
+}
+
+/* ===== Service tag pills ===== */
+.footer_tags_row {
+	padding-top: 1rem;
+}
+/* Real list markers, not list-style: none — Orisa's own <ul> here keeps its
+   default discs (it only sets `ps-3` for the indent they need, and never
+   resets the style), which is where the small dots separating each service
+   in its footer come from. They read as separators between the items rather
+   than as a bulleted list, since the row runs horizontally. */
+.footer_tags {
+	list-style: disc;
+	margin: 0;
+	padding: 0.75rem 0 0.5rem 1rem;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+}
+.footer_tags li::marker {
+	color: rgba(245, 242, 237, 0.35);
+	font-size: 0.7em;
+}
+/* No border, no background — Orisa's own classes on this element are
+   `at-btn at-btn-border-white border-0 ps-2 pe-2 py-0 common-white
+   opacity-50 bg-transparent rounded-0` (footer-2.html:117). The
+   border-0/bg-transparent/rounded-0 trio strips the .at-btn pill it starts
+   from right back down to plain text plus an arrow, which is what its
+   footer actually shows. The bordered, tinted boxes here before were the
+   un-stripped .at-btn base — a pill treatment that belongs to the buttons
+   elsewhere on the page, not to this row. Hover just lifts the opacity. */
+/* cursor: default — same call as Pillars/Services/WhyUs's own non-navigating
+   rows (pillars.css/services.css/whyus.css): this is now a <div>, not an
+   <a> (Footer.astro — it went to /#services, a link nowhere in particular
+   once services got its own real page), so nothing here is clickable any
+   more and the pointer shouldn't promise otherwise. The hover animation
+   (text swap, arrow) is still purely decorative motion, same as those. */
+.footer_tag {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	cursor: default;
+	gap: 8px;
+	padding: 0 8px;
+	color: var(--vv-off-white);
+	opacity: 0.5;
+	text-decoration: none;
+	border: 0;
+	background-color: transparent;
+	transition: opacity 0.3s ease;
+}
+.footer_tag:hover {
+	opacity: 1;
+}
+/* Same double-text-layer hover already used for the eyebrow badges
+   (WhyUs/Services) — see those for the fuller explanation. Scoped to
+   .footer_tag rather than shared, matching how every other ported component
+   keeps its own copy of this pattern rather than a shared base class. */
+.footer_tag_label {
+	position: relative;
+	z-index: 1;
+	overflow: hidden;
+	display: inline-block;
+}
+.footer_tag_text {
+	display: block;
+	font-size: 0.75rem;
+	letter-spacing: 0.025rem;
+	text-transform: uppercase;
+	transition: 0.3s;
+}
+.footer_tag_text.text-1 {
+	position: relative;
+}
+.footer_tag_text.text-2 {
+	position: absolute;
+	top: 100%;
+	left: 0;
+}
+.footer_tag:hover .footer_tag_text.text-1 {
+	transform: translateY(-150%);
+}
+.footer_tag:hover .footer_tag_text.text-2 {
+	top: 50%;
+	transform: translateY(-50%);
+}
+.footer_tag_icon {
+	position: relative;
+	overflow: hidden;
+	width: 11px;
+	height: 11px;
+	display: inline-flex;
+}
+.footer_tag_icon svg {
+	position: absolute;
+	inset: 0;
+	transition: all 0.2s ease-out;
+}
+.footer_tag_icon svg:last-child {
+	opacity: 0;
+	transform: translate(-12px, 12px);
+}
+.footer_tag:hover .footer_tag_icon svg:first-child {
+	transform: translate(12px, -12px);
+	opacity: 0;
+}
+.footer_tag:hover .footer_tag_icon svg:last-child {
+	opacity: 1;
+	transform: translate(0, 0);
+}
+
+/* ===== The placeholder that gives the page its scroll length =====
+   Sits in normal flow at the end of #smooth-content, sized by footer.js to
+   exactly match .footer_fixed's real height. Nothing renders here — it
+   exists purely so the page has enough scroll distance for the reveal to
+   play out before it runs out of document to scroll through. */
+.footer_placeholder {
+	width: 100%;
+	pointer-events: none;
+}
+
+@media screen and (max-width: 1199px) {
+	.footer_connect {
+		font-size: 78px;
+		letter-spacing: -3px;
+	}
+}
+@media screen and (max-width: 991px) {
+	.footer_area {
+		padding-top: 4rem;
+	}
+	.footer_top {
+		grid-template-columns: 1fr;
+		gap: 2.5rem;
+	}
+	.footer_nav {
+		justify-self: start;
+	}
+	.footer_bottom_row {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 1.5rem;
+	}
+	.footer_hours {
+		text-align: left;
+	}
+	.footer_connect {
+		font-size: 3.25rem;
+		letter-spacing: -1px;
+	}
+}
+@media screen and (max-width: 767px) {
+	.footer_nav {
+		grid-template-columns: 1fr 1fr;
+	}
+	.footer_connect {
+		font-size: 2.75rem;
+	}
+	.footer_nav_col a {
+		font-size: 1.125rem;
+	}
+}

@@ -1,0 +1,268 @@
+/* Continues the charcoal from Brands/Pillars — see the design-tokens comment
+   in base.css. Gold for accents (index numbers, hairlines), off-white for
+   type, same roles they carry everywhere else on this ground.
+
+   Every dimension and duration below is Orisa's own, taken from its compiled
+   main.css (.at-service-item and .at-service-img-wrapper, lines ~5996-6123)
+   rather than re-derived: the 100px/280px track widths, 21px/29px row
+   padding, 36px number at -1.8px tracking, 190px→284px thumb, 450px media
+   column, 0.5s transitions. Only the palette and the two typefaces are
+   Minos's. If these numbers get "tidied" into round rem values the hover
+   stops matching the original — it's the specific proportions that make it
+   read the way it does. */
+/* padding-top: 0, not matching .section_brands's padding — CANCELLING it out
+   is what makes the two gaps equal. Brands already contributes its own
+   padding-bottom to this gap; adding padding-top here on top of that doubled
+   it (3.5rem became 7rem against Pillars→Brands' 3.5rem, the bug this
+   replaces). With this at 0, the whole Brands→Services gap is Brands' own
+   padding-bottom, the same way Brands' own padding-top is the whole
+   Pillars→Brands gap. Don't add padding-top back here without either
+   removing an equal amount from Brands, or accepting the two gaps will
+   diverge again. */
+.section_services {
+	position: relative;
+	background-color: var(--vv-charcoal);
+	padding-top: 0;
+	padding-bottom: 6rem;
+}
+
+/* ===== Two-column body: pinned media left, hoverable list right ===== */
+.services_body {
+	display: grid;
+	grid-template-columns: minmax(0, 34%) 1fr;
+	gap: 3rem;
+	align-items: start;
+}
+
+/* .services_media itself carries no positioning rule here — services.js pins
+   it with ScrollTrigger (position: sticky does not survive ScrollSmoother's
+   transform-based scroll; see the comment at the top of services.js for what
+   that looked like broken, confirmed on this exact element). The "top 9rem"
+   the pin holds at clears the fixed navbar, the same clearance
+   .section_pillars gives it. */
+
+/* Orisa's own .at-service-img-wrapper: a fixed 450px column, radius on the
+   TOP corners only (the counter sits directly under it, so the bottom edge
+   is meant to run square into it), not an aspect-ratio box. */
+.services_media_stack {
+	position: relative;
+	overflow: hidden;
+	height: 450px;
+	border-top-left-radius: 16px;
+	border-top-right-radius: 16px;
+}
+/* No CSS transition here — services.js drives opacity/y/scale with GSAP, and
+   a transition on the same properties would fight it (each GSAP frame would
+   become the start of a new 0.6s CSS ease, so the 0.8s slide would crawl).
+   The opacity below is only a no-JS fallback: GSAP's inline styles override
+   it on the first frame. */
+.services_media_item {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+}
+.services_media_item.is-active {
+	opacity: 1;
+}
+.services_media_item img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	border-top-left-radius: 16px;
+	border-top-right-radius: 16px;
+}
+/* ===== The list itself ===== */
+.services_list {
+	display: flex;
+	flex-direction: column;
+}
+/* 100px / 1fr / 280px, Orisa's exact tracks. The 280px matters twice over:
+   it's what the thumb grows INTO (a grid track can't grow on :hover, so a
+   track sized to the thumb's resting 190px would clip the hover state no
+   matter what max-width said), and because the img is width:100% of the
+   track, the hover max-width of 284px never actually binds — the thumb
+   resolves to the track's 280px. So the real growth is 190px → 280px, which
+   is what the original does too. */
+/* cursor: default, not pointer — same call as Pillars' category headings
+   (pillars.css) and WhyUs's "What we do" eyebrow (whyus.css): hovering a row
+   does something (swaps the image on the left, services.js), but doesn't go
+   anywhere, so a hand cursor promised a click these rows don't have.
+   tabindex/role="button" (Services.astro) stay as they are — keyboard users
+   can still tab through and trigger the same swap, this only changes what
+   the mouse cursor looks like. */
+.services_item {
+	display: grid;
+	grid-template-columns: 100px 1fr 280px;
+	align-items: center;
+	gap: 15px 30px;
+	padding-top: 21px;
+	padding-bottom: 29px;
+	background-color: var(--vv-charcoal);
+	border-bottom: 1px solid rgba(184, 154, 107, 0.2);
+	cursor: default;
+}
+/* font-weight 400, not the original's 600: the Review family is loaded at
+   300/400/900 only (see base.css @font-face), so 600 would be synthesised
+   and comes out muddy at this size. Everything else — 36px, the -1.8px
+   tracking, the 0.3 resting opacity, the 0.5s — is Orisa's. */
+.services_item_index {
+	color: var(--vv-off-white);
+	font-size: 36px;
+	font-weight: 400;
+	line-height: normal;
+	letter-spacing: -1.8px;
+	opacity: 0.3;
+	transition: all 0.5s;
+}
+.services_item_content {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	min-width: 0;
+}
+/* 50px is what the original renders at on any screen below 1725px, i.e. all
+   but the widest desktops — worth matching directly rather than reproducing
+   its full ladder. Feature Display ships at 400 only, same constraint as the
+   number above. */
+.services_item_title {
+	color: var(--vv-off-white);
+	font-size: 50px;
+	line-height: 1;
+	letter-spacing: -1px;
+	opacity: 0.3;
+	margin-bottom: 0;
+	transition: all 0.5s;
+}
+/* max-height 0 → 100px is how the original opens this: an animatable stand-in
+   for height:auto, with overflow hidden so the collapsed state clips cleanly.
+   370px measure and 0.5s are its numbers too. */
+.services_item_text {
+	color: var(--vv-off-white);
+	text-align: left;
+	max-width: 370px;
+	max-height: 0;
+	opacity: 0;
+	margin-bottom: 0;
+	overflow: hidden;
+	transition: all 0.5s;
+}
+/* The transition lives on the IMG, not this wrapper — the wrapper is a grid
+   item pinned to the 280px track and never changes size; it's the image
+   inside it that grows. Putting it on the wrapper (as an earlier pass did)
+   animates a box that has no room to move. */
+.services_item_thumb {
+	text-align: right;
+}
+.services_item_thumb img {
+	display: block;
+	width: 100%;
+	max-width: 190px;
+	height: auto;
+	margin-left: auto;
+	object-fit: cover;
+	border-radius: 8px;
+	transition: all 0.5s;
+}
+
+/* Orisa drives all four of these off :hover on the row. The focus-visible
+   pairing is the one addition — .services_item is a tabbable div (there is
+   nowhere for these to navigate to yet, same call as
+   .pillar_heading_wrapper), and without it a keyboard user gets the image
+   swap from services.js with none of the row's own state. Real pointer only,
+   the same guard films.css uses, so a tap doesn't latch a row open on touch. */
+@media (hover: hover) and (pointer: fine) {
+	.services_item:hover .services_item_index,
+	.services_item:focus-visible .services_item_index {
+		color: var(--vv-gold);
+		opacity: 1;
+	}
+	.services_item:hover .services_item_title,
+	.services_item:focus-visible .services_item_title {
+		opacity: 1;
+	}
+	.services_item:hover .services_item_text,
+	.services_item:focus-visible .services_item_text {
+		opacity: 1;
+		max-height: 100px;
+	}
+	.services_item:hover .services_item_thumb img,
+	.services_item:focus-visible .services_item_thumb img {
+		max-width: 284px;
+	}
+}
+.services_item:focus-visible {
+	outline: 1px solid var(--vv-gold);
+	outline-offset: 0.25rem;
+}
+
+/* display: flex is load-bearing, not cosmetic. .u-btn-ellipse (base.css) never
+   sets `display` — it inherits whatever its parent gives it, and every working
+   instance of it on this site is a flex item: Films' buttons are <div>s inside
+   .film_inner (display: flex), which blockifies and shrink-wraps them, and
+   that box is what border-radius: 50% turns into the pill.
+   As a plain block parent, this left the <a> at display: inline, where
+   vertical padding doesn't open the line box and border-radius: 50% renders as
+   a broken sliver of a curve rather than an ellipse — it never actually drew
+   the pill. Making this a flex container gives the anchor the same blockified,
+   shrink-wrapped box Films' divs get, so the same classes finally produce the
+   same button. */
+.services_cta {
+	display: flex;
+	justify-content: center;
+	padding-top: 2rem;
+}
+
+@media screen and (max-width: 991px) {
+	/* Same ownership rule as desktop, at the mobile-standard 3rem (Brands'
+	   own mobile padding, brands.css): top cancels to 0, bottom is what
+	   creates the gap to WhyUs. Was 2.5rem/4rem, matching neither Brands'
+	   mobile padding (3rem) nor WhyUs's — every mobile boundary in this chain
+	   was a different size before this pass. */
+	.section_services {
+		padding-top: 0;
+		padding-bottom: 3rem;
+	}
+	.services_body {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+	/* No second column of independent height left to scroll past below 992px,
+	   so services.js never creates the pin in the first place (see its
+	   matchMedia gate) — .services_media just sits in normal flow here,
+	   nothing to override. */
+	.services_media_stack {
+		height: 440px;
+	}
+	/* Orisa's own narrow-screen tracks. */
+	.services_item {
+		grid-template-columns: 70px 1fr 295px;
+	}
+	.services_item_title {
+		font-size: 42px;
+		line-height: 42px;
+		letter-spacing: -2.4px;
+	}
+}
+@media screen and (max-width: 767px) {
+	/* Orisa collapses to a single column here and lets the thumb stack under
+	   the copy rather than shrinking it into an unreadable sliver. */
+	.services_item {
+		grid-template-columns: 1fr;
+	}
+	.services_item_thumb {
+		text-align: left;
+	}
+	.services_item_thumb img {
+		margin-left: 0;
+	}
+}
+@media screen and (max-width: 479px) {
+	.services_media_stack {
+		height: 300px;
+	}
+	.services_item_title {
+		font-size: 32px;
+		line-height: 32px;
+	}
+}

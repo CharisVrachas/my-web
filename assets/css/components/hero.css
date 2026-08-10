@@ -1,0 +1,245 @@
+.section_hero {
+	z-index: 2;
+	transform-origin: 50%;
+	will-change: transform;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: stretch;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	position: relative;
+	overflow: hidden;
+}
+.hero_container {
+	height: 100%;
+	position: relative;
+}
+.hero_wrapper {
+	width: 100%;
+	height: 100%;
+	/* Off-white, not the red accent: the hero sits on a photograph now. Red
+	   measures 1.29:1 against it, off-white 4.69:1. */
+	color: var(--vv-off-white);
+	/* Lifts the headline off the bottom edge into the clean stretch of water.
+	   Raise it and the type climbs out of the scrim into the mid-tones of the
+	   hillside, where contrast falls away — 12vh or so is the ceiling.
+	   Measured in --vh rather than vh so it tracks the real viewport on mobile
+	   browsers whose toolbars come and go. */
+	--hero-lift: calc(var(--vh) * 8);
+	flex-flow: column;
+	justify-content: flex-end;
+	align-items: stretch;
+	padding-top: 2rem;
+	padding-bottom: calc(2rem + var(--hero-lift));
+	display: flex;
+}
+/* No mix-blend-mode here. `difference` derives the text colour from the
+   backdrop (|backdrop - red|), so on a photograph the two move together and
+   the gap never opens up — it tops out around 2:1 whatever you do to the
+   image's brightness. It only reads on a near-black backdrop, which is what
+   the original template shipped. */
+.hero_heading {
+	z-index: 2;
+	object-fit: fill;
+	font-size: 3vw;
+	position: relative;
+}
+/* Block + justify, not the template's flex row. Flex with space-between spreads
+   every line edge to edge including the last, which on an eighty-character
+   sentence leaves the closing words marooned at opposite sides. Justified text
+   leaves the last line alone, which is what this copy needs. */
+/* 3vw is not arbitrary: it is the largest size at which this sentence breaks
+   into three lines that are each 82–99% full. Justification only stretches
+   lines that fall short, so keeping them near-full is what keeps the word gaps
+   tight — at 4vw one line sat at 64% and the gaps blew wide open.
+   The 80% line-height of .u-h1-review is built for one or two lines of display
+   type; over three lines of heavy caps the rows close up on each other. */
+.hero_heading.u-h1-review {
+	display: block;
+	text-align: justify;
+	font-size: 3vw;
+	line-height: 0.92;
+}
+/* GSAP shifts these two sideways as the hero dissolves; transforms do not apply
+   to non-replaced inline boxes, so they have to be inline-block to move. */
+.hero_heading_first,
+.hero_heading_third {
+	display: inline-block;
+}
+.hero_labels {
+	z-index: 2;
+	justify-content: space-between;
+	align-items: flex-end;
+	margin-bottom: 1rem;
+	display: flex;
+	position: relative;
+}
+.hero_heading.u-h1-review.decor {
+	opacity: 0;
+	mix-blend-mode: normal;
+}
+.hero_heading.u-h1-review.blend {
+	z-index: 3;
+	opacity: 1;
+	color: #fff;
+	mix-blend-mode: color-burn;
+	position: absolute;
+	inset: auto 2rem 2rem;
+}
+/* Weights the bottom of the frame so the headline sits on something, and adds
+   depth. Deliberately not `opacity` on .hero_bg: the layer behind the hero is
+   .section_vv's off-white, so lowering the image's opacity washes the
+   photograph pale rather than darkening it. Sky and sunset stay untouched —
+   the gradient only starts at 45%. Tune with --hero-scrim. */
+.hero_container::after {
+	--hero-scrim: 0.55;
+	content: "";
+	z-index: 1;
+	pointer-events: none;
+	position: absolute;
+	inset: 45% 0 0;
+	background: linear-gradient(
+		to bottom,
+		rgba(0, 0, 0, 0) 0%,
+		rgba(0, 0, 0, calc(var(--hero-scrim) * 0.22)) 45%,
+		rgba(0, 0, 0, var(--hero-scrim)) 100%
+	);
+}
+.hero_bg {
+	/* 1 = fully black and white, 0.75 keeps a trace of the sunset's warmth. */
+	--hero-desaturate: 1;
+	filter: grayscale(var(--hero-desaturate));
+	z-index: 1;
+	object-fit: cover;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	inset: 0%;
+	transform: scale(1.05);
+}
+.hero_decor_content {
+	z-index: 2;
+	justify-content: flex-end;
+	align-items: center;
+	position: relative;
+}
+.hero_decor_content.first {
+	justify-content: flex-start;
+	align-items: center;
+	padding-right: 0.25rem;
+}
+.hero_decor {
+	z-index: 2;
+	grid-column-gap: 1rem;
+	grid-row-gap: 1rem;
+	flex-flow: column;
+	display: flex;
+	/* Was absolute, pinned to the bottom corners. Now laid out by .hero_labels;
+	   any bottom/left/right offset here would shift it back out of place. */
+	position: relative;
+}
+.hero_decor.is-right {
+	inset: auto 0% 0% auto;
+}
+.u-h1-review {
+	letter-spacing: -0.03125rem;
+	text-transform: uppercase;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 8.7rem;
+	font-weight: 900;
+	line-height: 80%;
+}
+/* Matches .section_vv so the hero washes seamlessly into the panel behind it
+   as it scales away. */
+.hero_overlay {
+	z-index: 3;
+	background-color: var(--vv-charcoal);
+	opacity: 0;
+	pointer-events: none;
+	position: absolute;
+	inset: 0%;
+}
+.cs_overview_decor_wrapper.first {
+	bottom: 2rem;
+	left: 2rem;
+}
+.cs_overview_decor_wrapper.second {
+	bottom: 2rem;
+	right: 2rem;
+}
+.cs_overview_col_decor_wrapper.first {
+	bottom: 2rem;
+	left: 2rem;
+}
+.cs_overview_col_decor_wrapper.second {
+	bottom: 2rem;
+	right: 2rem;
+}
+.pp_decor_wrapper.first {
+	bottom: 2rem;
+	left: 2rem;
+}
+.pp_decor_wrapper.second {
+	bottom: 2rem;
+	right: 2rem;
+}
+.navbar_link_diff.u-link.first {
+	left: 2rem;
+}
+.navbar_link_diff.u-link.second {
+	left: 25%;
+	transform: translate(-50%);
+}
+.about_decor_content.first {
+	padding-right: 0.25rem;
+}
+.film_img_inner.first {
+	transform-origin: 50% 0;
+}
+@media screen and (max-width: 991px) {
+	.section_hero {
+		height: calc(var(--vh) * 100);
+	}
+	/* vw sizing that reads as display type on a desktop is body-text size on a
+	   phone — 4vw is 15px at 390px wide. The narrower the screen, the larger
+	   the share of it the headline has to take. */
+	.hero_heading.u-h1-review {
+		font-size: 5.5vw;
+	}
+}
+@media screen and (max-width: 479px) {
+	.hero_wrapper {
+		/* The headline runs to eight lines here — there is no room to lift it. */
+		--hero-lift: 0px;
+		padding-top: 1rem;
+		padding-bottom: 1rem;
+	}
+	.hero_heading.u-h1-review {
+		font-size: 7.5vw;
+	}
+	.cs_overview_decor_wrapper.first {
+		bottom: 1rem;
+		left: 1rem;
+	}
+	.cs_overview_decor_wrapper.second {
+		bottom: 1rem;
+		right: 1rem;
+	}
+	.cs_overview_col_decor_wrapper.first {
+		bottom: 1rem;
+		left: 1rem;
+	}
+	.cs_overview_col_decor_wrapper.second {
+		bottom: 1rem;
+		right: 1rem;
+	}
+	.pp_decor_wrapper.first {
+		bottom: 1rem;
+		left: 1rem;
+	}
+	.pp_decor_wrapper.second {
+		bottom: 1rem;
+		right: 1rem;
+	}
+}

@@ -1,0 +1,533 @@
+/* Originally styles for the /services page only. The .sv_hero* block (hero,
+   eyebrow, banner — ported from Orisa's services-2/sec-1) is no longer
+   exclusive to it: /about's own AboutHero.astro reuses these same classes
+   verbatim for its own hero rather than duplicating the rule set, since the
+   brief for that page was explicitly "keep the top part like Services." The
+   .sv_ticker and .sv_offer* blocks below the hero ARE still /services-only —
+   nothing else on the site uses them. Named after the page that introduced
+   it, not a promise that it stays that page's alone.
+
+   Palette is Minos's throughout: Orisa's services-2 is a light page built on
+   neutral-0/neutral-50, and this site's equivalent surfaces are the charcoal
+   ground with the same one-step-lifted #333c4b panel that WhyUs's stacking
+   cards and the testimonial cards already use. Dimensions that carry meaning
+   (the deck's pin distance, the card radius, the 0.9 scale) are Orisa's own.
+
+   px, not rem, for anything that has to match a fixed measurement — this
+   page's root font-size is fluid (see the same note in whyus.css/navbar.css). */
+
+/* ===== Shared eyebrow (hero + offer head) ===================================
+   Same two-stacked-copies + dual-arrow hover as .whyus_eyebrow and
+   .footer_tag. Kept as its own set of class names rather than reaching for
+   those, matching how every ported section on this site owns its own copy of
+   the pattern instead of sharing a base class. */
+.sv_eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--vv-gold);
+	letter-spacing: 0.025rem;
+	text-transform: uppercase;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.2;
+	text-decoration: none;
+}
+.sv_eyebrow_label {
+	position: relative;
+	z-index: 1;
+	overflow: hidden;
+	display: inline-block;
+}
+.sv_eyebrow_text {
+	display: block;
+	transition: 0.3s;
+}
+.sv_eyebrow_text.text-1 {
+	position: relative;
+}
+.sv_eyebrow_text.text-2 {
+	position: absolute;
+	top: 100%;
+	left: 0;
+}
+.sv_eyebrow:hover .sv_eyebrow_text.text-1 {
+	transform: translateY(-150%);
+}
+.sv_eyebrow:hover .sv_eyebrow_text.text-2 {
+	top: 50%;
+	transform: translateY(-50%);
+}
+.sv_eyebrow_icon {
+	position: relative;
+	overflow: hidden;
+	width: 11px;
+	height: 11px;
+	display: inline-flex;
+	flex-shrink: 0;
+}
+.sv_eyebrow_icon svg {
+	position: absolute;
+	inset: 0;
+	transition: all 0.2s ease-out;
+}
+.sv_eyebrow_icon svg:last-child {
+	opacity: 0;
+	transform: translate(-12px, 12px);
+}
+.sv_eyebrow:hover .sv_eyebrow_icon svg:first-child {
+	transform: translate(12px, -12px);
+	opacity: 0;
+}
+.sv_eyebrow:hover .sv_eyebrow_icon svg:last-child {
+	opacity: 1;
+	transform: translate(0, 0);
+}
+
+/* ===== Hero (Orisa services-2/sec-1) ===================================== */
+.sv_hero {
+	position: relative;
+	background-color: var(--vv-charcoal);
+	/* Clears the fixed navbar, which is 1rem from the top plus its own logo
+	   height (--nav-logo-h, navbar.css) — this page opens straight into a
+	   title rather than a full-bleed hero photo, so nothing else is holding
+	   that space open the way index.astro's hero does. Trimmed from 220px:
+	   with .sv_eyebrow now removed (below) there's no label sitting above
+	   the title to clear room for any more, and the extra space above just
+	   read as the whole page starting unnecessarily low. */
+	padding-top: 160px;
+	overflow: hidden;
+}
+.sv_hero_head {
+	padding-bottom: 60px;
+}
+/* Removed, not just hidden: the "About ↗" / "Services ↗" / etc. label
+   this used to show above every one of these titles. Kept as a CSS rule
+   rather than pulled from all four .astro files individually — they all
+   still carry the markup, this is what actually takes it off the page. */
+.sv_hero_head .sv_eyebrow {
+	display: none;
+}
+/* 2:1, matching Orisa's own col-lg-8 / col-lg-4 split on this row — the title
+   needs the room, see the note on .sv_hero_title.
+
+   align-items: center, not end — the row's own height is set by whichever
+   column is taller, and since the title shrank to one line (.sv_hero_title,
+   above) while .sv_hero_lead still runs several, that's now always the lead
+   paragraph on the right. "end" alignment was pinning the (now short) title
+   to the BOTTOM of that taller box, which read as the title sitting in a
+   large empty gap it never used — centering it in that same box is what was
+   actually asked for. */
+.sv_hero_row {
+	display: grid;
+	grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+	gap: 3rem;
+	align-items: center;
+	margin-top: 20px;
+}
+/* Orisa's own is fz-200 (200px) at fw-600. Capped at 132px here, not 200px,
+   because this site's display face is Review Wide Black — genuinely wide, as
+   the filename says (see the same trap in navbar.css, where the menu links
+   had to drop to weight 400 over it). At 200px the single word "SERVICES" is
+   about 880px wide, more than this column holds, and because
+   [data-reveal-text] splits the heading into per-character spans (reveal.js),
+   the line breaker is free to break BETWEEN characters — so it wrapped
+   mid-word as "SERVI / CES" rather than overflowing. Sizing the longest word
+   to fit the column is what actually prevents that; no white-space rule
+   would, short of letting it overflow the page.
+
+   line-height 0.85 is Orisa's own tight display leading, kept. */
+.sv_hero_title {
+	margin: 0;
+	color: var(--vv-off-white);
+	font-family: Jost, Arial, sans-serif;
+	/* Shrunk again, well past the previous 42–112px pass — this class now
+	   has to hold four different titles to ONE line each, not just
+	   "Services"/"About Minos Host". The longest, Pricing's own "Property
+	   Management Pricing" (28 characters), is what the ceiling is actually
+	   sized against: at the OLD 112px it ran to roughly 1.8× this column's
+	   own width at a 1920px viewport (2fr of .sv_hero_row, minus its gap),
+	   wrapping the way "SERVICES" once threatened to at 200px (see the
+	   paragraph above) — same failure, longer string. Worked back from
+	   that column width at both ends of the realistic desktop range
+	   (992px–1920px) the same way, with a safety margin this time rather
+	   than cutting it exactly at the edge, since this is an estimate, not a
+	   fontTools measurement against the actual Jost metrics. Re-measure
+	   properly before raising this again — 3.6vw put the tightest point (a
+	   1200px viewport, the narrowest width .sv_hero_row is still 2fr/1fr
+	   rather than a single stacked column, see the 1199px breakpoint below)
+	   only a few percent inside the estimated limit; 3.3vw gives that same
+	   point real margin instead of sitting right on the edge of a guess. */
+	font-size: clamp(28px, 3.3vw, 62px);
+	font-weight: 900;
+	line-height: 0.85;
+	letter-spacing: -0.02em;
+	text-transform: uppercase;
+}
+.sv_hero_lead {
+	margin: 0 0 0.75rem;
+	color: var(--vv-off-white);
+	opacity: 0.75;
+	font-size: 1.125rem;
+	line-height: 1.5;
+	max-width: 34rem;
+}
+/* The banner. Height is fixed and the image is object-fit: cover at 120% so
+   ScrollSmoother's data-speed="0.4" (ServicesHero.astro) has vertical slack
+   to move the image within the frame — at exactly 100% the drift would pull
+   the image's own edge into view at one end of the scroll. */
+.sv_hero_banner {
+	position: relative;
+	height: clamp(320px, 52vh, 620px);
+	overflow: hidden;
+}
+.sv_hero_banner img {
+	display: block;
+	width: 100%;
+	height: 120%;
+	object-fit: cover;
+	object-position: center;
+}
+
+/* ===== Ticker (Orisa services-2/sec-2) ===================================
+   Same CSS-only marquee as brands.css: the track holds two copies of the
+   list and translates -50%, so the second copy lands exactly where the first
+   began. See ServicesTicker.astro for why the plugin was not carried over. */
+.sv_ticker {
+	background-color: var(--vv-charcoal);
+	border-top: 1px solid rgba(184, 154, 107, 0.18);
+	border-bottom: 1px solid rgba(184, 154, 107, 0.18);
+	padding: 26px 0;
+	overflow: hidden;
+}
+.sv_ticker_track {
+	display: flex;
+	width: max-content;
+	animation: sv-ticker-scroll 44s linear infinite;
+}
+/* Pauses under the cursor and for anyone who has asked for less motion. */
+.sv_ticker:hover .sv_ticker_track {
+	animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+	.sv_ticker_track {
+		animation: none;
+	}
+}
+@keyframes sv-ticker-scroll {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
+}
+.sv_ticker_list {
+	display: flex;
+	align-items: center;
+	gap: 2rem;
+	list-style: none;
+	margin: 0;
+	padding: 0 1rem 0 0;
+}
+.sv_ticker_item {
+	display: flex;
+	align-items: center;
+	gap: 2rem;
+	white-space: nowrap;
+	color: var(--vv-off-white);
+	font-size: 20px;
+	font-weight: 400;
+	letter-spacing: -0.01em;
+}
+.sv_ticker_item svg {
+	flex-shrink: 0;
+	color: var(--vv-gold);
+	opacity: 0.6;
+}
+
+/* ===== "Things we offer" deck (Orisa home-2/sec-4) ======================= */
+.sv_offer {
+	background-color: var(--vv-charcoal);
+	padding: 90px 0 0;
+}
+/* Orisa wraps this in .bg-neutral-50.rounded-5 inset from the page edge — a
+   panel floating on the background rather than a full-bleed band, the same
+   treatment .testimonials_panel already uses here. */
+.sv_offer_inner {
+	background-color: #232a35;
+	border-radius: 2rem;
+	margin: 0 0.75rem;
+	padding: 70px 0 0;
+}
+.sv_offer_head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-bottom: 28px;
+	margin-bottom: 40px;
+	border-bottom: 1px solid rgba(184, 154, 107, 0.2);
+}
+.sv_offer_count {
+	color: var(--vv-off-white);
+	opacity: 0.5;
+	font-size: 0.875rem;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+/* The deck itself. Every card after the first is absolutely positioned on top
+   of the one before it and starts at yPercent 100 (services-page.js); the
+   deck is what gets pinned. Height is driven by the first card, which is the
+   only one still in normal flow — exactly the arrangement whyus.css uses for
+   the same mechanic, including the same reason the cards must be opaque. */
+.sv_offer_deck {
+	position: relative;
+}
+/* min-height: 100vh, and the flex centring, are what make the stack read as
+   one card at a time — the same shape .whyus_card uses. Without a height
+   every card was only as tall as its own content, so `yPercent: 100` (the
+   off-screen start position services-page.js sets) put each one just one
+   CONTENT height down rather than a full screen down: several cards were
+   visible at once, at uneven offsets, since the cards are not all the same
+   length. A shared viewport height makes that offset uniform and off-screen. */
+/* The background lives HERE, on the full-height card box — not on the inner
+   grid. That is the one place this deviates from Orisa, and deliberately:
+   Orisa paints the background on its inner `.container.bg-neutral-50` and
+   leaves `.item` transparent, which works there because its four cards are
+   near enough the same height that each incoming card's opaque area covers
+   the outgoing one's. These nine are not — the first card carries a
+   twelve-item list and runs ~870px while most of the others are ~430px — so
+   with the fill on the inner box the taller card's top and bottom bands sat
+   outside the shorter card's, and its title and photo stayed visible above
+   the card that was supposed to have replaced it. Filling the whole 100vh
+   box makes every card cover every other one whatever its content length. */
+.sv_offer_card {
+	min-height: 100vh;
+	width: 100%;
+	top: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	align-items: center;
+	padding-bottom: 40px;
+	background-color: #232a35;
+}
+/* min-width: 992px — matching services-page.js's own matchMedia gate on the
+   pin/yPercent JS that actually positions cards 2+ once this applies. Below
+   that width the JS never runs (the deck is a plain scrolling list there on
+   purpose — see the comment in services-page.js), but this rule doesn't know
+   that: applied unconditionally, cards 2+ still went absolute with no
+   transform ever set on them, so they collapsed to the exact same spot as
+   card 1 instead of flowing normally underneath it — all nine's own eyebrow
+   number badges stacked directly on top of each other. Gating it here to the
+   same width the JS itself uses is what actually pairs the CSS with the
+   behaviour that positions it. */
+@media screen and (min-width: 992px) {
+	.sv_offer_card:not(:first-child) {
+		position: absolute;
+	}
+}
+/* The wrapper .container div between the card and its grid (see
+   ServicesOffer.astro) is a flex child here, so it needs to be told to take
+   the full width — its own `margin: auto` would otherwise shrink-wrap it. */
+.sv_offer_card > .container {
+	width: 100%;
+}
+/* Background is the SAME colour as the panel behind it (.sv_offer_inner), and
+   there is deliberately no border and no radius — this is Orisa's own card,
+   whose classes are `container bg-neutral-50` where bg-neutral-50 is exactly
+   the background of the section it sits in (home-2/sec-4.html).
+
+   That is not a cosmetic detail, it is what makes the stack work. Each card
+   is only scaled down to 0.9 as the next one covers it — never hidden — so
+   an outgoing card that looks different from its background stays visible as
+   a shrinking rectangle peeking out around the incoming one. A first pass
+   here gave the card its own lifted #333c4b panel with a gold border, and
+   that edge was plainly visible behind every transition. Matching the
+   background means the shrink has nothing to show.
+
+   Still fully opaque, for the reason .whyus_card_inner documents: the card
+   underneath has to be occluded, and only a solid fill does that. */
+.sv_offer_card_inner {
+	display: grid;
+	grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+	gap: 2.5rem;
+	align-items: center;
+	/* px, and margin-inline: auto now that .container sits on a wrapper above
+	   rather than on this element (see ServicesOffer.astro) — that wrapper no
+	   longer centres this for us. 1320px is Orisa's own .container ceiling;
+	   the 78rem this used to be resolved to ~1716px at this page's fluid root
+	   (22px, not 16px), i.e. a card half again as wide as the original. */
+	max-width: 1320px;
+	margin-inline: auto;
+	/* 20px top / 40px bottom — Orisa's own pt-20 pb-40 on this element. */
+	padding: 20px 0 40px;
+	/* No background here — it is on .sv_offer_card above; see the note there. */
+}
+.sv_offer_text {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding: 1rem 0.5rem;
+}
+/* Feature Display, not Review: these are sentence-case service names of very
+   uneven length ("Property management" vs "Review response and online
+   reputation"), and the wide display face turns the longer ones into three
+   cramped lines. Same call, for the same reason, as .footer_connect. */
+/* Orisa's own size for this heading is .fz-ds-1 — 80px, rising to 124px above
+   1400px (main.css:55/75). clamp() tracks that rather than the 52px cap this
+   had, which was well under half the original and made the card read as a
+   list item instead of the display heading it is. */
+.sv_offer_title {
+	margin: 0;
+	color: var(--vv-off-white);
+	font-family: "Playfair Display", Georgia, serif;
+	/* Trimmed ~15% from 104px for the site-wide title pass — stays well
+	   above the old 52px cap the paragraph above was written against (the
+	   one that read as a list item, not a display heading); this isn't a
+	   return to that, just a size step down from the current ceiling. */
+	font-size: clamp(30px, 4.6vw, 88px);
+	font-weight: 400;
+	line-height: 1.05;
+	letter-spacing: -0.01em;
+}
+/* text-scale-anim wraps every letter in its own span (services-page.js). They
+   have to be inline-block for scaleY/y to apply at all — transforms are a
+   no-op on a plain inline box — and the word spans keep whole words from
+   breaking apart across a line end. */
+.sv_offer_title .at-word-span {
+	display: inline-block;
+	white-space: nowrap;
+}
+.sv_offer_title .at-letter-span {
+	display: inline-block;
+	transform-origin: center bottom;
+}
+.sv_offer_body {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1.25rem;
+}
+.sv_offer_desc {
+	margin: 0;
+	color: var(--vv-off-white);
+	opacity: 0.8;
+	font-size: 1rem;
+	line-height: 1.55;
+}
+.sv_offer_aside {
+	margin: 0;
+	color: var(--vv-off-white);
+	opacity: 0.6;
+	font-size: 0.9375rem;
+	line-height: 1.55;
+	padding-left: 1.25rem;
+	border-left: 1px solid rgba(184, 154, 107, 0.35);
+}
+.sv_offer_list_label {
+	margin: 0 0 0.75rem;
+	color: var(--vv-gold);
+	letter-spacing: 0.025rem;
+	text-transform: uppercase;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 0.75rem;
+}
+.sv_offer_lists {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0.5rem 1.5rem;
+}
+.sv_offer_list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+.sv_offer_list li {
+	position: relative;
+	padding-left: 1rem;
+	color: var(--vv-off-white);
+	opacity: 0.7;
+	font-size: 0.875rem;
+	line-height: 1.4;
+}
+.sv_offer_list li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0.5em;
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background-color: var(--vv-gold);
+}
+.sv_offer_media {
+	border-radius: 12px;
+	overflow: hidden;
+	align-self: stretch;
+	min-height: 320px;
+}
+.sv_offer_media img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	min-height: 320px;
+	object-fit: cover;
+}
+
+@media screen and (max-width: 1199px) {
+	.sv_hero {
+		padding-top: 130px;
+	}
+	.sv_hero_row {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.5rem;
+		align-items: start;
+	}
+	.sv_offer_card_inner {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.5rem;
+	}
+	/* The photo goes first on a single-column card — the title reading before
+	   an image it sits beside is fine, reading before an image stacked under
+	   three paragraphs of copy is not. */
+	.sv_offer_media {
+		order: -1;
+		min-height: 220px;
+	}
+	.sv_offer_media img {
+		min-height: 220px;
+	}
+}
+@media screen and (max-width: 767px) {
+	.sv_hero {
+		padding-top: 110px;
+	}
+	.sv_offer {
+		padding-top: 48px;
+	}
+	.sv_offer_inner {
+		border-radius: 1.5rem;
+		padding-top: 40px;
+	}
+	.sv_offer_head {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.75rem;
+	}
+	.sv_offer_lists {
+		grid-template-columns: 1fr;
+	}
+	.sv_ticker_item {
+		font-size: 16px;
+		gap: 1.25rem;
+	}
+	.sv_ticker_list {
+		gap: 1.25rem;
+	}
+}

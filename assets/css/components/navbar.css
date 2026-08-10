@@ -1,0 +1,758 @@
+.nav {
+	z-index: 1000;
+	background: #ddd;
+	position: relative;
+}
+.nav:before,
+.nav:after {
+	content: " ";
+	grid-area: 1 / 1 / 2 / 2;
+	display: table;
+}
+.nav:after {
+	clear: both;
+}
+.nav-brand {
+	float: left;
+	color: #333;
+	text-decoration: none;
+	position: relative;
+}
+.nav-menu {
+	float: right;
+	position: relative;
+}
+.nav-button {
+	float: right;
+	cursor: pointer;
+	-webkit-tap-highlight-color: #0000;
+	tap-highlight-color: #0000;
+	-webkit-user-select: none;
+	user-select: none;
+	padding: 18px;
+	font-size: 24px;
+	display: none;
+	position: relative;
+}
+/* The toggles are <button> elements: strip the UA chrome so they inherit
+   the same look as the surrounding links. */
+.nav-button,
+.u-menu-btn {
+	appearance: none;
+	background: none;
+	border: 0;
+	color: inherit;
+	font: inherit;
+	text-align: inherit;
+}
+.nav-button:focus {
+	outline: 0;
+}
+@media screen and (max-width: 767px) {
+	.nav-brand {
+		padding-left: 10px;
+	}
+}
+/* Below this width the inline links collapse into the burger menu. */
+@media screen and (max-width: 479px) {
+	.nav[data-collapse="tiny"] .nav-menu {
+		display: none;
+	}
+	.nav[data-collapse="tiny"] .nav-button {
+		display: inline-flex;
+	}
+}
+.nav_brand.is-current {
+	padding: 0;
+}
+.nav_logo {
+	height: 2rem;
+}
+/* pointer-events: none here, auto again on the actual controls below — the
+   same fix as #smooth-content's own (footer.css), and the same bug: .u-navbar
+   is position: fixed, inset: 1rem 0% auto (full viewport WIDTH, height from
+   its own content), so its box sits over everything underneath it at that
+   position regardless of what's actually drawn there. Once the footer is
+   scrolled into view, its own top row (Home / Pricing — the first item in
+   each .footer_nav_col, footer.css) lands at almost exactly this same
+   position (the whole reason .is-compact exists — see that comment further
+   down for the collision this was already known to cause), and without this,
+   .u-navbar's own empty space there — not any visible link, just the box
+   itself — swallowed the click before it ever reached the footer link
+   underneath. Rows further down the footer's columns (About/Services,
+   FAQ/Contact) were never inside this band, which is why only the very
+   first link in each column was affected. */
+.u-navbar {
+	/* Declared here, not on .navbar_logo, so the nav row can size itself from
+	   the same value — the logo is positioned out of flow and contributes no
+	   height of its own. */
+	--nav-logo-h: clamp(3.5rem, 7vw, 8rem);
+	z-index: 888;
+	background-color: #0000;
+	position: fixed;
+	inset: 1rem 0% auto;
+	pointer-events: none;
+}
+.u-navbar a,
+.u-navbar button {
+	pointer-events: auto;
+}
+/* Anchors the navbar to something dark. Nothing here can rely on the hero
+   behind it: it is a photograph, and its sky measures about 36% grey at this
+   height — enough to swallow the gold mark and to leave any type marginal.
+   The gradient fades out well before the headline, and over the charcoal
+   panel further down the stack it is simply invisible. */
+.u-navbar::before {
+	content: "";
+	z-index: -1;
+	pointer-events: none;
+	position: absolute;
+	inset: -1rem 0 auto;
+	height: calc(var(--nav-logo-h) + 5rem);
+	background: linear-gradient(
+		to bottom,
+		rgba(0, 0, 0, 0.5) 0%,
+		rgba(0, 0, 0, 0.28) 45%,
+		rgba(0, 0, 0, 0) 100%
+	);
+}
+/* The row is held open to the logo's height so the links centre against the
+   mark rather than hanging off the top edge.
+
+   position: relative is for .navbar_logo below — neither this nor
+   .navbar_container had ever set it, so the logo's own position: absolute
+   was resolving against the next ancestor that DOES have one — .u-navbar,
+   position: fixed, spanning the full viewport — not against this row's
+   own, narrower, container-padded width. Harmless for the logo itself
+   (viewport-centred and container-centred land on the same point, since
+   .u-container/.container pad and cap it symmetrically either way), but it
+   was the reason a previous, since-replaced approach to positioning
+   Contact as its own absolutely-placed pill landed in the wrong place
+   entirely — see .navbar_nav_right below for why Contact isn't absolute
+   any more at all. */
+.navbar_nav {
+	position: relative;
+	justify-content: space-between;
+	align-items: center;
+	min-height: var(--nav-logo-h);
+	width: 100%;
+	display: flex;
+}
+.navbar_menu_mobile {
+	display: none;
+}
+/* Two INDEPENDENT space-between contexts, not one shared gap — each wrapper
+   is flex: 1 1 0% (splits the row exactly in half between them) with its
+   own justify-content: space-between, so About/Services spread across the
+   left half on their own terms and Pricing/FAQ/Contact spread across the
+   right half on theirs — the same edge-to-edge feel the original flat,
+   five-sibling row had (About flush left, the far side's last link flush
+   right), just now scoped per side instead of fighting over one shared
+   space-between across all five at once, which is what left FAQ sitting
+   wherever About+Services' combined width happened to push it rather than
+   centred between Pricing and Contact, its own two real neighbours.
+
+   padding-right/padding-left (below, per side) reserve the centre for the
+   logo: with both halves at flex: 1 1 0%, their inner edges would otherwise
+   meet exactly where .navbar_logo sits, and space-between would happily
+   push Services/Pricing right up against it. 130px comfortably clears the
+   logo's own widest rendered size (--nav-logo-h's 8rem/128px ceiling,
+   navbar.css, scaled to its actual aspect ratio) with a little to spare. */
+.navbar_nav_left,
+.navbar_nav_right {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex: 1 1 0%;
+}
+.navbar_nav_left {
+	padding-right: 130px;
+}
+.navbar_nav_right {
+	padding-left: 130px;
+}
+/* Taken out of the flex flow and centred against .navbar_nav instead —
+   reliably now that both wrappers are flex: 1 1 0% (above): equal width by
+   construction, not by their content happening to balance, so the true
+   centre between them lands in the same place regardless of copy length on
+   either side (three links vs two, or after translation). */
+.navbar_logo {
+	color: var(--vv-gold);
+	cursor: pointer;
+	padding-left: 0;
+	padding-right: 0;
+	transition: opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translate(-50%);
+}
+.navbar_logo:hover {
+	opacity: 0.5;
+}
+/* Height drives the size; the width/height attributes on the <img> hold the
+   aspect ratio so nothing shifts while the PNG downloads. */
+.nav_logo_img {
+	width: auto;
+	height: var(--nav-logo-h);
+	display: block;
+}
+/* <picture> is inline by default, and its line box would add a few stray pixels
+   under the mark. */
+.navbar_logo picture {
+	display: block;
+}
+.u-menu-btn {
+	color: var(--vv-off-white);
+	letter-spacing: 0.025rem;
+	text-transform: uppercase;
+	cursor: pointer;
+	padding-top: 0.25rem;
+	padding-bottom: 0.125rem;
+	font-family: Jost, Arial, sans-serif;
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 120%;
+	text-decoration: none;
+	transition: opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.u-menu-btn:hover {
+	opacity: 0.5;
+}
+/* Icon/text alignment — NOT unconditional display: inline-flex here. That
+   would win the cascade over .nav-button's own display: none above (equal
+   specificity, later rule), and the button is meant to be invisible except
+   in the two contexts that explicitly turn it back on: .is-compact
+   (immediately below) and [data-collapse="tiny"] at ≤479px (below that).
+   align-items/gap alone are inert on a display: none element, so they're
+   safe to set here once rather than duplicating them in both "on" states. */
+.u-menu-btn {
+	align-items: center;
+	justify-content: center;
+	gap: 0.625rem;
+}
+.u-menu-btn_icon {
+	display: block;
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
+}
+/* The SVG inside carries its own width="24" height="24" attributes (copied
+   verbatim from Orisa's header-2.html, where the button is bigger). Without
+   this rule those attributes win and the icon renders 24×24 inside an 18×18
+   box — it doesn't shrink to fit, it OVERFLOWS 6px right and 6px down. Flex
+   centring then lines up the 18px box, not the 24px thing actually being
+   drawn, so the icon sits visibly low and right of the "MENU" text next to
+   it. That's the asymmetry: not a padding or alignment problem at all, just
+   an unsized SVG. 100%/100% makes it fill the box it was given. */
+.u-menu-btn_icon svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+@media screen and (max-width: 991px) {
+	.navbar_logo:hover {
+		color: var(--vv-gold);
+	}
+	.u-menu-btn:hover {
+		opacity: 1;
+	}
+}
+
+/* ===== "MENU" pill — the button that opens .menu2_area below =====
+   Restyled from a plain text link into Orisa's own shape for this exact
+   role (.hamburger-sticky-menu, main.css:3588): a filled, rounded pill
+   rather than something that reads as a leftover inline link once the
+   About/Pillars/etc. row around it is gone. Gold-on-charcoal is this site's
+   own established pill treatment (WhyUs's "What we handle", Services'
+   "Get in touch") — Orisa's own version of this button is white-on-white,
+   which is Orisa's palette, not this page's. */
+.u-navbar.is-compact .u-menu-btn,
+.nav[data-collapse="tiny"] .nav-button.u-menu-btn {
+	background-color: var(--vv-gold);
+	color: var(--vv-charcoal);
+	border-radius: 16px;
+	/* px, not the base rule's 0.75rem — Orisa's own button (main.css:3588)
+	   is a flat 16px/15px-24px regardless of root size, and at this page's
+	   fluid root the inherited 0.75rem was rendering closer to 16-17px
+	   already at wide viewports but noticeably smaller at narrower ones,
+	   where the fluid root itself shrinks — the button read as a different,
+	   dinkier size than Orisa's real one instead of a consistent match. */
+	padding: 16px 28px;
+	font-size: 16px;
+	font-weight: 900;
+}
+.u-navbar.is-compact .u-menu-btn:hover,
+.nav[data-collapse="tiny"] .nav-button.u-menu-btn:hover {
+	opacity: 0.85;
+}
+
+/* No more .navbar_contact_btn — Contact is a plain .u-link now, living
+   inside .navbar_nav_right next to Pricing and FAQ (Navbar.astro), which is
+   what actually fixes it being centred between them. It gets .hide-mobile/
+   is-compact treatment automatically through those shared classes, the
+   same as About/Services/Pricing — no bespoke rule needed here any more. */
+
+/* ===== Compact state: the wide inline nav collapses to one button =====
+   Toggled by navbar.js once you've scrolled — not tied to viewport width at
+   all, unlike the mobile collapse above (data-collapse="tiny", ≤479px).
+   Reusing .u-menu-btn/.navbar_menu_mobile for this rather than building a
+   second "desktop menu button" is why the overlay above had to stop being
+   phone-only in the first place: this is the same button, same panel, just
+   also reachable by scrolling instead of only by a narrow viewport.
+
+   The reason to collapse at all: About/Pillars/Lineage/Shop spread across
+   the full row are fine over the hero, but by the time you scroll to the
+   very bottom the fixed navbar is still sitting at its own y=0 while the
+   revealed footer's own top row (logo, contact, its own nav, social) has
+   nowhere else to go on a short viewport — the two fixed layers collide.
+   One small button in the corner has nothing left to collide with.
+
+   opacity/visibility, not display: none directly on these three — display
+   can't transition, so the inline links and the centred logo used to just
+   snap out of existence the instant is-compact landed, and snap back just
+   as abruptly scrolling up past the threshold. visibility gets its own
+   entry in the transition list because it's what actually removes them
+   from tab order / hit-testing once the fade finishes; CSS's own handling
+   of that property is what makes the direction asymmetric for free — going
+   to hidden, the UA holds "visible" until the transition's end (so it fades
+   before disappearing); going to visible, it flips at the very start (so it
+   fades in visible the whole time) — no JS timing needed for this half. */
+.hide-mobile,
+.navbar_mobile_link,
+.navbar_logo {
+	transition:
+		opacity 0.3s ease-in-out,
+		visibility 0.3s ease-in-out;
+}
+.u-navbar.is-compact .hide-mobile,
+.u-navbar.is-compact .navbar_mobile_link,
+/* The centred logo goes too, not just the inline links — this is what
+   Orisa's own sticky state actually is. Its header (.at-header-area,
+   header-2.html) is NOT fixed at all: it scrolls away with the page like
+   any other content, and the only thing that stays behind is the separate
+   #header-sticky MENU button. So past the hero, Orisa shows exactly one
+   thing in the corner and nothing else.
+   Without this, .navbar_logo (position: absolute, left: 50%) kept sitting
+   dead-centre at the top of the viewport at EVERY scroll position — and
+   since the revealed footer's own top row (its logo, contact, nav columns)
+   is also up there once footer.js has pulled main out of the way, the two
+   collided: the gold mark landed straight on top of the footer's own nav
+   links, which is the "About[MINOS HOST]ries" overlap. The footer carries
+   its own logo already, so nothing is lost by standing the fixed one down
+   once you've scrolled past the hero it belongs to. */
+.u-navbar.is-compact .navbar_logo {
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+}
+/* top: 40px; right: 20px — Orisa's own .hamburger-sticky-menu numbers
+   (header-2.html / _offcanvas.scss:641-642), not flush to the corner. Flush
+   0/0 was the "κολλήσει τέρμα δεξιά" (stuck all the way to the right) bug:
+   the button sat exactly on the viewport's edge with no breathing room,
+   which is not what Orisa's real button does even though Orisa's own is
+   position: fixed at that same offset once scrolled (.header-sticky) — this
+   is genuinely a floating corner button, not an edge-docked one. */
+/* .is-leaving-compact alongside .is-compact on both selectors below — this
+   is what makes the button's EXIT fade instead of vanishing. display can't
+   transition, and the instant .is-compact was removed (scrolling back up),
+   the base .nav-button rule's display: none won immediately, cutting the
+   opacity/transform tween off mid-frame — the button just disappeared,
+   asymmetric with the fade-in .starting-style gives it going the other way.
+   navbar.js now holds .is-leaving-compact for the 0.3s the fade actually
+   takes (same idea as menu2_area's own .is-closing hold, shorter because
+   this has no offscreen slide to wait out afterward) — display: inline-flex
+   stays true across both classes, so only opacity/transform change and the
+   transition has something to animate instead of a display jump. */
+.u-navbar.is-compact .u-menu-btn,
+.u-navbar.is-leaving-compact .u-menu-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	position: absolute;
+	top: 40px;
+	right: 20px;
+	transition:
+		opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+		transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.u-navbar.is-compact .u-menu-btn {
+	opacity: 1;
+	transform: scale(1);
+}
+.u-navbar.is-leaving-compact .u-menu-btn {
+	opacity: 0;
+	transform: scale(0.5);
+}
+/* The button's own entrance — Orisa's .hamburger-sticky-menu scales up from
+   0.5 and fades in the same way (main.css:3606) rather than just snapping
+   to visible. @starting-style is what lets a freshly-shown display: none
+   element transition at all: without it there is no "previous frame" for
+   the browser to animate FROM, so opacity/transform above would apply
+   instantly no matter how they're written. Unsupported browsers (pre-2024
+   Firefox) just skip straight to the "arrived" state — the button still
+   works, it only loses the pop. */
+@starting-style {
+	.u-navbar.is-compact .u-menu-btn {
+		opacity: 0;
+		transform: scale(0.5);
+	}
+}
+/* "The navbar leaves" — .active is set on .u-navbar by navbar.js's
+   openMenu()/closeMenu(), the same moment .menu2_area gets .is-open. Fades
+   the fixed navbar's own logo and MENU button out while the panel is open:
+   the panel carries its own "Minos Host" logo top-left (Navbar.astro), so
+   without this there were two logos on screen at once, and two overlapping
+   click targets (the outer button, the panel's own close control) doing
+   almost the same job. Opacity only, not a translate — .navbar_logo already
+   carries `transform: translate(-50%)` for horizontal centring, and adding
+   a second transform for a slide would need combining both into one value
+   rather than one silently overwriting the other. */
+.u-navbar.active .navbar_logo,
+.u-navbar.active .u-menu-btn {
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.3s ease;
+}
+
+@media screen and (max-width: 479px) {
+	.u-navbar {
+		mix-blend-mode: normal;
+		display: block;
+		top: 0.5rem;
+	}
+	.navbar_nav {
+		flex-flow: row-reverse;
+	}
+	.hide-mobile {
+		display: none;
+	}
+	.u-menu-btn {
+		padding: 0.5rem 0.5rem 0.375rem;
+	}
+	.navbar_container {
+		padding-left: 0.5rem;
+		padding-right: 0.5rem;
+	}
+	.navbar_mobile_link.u-link {
+		padding: 0.5rem 0.5rem 0.375rem;
+	}
+	/* Compact mode's absolute top-right placement is a desktop-row concern —
+	   at this width .navbar_nav is already row-reverse (the rule above), so
+	   the button belongs back in normal flow with everything else instead. */
+	.u-navbar.is-compact .u-menu-btn {
+		position: static;
+	}
+}
+.u-navbar,
+.navbar_container,
+.navbar_nav {
+	isolation: auto;
+}
+
+/* =====================================================================
+   Circle-reveal side menu — Orisa's .at-offcanvas-2-area / .offcanvas-bg
+   (main.css ~3290-3620). Every timing/offset number below is copied from
+   there: 0.7s for the circle, 45px/45px for the corner it grows from
+   (matching the MENU button's own top/right position), the 1.5s duration
+   and per-item 0.1s stagger on the links, the 2s hold before the panel
+   snaps fully offscreen (see menu2.js — that hold is load-bearing, not
+   decorative: without it the container's own position: fixed would let go
+   the instant you click close, before the 0.7s circle has had any chance
+   to shrink back down, so the panel would just vanish rather than close).
+
+   Colour is Minos's throughout — the panel surface reuses the same
+   elevated-charcoal (#232a35) the testimonials panel and WhyUs's stacking
+   cards already use, with gold accents, rather than Orisa's white/blurred
+   glass, which belongs to a light page this one isn't. */
+.menu2_area {
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: 100%;
+	height: 100%;
+	width: 680px;
+	max-width: 100vw;
+	z-index: 1000;
+	pointer-events: none;
+}
+.menu2_area.is-open,
+.menu2_area.is-closing {
+	left: auto;
+	pointer-events: auto;
+}
+/* 640px, not 560px — wider so the panel's left edge sits further into the
+   viewport instead of hugging the right edge with a lot of dead grey space
+   to its left. .menu2_area above widened to match (680px, always ≥ this
+   width + the 20px right inset, or the panel would clip against the
+   offscreen slide container). */
+.menu2_bg {
+	position: fixed;
+	inset: 20px;
+	right: 20px;
+	left: auto;
+	width: 640px;
+	max-width: calc(100vw - 40px);
+	border-radius: 20px;
+	background-color: rgba(35, 42, 53, 0.94);
+	border: 1px solid rgba(184, 154, 107, 0.25);
+	backdrop-filter: blur(20px);
+	box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.45);
+	clip-path: circle(0% at calc(100% - 45px) 45px);
+	transition: clip-path 0.7s ease-in-out;
+	z-index: 2;
+}
+.menu2_area.is-open .menu2_bg {
+	clip-path: circle(150% at calc(100% - 45px) 45px);
+}
+/* 80px horizontal, not 60px — more interior breathing room now that the
+   panel itself is wider. Paired with the smaller nav-link font-size below:
+   at 60px/2.75rem the widest rows ("SERVICES") ran past the panel's own
+   right edge and got clipped by .menu2_bg's border-radius instead of
+   wrapping or shrinking. */
+/* Positioned to the CARD's box, not the viewport's — top/bottom/right: 20px
+   and width: 640px are the same numbers .menu2_bg uses, so the scrollable
+   content area now ends exactly where the visible card ends. Previously this
+   was height: 100% (the full viewport) while the card is inset 20px, so the
+   last row could sit in that 20px strip below the card's rounded bottom edge
+   and get cut by the viewport instead — which is what "CONTACT" half-clipped
+   off the bottom of the screen actually was: VERTICAL overflow, not the
+   horizontal kind that was fixed earlier.
+   Absolute (not fixed, the way .menu2_bg is) so it still travels offscreen
+   with .menu2_area's own left: 100% at rest — .menu2_bg can afford fixed
+   because clip-path hides it in place; the panel's text has no such cover
+   and would otherwise sit visible on the page with the menu closed. */
+.menu2_panel {
+	position: absolute;
+	z-index: 2;
+	top: 20px;
+	bottom: 20px;
+	right: 20px;
+	width: 640px;
+	max-width: calc(100vw - 40px);
+	/* 70/60/40 px, not 100/80/40 — trimmed along with the gaps below to get
+	   the whole 8-row menu inside a short laptop viewport without scrolling.
+	   Everything here stays px for the usual reason (fluid root font-size). */
+	padding: 70px 60px 40px;
+	overflow-y: auto;
+	scrollbar-width: none;
+}
+.menu2_top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	/* 40px, not 3rem — 3rem resolved to 66px at this page's fluid root
+	   (22px at a wide viewport, not 16px), which was a big part of why the
+	   8-row menu didn't fit vertically on a laptop screen. */
+	margin-bottom: 40px;
+	/* 0.5s, not the nav links' 1.5s — this row has no stagger delay, so it
+	   starts moving the instant .is-open lands. At 1.5s it was slower than
+	   .navbar_logo's own 0.3s fade-out (navbar.css, the .active rule below),
+	   leaving a good second where NEITHER logo was on screen: the fixed
+	   navbar's mark already gone, the panel's own mark still barely faded
+	   in. 0.5s closes most of that gap without losing the slide-down.
+	   (.navbar_logo's own fade is the ".u-navbar.active" rule further up
+	   this file.) */
+	opacity: 0;
+	visibility: hidden;
+	/* -80px — Orisa's own .at-header-logo distance (_offcanvas.scss:465). */
+	transform: translateY(-80px);
+	transition: all 0.5s ease-in-out !important;
+}
+.menu2_area.is-open .menu2_top {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+}
+.menu2_logo {
+	display: flex;
+	align-items: center;
+	gap: 0.625rem;
+	color: var(--vv-off-white);
+	text-decoration: none;
+}
+.menu2_logo img {
+	display: block;
+	width: 46px;
+	height: auto;
+}
+/* appearance/background/border/padding reset — .menu2_close is a <button>,
+   and without this it rendered as the browser's own default button chrome
+   (a grey filled box) sitting on top of the SVG rather than the plain X the
+   other reset buttons on this site already get from .nav-button/.u-menu-btn
+   (navbar.css, top of file). This one needs its own copy of that same
+   reset: it isn't a .nav-button (that class carries display: none by
+   default, which .menu2_close must never have — it's not tucked behind any
+   [data-collapse]/.is-compact gate the way the open button is, it's simply
+   always the close control for an always-present panel). */
+.menu2_close {
+	appearance: none;
+	background: none;
+	border: 0;
+	padding: 0;
+	color: var(--vv-off-white);
+	cursor: pointer;
+	transition: transform 0.4s ease;
+}
+.menu2_close:hover {
+	transform: rotate(90deg);
+}
+/* px, not 2rem — same fluid-root reason as .menu2_top's margin above. */
+.menu2_nav {
+	list-style: none;
+	margin: 0 0 24px;
+	padding: 0 0 24px;
+	border-bottom: 1px solid rgba(184, 154, 107, 0.2);
+}
+.menu2_nav_item {
+	overflow: hidden;
+}
+/* The stagger: each row's own transition-delay, 0.1s apart. Re-checked
+   against Orisa's real source (_offcanvas.scss:280-311): its own numbers
+   (1.7s/1.8s/1.9s/2.1s on items 2/3/4/5) leave item 1 at delay 0 — meaning
+   on the real template the FIRST row starts moving instantly while the
+   panel is still mid-reveal, and every later row is bunched into the
+   0.7s-1.5s window after. Copied over literally, that reads exactly like
+   the bug reported here: the panel finishes its circle-reveal (0.7s) and
+   sits there with NO visible menu items for another second or more before
+   anything appears — easy to mistake for "the menu doesn't open." Starting
+   the whole cascade at 0.3s (roughly when the circle is mostly grown) and
+   stepping by 0.1s keeps the same cascading feel without that dead gap.
+
+   Scoped under .menu2_area.is-open, NOT applied unconditionally — this is
+   the fix for the close animation reading as broken. transition-delay on
+   an element applies to BOTH directions of a transition, not just the one
+   it was written for: with these written against .menu2_nav_item bare
+   (no .is-open in the selector), closing the menu would re-trigger these
+   same delays in reverse, so the panel's own background (.menu2_bg, 0.7s)
+   would have already shrunk to nothing while later rows were still sitting
+   there at full opacity for another second-plus, floating with no card
+   behind them. See the explicit .is-closing rule further down for the fast,
+   un-staggered close transition that replaces this on the way out. */
+.menu2_area.is-open .menu2_nav_item:nth-child(1) .menu2_nav_link {
+	transition-delay: 0.3s !important;
+}
+.menu2_area.is-open .menu2_nav_item:nth-child(2) .menu2_nav_link {
+	transition-delay: 0.4s !important;
+}
+.menu2_area.is-open .menu2_nav_item:nth-child(3) .menu2_nav_link {
+	transition-delay: 0.5s !important;
+}
+.menu2_area.is-open .menu2_nav_item:nth-child(4) .menu2_nav_link {
+	transition-delay: 0.6s !important;
+}
+.menu2_area.is-open .menu2_nav_item:nth-child(5) .menu2_nav_link {
+	transition-delay: 0.7s !important;
+}
+.menu2_area.is-open .menu2_nav_item:nth-child(6) .menu2_nav_link {
+	transition-delay: 0.8s !important;
+}
+/* font-weight: 400, not 900 — the actual root of the overflow. Review is
+   only shipped at three weights (base.css @font-face: 300 light, 400
+   regular, 900 "reviewwide-black"). That 900 file is a WIDE face by name
+   and by design, not just a bolded version of the same letterforms — it's
+   the widest thing this typeface has. Fine for short punchy words like the
+   hero H1 or a two-word pill button; wrong for full nav words like
+   "SERVICES"/"TESTIMONIALS" inside a fixed-width panel, where it was
+   reliably the widest render physically possible. 400 is a real loaded
+   weight (not synthesised) and dramatically narrower per letter — combined
+   with the tightened clamp() and letter-spacing below, this is what
+   actually keeps every row inside the card, not the font-size alone.
+   -0.01em letter-spacing echoes Orisa's own -0.04em on this exact rule
+   (_offcanvas.scss:317) — its nav type is tracked IN, not out. */
+.menu2_nav_link {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	/* 7px, not 0.5rem (=11px at the fluid root) — kept even with the panel
+	   down to six rows (was eight when this was first tuned against a
+	   768px-tall screen): less margin needed now, not more, so there's no
+	   reason to loosen it back up. */
+	padding: 7px 0;
+	color: var(--vv-off-white);
+	text-transform: uppercase;
+	font-family: Jost, Arial, sans-serif;
+	font-size: clamp(20px, 2.4vw, 32px);
+	font-weight: 400;
+	line-height: 90%;
+	letter-spacing: -0.01em;
+	text-decoration: none;
+	/* -300px, not -60px — Orisa's own real slide distance
+	   (_offcanvas.scss:320, translateY(-300px)). -60px was an arbitrary
+	   guess made without the real source in front of me; it read as barely
+	   a nudge rather than the actual drop-in Orisa's menu does. */
+	transform: translateY(-300px);
+	opacity: 0;
+	visibility: hidden;
+	/* 1.5s duration kept as Orisa's own — only the DELAY above is now scoped
+	   to opening. The .is-closing rule below overrides this whole property
+	   on the way out, so the 1.5s here only ever governs the entrance. */
+	transition: all 1.5s ease-in-out !important;
+}
+.menu2_area.is-open .menu2_nav_link {
+	transform: translateY(0);
+	opacity: 1;
+	visibility: visible;
+}
+/* Closing: fast and unstaggered, not a reverse-play of the 1.5s/staggered
+   entrance above. This is the actual fix for "μένουν πίσω τα γράμματα και
+   δεν σβήνουν γρήγορα" (the letters stay behind and don't fade away
+   quickly) — without this rule, removing .is-open still leaves the row
+   inheriting the entrance's own 1.5s duration (only the per-item DELAY was
+   scoped to .is-open, not the duration), so every row would take a full
+   1.5s to fade out even in sync, well after .menu2_bg has finished
+   shrinking (0.7s). 0.4s here is faster than the background's own close, so
+   nothing is ever left floating with no card behind it. Higher specificity
+   than the base rule above (two classes on the ancestor) wins this without
+   relying on source order, but !important is kept anyway since the base
+   rule also carries it and source order shouldn't be what decides this. */
+.menu2_area.is-closing .menu2_nav_link {
+	transition:
+		transform 0.4s ease-in-out,
+		opacity 0.4s ease-in-out,
+		visibility 0.4s ease-in-out !important;
+}
+.menu2_nav_link:hover {
+	color: var(--vv-gold);
+}
+.menu2_nav_plus {
+	flex-shrink: 0;
+	color: var(--vv-gold);
+	font-size: 24px;
+	font-weight: 300;
+	font-style: normal;
+	line-height: 1;
+	transition: transform 0.3s ease;
+}
+.menu2_nav_link:hover .menu2_nav_plus {
+	transform: rotate(90deg);
+}
+/* No .menu2_social — Instagram/Facebook/WhatsApp/Airbnb were TODO
+   placeholders (href="#", same as Footer.astro's own copies), pulled per
+   request rather than shipped as dead links. .menu2_nav's own
+   border-bottom now reads as the panel's bottom edge instead of a divider
+   before a row that no longer exists. */
+@media screen and (max-width: 767px) {
+	.menu2_area {
+		width: 100%;
+	}
+	.menu2_bg {
+		inset: 0;
+		width: 100%;
+		max-width: 100%;
+		border-radius: 0;
+		border-width: 0 0 0 1px;
+	}
+	/* Inset back to 0 to match .menu2_bg going full-bleed above — the 20px
+	   card inset the desktop rule positions against doesn't exist here. */
+	.menu2_panel {
+		top: 0;
+		bottom: 0;
+		right: 0;
+		width: 100%;
+		max-width: 100%;
+		padding: 70px 24px 32px;
+	}
+}

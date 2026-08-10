@@ -1,0 +1,128 @@
+/* Same charcoal as Pillars right above it — there is no seam to cross, so the
+   two sections read as one continuous surface. See design-tokens comment in
+   base.css: gold text needs a dark ground to clear contrast, off-white is
+   reserved for type-on-dark, and both hold here the same way they do in
+   Definitions/About/Pillars. */
+/* Two separate spacings, not one doing both jobs like before: .section_brands
+   itself is the OUTER gap — the space between Pillars and Brands, and between
+   Brands and Services, with no border on it, so it's just quiet charcoal. The
+   border and the ticker's own breathing room both moved to .brands_container
+   below, much smaller, so the gold hairlines sit close to the logos instead of
+   floating out in the middle of the outer gap. Splitting these is what lets
+   the outer gap grow and the inner padding shrink at the same time — as one
+   shared number they could only move together.
+   .section_pillars still contributes nothing on its side (height: 100vh is
+   tight enough already) and .section_services's own padding-top is still 0
+   (see services.css) — .section_brands is symmetric top/bottom and is the
+   sole source of both outer gaps, so they can't drift apart again. */
+.section_brands {
+	position: relative;
+	background-color: var(--vv-charcoal);
+	padding: 6rem 0;
+}
+.brands_container {
+	position: relative;
+	overflow: hidden;
+	padding: 2rem 0;
+	/* Echoes .pillar_heading_rectangle and the pillars_glow gradient — same
+	   --vv-gold value (#b89a6b), hand-written as rgba here because these are
+	   translucent strokes, not solid fills, and the custom property only
+	   carries the opaque hex. Marks this section as part of the same family
+	   as Pillars without a full gold block. */
+	border-top: 1px solid rgba(184, 154, 107, 0.2);
+	border-bottom: 1px solid rgba(184, 154, 107, 0.2);
+	/* Fades the two edges to the section's own background instead of Orisa's
+	   pair of absolutely-positioned gradient divs (::before/::after in the
+	   template) — a mask does the same job on the one element that actually
+	   needs it, with no extra DOM. */
+	-webkit-mask-image: linear-gradient(90deg, transparent, #000 8rem, #000 calc(100% - 8rem), transparent);
+	mask-image: linear-gradient(90deg, transparent, #000 8rem, #000 calc(100% - 8rem), transparent);
+}
+/* Two <ul> children (see Brands.astro) sit side by side and the whole row
+   slides left by exactly half its own width — i.e. by one list's width — so
+   the moment the first list has scrolled fully off, the second is sitting
+   exactly where the first started. Width: max-content so the row is only as
+   wide as its content demands, never clipped to the viewport. */
+.brands_track {
+	display: flex;
+	width: max-content;
+	animation: brands-scroll 32s linear infinite;
+	will-change: transform;
+}
+.brands_list {
+	display: flex;
+	align-items: center;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.brands_item {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	height: 2.25rem;
+	margin: 0 2.5rem;
+}
+/* The source marks are flat black glyphs on transparent backgrounds (built
+   for a white page in the template). brightness(0) invert(1) turns any
+   opaque pixel white regardless of its original shade — cheaper and more
+   robust than shipping a second off-white export of each file — and the
+   reduced opacity keeps them reading as a quiet supporting row rather than
+   competing with the gold/off-white type around them. */
+.brands_item img {
+	height: 100%;
+	width: auto;
+	filter: brightness(0) invert(1);
+	opacity: 0.55;
+	transition: opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.brands_item:hover img {
+	opacity: 1;
+}
+/* Pausing on hover — anywhere over the strip, not just a logo — wasn't in
+   the template (its jQuery ticker had no hover handling at all), but it's
+   the behaviour anyone hovering a moving row of logos expects: something to
+   read stays still long enough to actually read it. */
+.brands_container:hover .brands_track {
+	animation-play-state: paused;
+}
+@keyframes brands-scroll {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.brands_track {
+		animation: none;
+	}
+	/* With the scroll off there is nothing to loop into view, so the second
+	   copy would just sit there as a visible, static duplicate of the first
+	   six logos — hide it rather than ship a doubled-up row. */
+	.brands_list[aria-hidden="true"] {
+		display: none;
+	}
+}
+@media screen and (max-width: 991px) {
+	.section_brands {
+		padding: 3rem 0;
+	}
+	.brands_container {
+		padding: 1.25rem 0;
+		-webkit-mask-image: linear-gradient(90deg, transparent, #000 3rem, #000 calc(100% - 3rem), transparent);
+		mask-image: linear-gradient(90deg, transparent, #000 3rem, #000 calc(100% - 3rem), transparent);
+	}
+	.brands_item {
+		height: 1.75rem;
+		margin: 0 1.75rem;
+	}
+}
+@media screen and (max-width: 479px) {
+	.brands_item {
+		height: 1.5rem;
+		margin: 0 1.25rem;
+	}
+}

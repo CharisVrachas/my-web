@@ -1,0 +1,202 @@
+.section_about {
+	z-index: 3;
+	flex-direction: column;
+	justify-content: center;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	position: relative;
+}
+.about_container {
+	height: 100%;
+	position: relative;
+	overflow: hidden;
+}
+/* Top scrim — same reasoning as .u-navbar::before (navbar.css), which
+   already sits over EVERY section including this one (it's on the fixed
+   navbar itself, not scoped to Hero) but wasn't dark enough here on its
+   own: sampling the new about.jpg's own top strip put it at ~84% grey,
+   noticeably lighter than what the navbar's shared scrim was tuned
+   against.
+
+   height: calc(var(--nav-logo-h) + 5rem) — copied directly from the
+   navbar's own formula (navbar.css) rather than a guessed flat value, so
+   this scrim's dark zone lines up with exactly where the row actually
+   sits at any viewport width, the same way the shared one does over Hero.
+   A flat 14rem here first pass, faded out by its own end (100% stop at
+   0 opacity) — fine in principle, but with the gradient's midpoint stop
+   at 55% doing most of the fading well before the nav row's own text, the
+   row ended up sitting in the THIN part of the fade rather than the solid
+   dark band, which read as a hazy wash instead of a clean dark zone the
+   text could sit on. Two fixes together: 0.78 peak (was 0.55) for real
+   opacity where it starts, and a later midpoint stop (70%, was 55%) so
+   the strong, solid part of the gradient actually extends past the row's
+   own height instead of already fading through it. */
+.about_container::after {
+	content: "";
+	z-index: 1;
+	pointer-events: none;
+	position: absolute;
+	inset: 0 0 auto;
+	height: calc(var(--nav-logo-h) + 5rem);
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.4) 70%, rgba(0, 0, 0, 0) 100%);
+}
+.about_wrapper {
+	z-index: 2;
+	grid-column-gap: 2rem;
+	grid-row-gap: 2rem;
+	width: 100%;
+	height: 100%;
+	color: var(--vv-off-white);
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+	display: flex;
+	position: relative;
+}
+/* The template cut this column for a 158-character caption. The copy is now
+   about 520 characters over two paragraphs, which at 21.5rem ran to eleven
+   lines on a desktop and twenty-five on a phone. Widening the measure — rather
+   than shrinking the type, as the hero needed — is what makes it fit, and it
+   reads far better: justified text in a narrow column opens ugly word gaps. */
+.about_p {
+	width: 30rem;
+	max-width: 100%;
+}
+/* Holds the two paragraphs closer together than the wrapper's 2rem, so they
+   read as one block rather than two unrelated notes. */
+.about_copy {
+	grid-row-gap: 0.75rem;
+	flex-flow: column;
+	align-items: center;
+	display: flex;
+}
+/* The "View more" button (opens /about) sits in this same flex column as the
+   two paragraphs above it — 0.75rem from .about_copy's own gap reads too
+   tight between body copy and a button, so it gets a bit more room of its
+   own on top of that. */
+.about_copy > .u-btn-ellipse {
+	margin-top: 1rem;
+}
+/* Gold, not the inherited off-white (.about_wrapper) — off-white read fine
+   against the old night photo, but the new one's grayscale filter
+   (.about_bg) leaves large light-grey areas (the sky) with barely any
+   separation from near-white text sitting on top of them: the same
+   washed-out problem the navbar had against this photo's own brightness,
+   just lower down where the top scrim doesn't reach. Gold holds up against
+   both the light and dark parts of a monochrome image the way off-white
+   can't, the same reason it's the mark's own colour everywhere else on
+   this site. */
+.about_heading {
+	z-index: 2;
+	color: var(--vv-gold);
+	/* Local override, not a change to .u-h3-review's own 3.25rem (base.css)
+	   — that shared class also sizes Testimonials' "What owners say", which
+	   wasn't part of this ask. 2.7rem here only. */
+	font-size: 2.7rem;
+	text-align: center;
+	position: relative;
+}
+.about_heading.u-h3-review.decor {
+	display: none;
+	opacity: 0;
+	white-space: nowrap;
+}
+/* --about-desaturate, filter: grayscale() — the same treatment .hero_bg
+   carries (hero.css, --hero-desaturate), copied over rather than
+   reinvented: that moody black-and-white look is what "grey θόλωμα... όπως
+   στο Hero section" was actually asking for, not (only) the top scrim
+   added separately above. 1 = fully black and white, matching Hero's own
+   default rather than its 0.75 "keep a trace of warmth" alternative — this
+   photo has no sunset colour worth keeping a trace of the way Hero's does. */
+.about_bg {
+	--about-desaturate: 1;
+	filter: grayscale(var(--about-desaturate));
+	z-index: 1;
+	transform-origin: 50% 100%;
+	object-fit: cover;
+	object-position: 50% 0%;
+	width: 110%;
+	max-width: none;
+	height: 200%;
+	position: absolute;
+	inset: 0%;
+	transform: translate(-4.5%);
+}
+.about_overlay {
+	z-index: 2;
+	opacity: 0;
+	pointer-events: none;
+	background-color: #000;
+	position: absolute;
+	inset: 0%;
+}
+.about_heading_wrapper {
+	position: relative;
+}
+.about_logo {
+	grid-column-gap: 16px;
+	grid-row-gap: 16px;
+	width: 100%;
+	height: 4.1rem;
+	color: var(--vv-off-white);
+	grid-template-rows: auto auto;
+	grid-template-columns: 1fr 1fr;
+	grid-auto-columns: 1fr;
+	padding-right: 0.4375rem;
+	position: absolute;
+	top: -0.75rem;
+}
+.about_decor {
+	z-index: 1;
+	flex-flow: column;
+	justify-content: flex-start;
+	align-items: center;
+	display: flex;
+	position: absolute;
+	inset: 0% auto auto 50%;
+	transform: translate(-50%);
+}
+.about_decor.is-right {
+	inset: auto 0% 0% auto;
+}
+@media screen and (max-width: 991px) {
+	.section_about {
+		height: calc(var(--vh) * 100);
+	}
+	.about_p {
+		width: 24rem;
+	}
+	.about_heading {
+		font-size: 2.1rem;
+	}
+	.about_bg {
+		width: 100%;
+		height: 100%;
+		transform: translate(0);
+	}
+	.about_logo {
+		height: 3.08rem;
+		padding-right: 0.525rem;
+		top: -0.5rem;
+	}
+}
+@media screen and (max-width: 767px) {
+	.about_heading {
+		font-size: 1rem;
+	}
+	.about_logo {
+		height: 1.39rem;
+		padding-right: 0.6375rem;
+		top: -0.25rem;
+	}
+}
+@media screen and (max-width: 479px) {
+	.about_p {
+		width: 100%;
+	}
+	.about_bg {
+		width: 150%;
+		transform: translate(-16.66%);
+	}
+}

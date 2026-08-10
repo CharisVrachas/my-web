@@ -1,0 +1,276 @@
+/* Styles for the /contact page only — ContactBanner.astro/ContactSection.astro,
+   ported from Orisa's contact-1.html (its own inline banner markup) and
+   about-1/sec-4.html (the form section it pulls in).
+
+   Class prefix is ct_ (Contact). The submit button reuses .pr_btn from
+   pricing-page.css rather than a third copy of the same text-1/text-2 +
+   dual-arrow pill — same button, same class, different page.
+
+   Numbers that carry real meaning — the 800px banner height, the form's
+   16px vertical padding, the 120px textarea min-height, the 14px
+   disclaimer — are Orisa's own (compiled main.css:3945-4000, 7013-7018).
+   Palette and px-not-rem: same reasoning as every other page-specific
+   stylesheet here. */
+
+/* ===== Banner ===============================================================
+   .scale-up-img/.scale-up: the GSAP scale(1→1.15) scrub tween, wired up in
+   contact-page.js's initContactBanner() — see ContactBanner.astro's file
+   comment for why this is a second, different effect from the data-speed
+   drift already on the same <img>. overflow: hidden is load-bearing here,
+   not decorative: without it the zoomed image would spill past the
+   banner's own edges instead of cropping into them. */
+.ct_banner {
+	position: relative;
+	height: 800px;
+	overflow: hidden;
+}
+.ct_banner_img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transform-origin: center center;
+}
+@media screen and (min-width: 992px) and (max-width: 1399px) {
+	.ct_banner {
+		height: 600px;
+	}
+}
+@media screen and (max-width: 767px) {
+	.ct_banner {
+		height: 420px;
+	}
+}
+
+/* ===== Head: eyebrow + title, lead line ==================================== */
+.ct_section {
+	background-color: var(--vv-charcoal);
+	padding: 90px 0 100px;
+}
+.ct_head {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr);
+	gap: 2rem;
+	align-items: end;
+	margin-bottom: 60px;
+}
+/* Removed for the same reason/at the same time as .sv_hero_head .sv_eyebrow
+   (services-page.css) — the "Contact us ↗" label above this title. "Get in
+   touch" was never at risk of wrapping the way the .sv_hero_title pages
+   were (12 characters, a wide 1fr/0.7fr column), so only the eyebrow and a
+   touch of top spacing changed here, not the title's own font-size. */
+.ct_eyebrow {
+	display: none;
+}
+/* clamp() tracking Orisa's own .fz-ds-1 (80px, up to 124px above 1400px —
+   compiled main.css:55-77), same scale already used for PricingTable's own
+   H2 in this same slot. */
+.ct_title {
+	margin: 0;
+	color: var(--vv-off-white);
+	font-family: "Playfair Display", Georgia, serif;
+	/* Trimmed ~15% from 96px for the site-wide title pass. */
+	font-size: clamp(34px, 5.5vw, 80px);
+	font-weight: 400;
+	line-height: 1;
+}
+.ct_head_side {
+	display: flex;
+	align-items: flex-end;
+	justify-content: flex-end;
+	gap: 1rem;
+	text-align: right;
+}
+.ct_rotate {
+	flex-shrink: 0;
+	color: var(--vv-gold);
+	display: none;
+}
+@media screen and (min-width: 992px) {
+	.ct_rotate {
+		display: block;
+	}
+}
+.ct_lead {
+	margin: 0;
+	color: var(--vv-off-white);
+	opacity: 0.75;
+	font-size: 1.125rem;
+	line-height: 1.5;
+	max-width: 22rem;
+}
+
+/* ===== Body: info column + form ============================================
+   4/7 split with a gap standing in for Orisa's own col-xxl-4/col-lg-7
+   ms-auto offset. */
+.ct_body {
+	display: grid;
+	grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
+	gap: 3rem;
+}
+.ct_info_row {
+	display: flex;
+	flex-direction: column;
+	gap: 2.5rem;
+}
+.ct_info_block {
+	display: flex;
+	gap: 1.5rem;
+}
+.ct_info_icon {
+	flex-shrink: 0;
+	width: 40px;
+	height: 40px;
+	color: var(--vv-gold);
+}
+.ct_info_title {
+	margin: 0 0 0.5rem;
+	color: var(--vv-off-white);
+	font-size: 1.125rem;
+	font-weight: 600;
+}
+.ct_info_text {
+	margin: 0;
+	color: var(--vv-off-white);
+	opacity: 0.7;
+	font-size: 1rem;
+	line-height: 1.7;
+}
+.ct_info_text a {
+	color: var(--vv-off-white);
+	text-decoration: none;
+	opacity: 1;
+}
+.ct_info_text a:hover {
+	color: var(--vv-gold);
+}
+
+.ct_social {
+	list-style: none;
+	margin: 3rem 0 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.25rem;
+}
+.ct_social_link {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: var(--vv-off-white);
+	opacity: 0.7;
+	text-decoration: none;
+	font-size: 0.9375rem;
+	font-weight: 500;
+	transition: opacity 0.3s ease, color 0.3s ease;
+}
+.ct_social_link svg {
+	flex-shrink: 0;
+}
+.ct_social_link:hover {
+	opacity: 1;
+	color: var(--vv-gold);
+}
+
+/* ===== Form ================================================================
+   Underline-only inputs on transparent backgrounds — Orisa's own treatment
+   here (compiled main.css:3945-3976), just in this palette: an off-white
+   line at rest that brightens to gold on focus, rather than Orisa's black
+   line that stays the same black on focus (a static-brightness rule that
+   doesn't say anything the field's own :focus state should be showing). */
+.ct_form_field {
+	margin-bottom: 0;
+}
+.ct_form_field + .ct_form_field {
+	margin-top: 0.5rem;
+}
+.ct_form_input {
+	display: block;
+	width: 100%;
+	padding: 16px 0;
+	font-family: inherit;
+	font-weight: 400;
+	font-size: 16px;
+	line-height: 1.5;
+	letter-spacing: -0.01em;
+	color: var(--vv-off-white);
+	background: transparent;
+	border: none;
+	border-bottom: 1px solid rgba(245, 242, 237, 0.3);
+	border-radius: 0;
+	outline: none;
+	transition: border-color 0.2s ease;
+}
+.ct_form_input::placeholder {
+	color: var(--vv-off-white);
+	opacity: 0.5;
+}
+.ct_form_input:focus {
+	border-bottom-color: var(--vv-gold);
+}
+.ct_form_textarea {
+	min-height: 120px;
+	resize: vertical;
+	padding-top: 16px;
+}
+.ct_form_actions {
+	margin-top: 40px;
+	margin-bottom: 16px;
+}
+.ct_form_btn {
+	/* .pr_btn is already a fully-styled pill; nothing to add here beyond
+	   spacing at the callsite, kept for a hook if that ever changes. */
+}
+.ct_form_disclaimer {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.5;
+	color: var(--vv-off-white);
+	opacity: 0.55;
+}
+.ct_form_link {
+	color: var(--vv-off-white);
+	opacity: 1;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+.ct_form_link:hover {
+	color: var(--vv-gold);
+}
+.ct_form_success {
+	margin: 1rem 0 0;
+	padding: 14px 18px;
+	border-radius: 10px;
+	background-color: rgba(184, 154, 107, 0.14);
+	border: 1px solid rgba(184, 154, 107, 0.35);
+	color: var(--vv-gold);
+	font-size: 0.9375rem;
+	line-height: 1.5;
+}
+
+@media screen and (max-width: 1199px) {
+	.ct_head {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.25rem;
+	}
+	.ct_head_side {
+		justify-content: flex-start;
+		text-align: left;
+	}
+	.ct_body {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 2.5rem;
+	}
+}
+@media screen and (max-width: 767px) {
+	.ct_section {
+		padding: 56px 0 64px;
+	}
+	.ct_head {
+		margin-bottom: 40px;
+	}
+	.ct_info_row {
+		gap: 1.75rem;
+	}
+}

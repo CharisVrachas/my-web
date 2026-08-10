@@ -1,0 +1,5 @@
+html {
+	overflow: hidden;
+	touch-action: none;
+	contain: paint;
+}

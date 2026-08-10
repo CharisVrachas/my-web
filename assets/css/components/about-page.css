@@ -1,0 +1,236 @@
+/* Styles for the /about page only — AboutStory.astro, ported from Orisa's
+   about-3/sec-2.html ("About section 2"), the "process-scroll" pinned deck
+   of .process-card items. AboutHero.astro (the page's own top section) reuses
+   services-page.css's .sv_hero* classes instead of duplicating them — see
+   that file's header comment.
+
+   Class prefix is as_ (About Story), kept separate from Services' sv_offer_*
+   even though the two decks share a mechanic, because several numbers here
+   are genuinely different (the card's own internal grid ratio, the media
+   column width, the meta row) — Orisa itself styles this under a different
+   selector (.process-scroll) from its own "Things we offer" deck
+   (.at-service-area), not a shared class either.
+
+   Palette and px-not-rem: same reasoning as services-page.css. */
+
+/* ===== Head row: eyebrow + heading, statement ============================
+   Orisa: col-lg-4 (eyebrow+H2) and col-xxl-5 col-lg-8 text-lg-end ms-auto
+   (the statement, right-aligned). align-items-end matches its own
+   `row pb-50 align-items-end`. */
+.as_story {
+	background-color: var(--vv-charcoal);
+	padding: 90px 0 60px;
+}
+.as_story_head {
+	padding-bottom: 50px;
+}
+.as_story_head_row {
+	display: grid;
+	grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+	gap: 2rem;
+	align-items: end;
+}
+.as_story_heading {
+	margin: 12px 0 0;
+	color: var(--vv-off-white);
+	font-family: "Playfair Display", Georgia, serif;
+	font-size: clamp(26px, 2.6vw, 38px);
+	font-weight: 400;
+	line-height: 1.1;
+}
+.as_story_statement {
+	margin: 0;
+	color: var(--vv-off-white);
+	opacity: 0.85;
+	font-size: 1.125rem;
+	line-height: 1.5;
+	text-align: right;
+	max-width: 34rem;
+	margin-left: auto;
+}
+
+/* ===== The deck ===========================================================
+   Same two fixes as .sv_offer_card/.sv_offer_card_inner in services-page.css,
+   for the same reasons (see AboutStory.astro's file comment and the longer
+   notes on those two rules): background on the full 100vh card, not the
+   inner box, or a shrinking card leaves the next photo showing through at its
+   edges; and the card's own grid needs a wrapper for .container, not to BE
+   the grid, or that class's clearfix pseudo-elements become real grid items. */
+.as_story_deck {
+	position: relative;
+}
+.as_card {
+	min-height: 100vh;
+	width: 100%;
+	top: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	align-items: center;
+	padding-bottom: 40px;
+	background-color: #232a35;
+}
+/* min-width: 992px — matching about-page.js's own matchMedia gate; see the
+   long version of this comment in services-page.css (the same bug, found
+   there first: applied unconditionally, cards 2/3 collapsed onto card 1 on
+   mobile instead of flowing normally, since nothing sets a transform on them
+   below the width where the JS that would runs at all). */
+@media screen and (min-width: 992px) {
+	.as_card:not(:first-child) {
+		position: absolute;
+	}
+}
+.as_card > .container {
+	width: 100%;
+}
+.as_card_inner {
+	display: grid;
+	grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+	gap: 2.5rem;
+	align-items: center;
+	max-width: 1320px;
+	margin-inline: auto;
+	padding: 20px 0 40px;
+}
+/* No explicit height for the media column at wide viewports in Orisa's own
+   source either — .process-card__img-wrap only gets a min-height/aspect-ratio
+   from its $lg breakpoint down (compiled main.css:4370-4413), and above that
+   its <img class="img-cover"> (width/height: 100%) has nothing to size
+   itself against. Taken at face value that collapses the column to nothing;
+   aspect-ratio here is the interpretive default that keeps this widest range
+   sized sensibly, since Orisa's own real behaviour above that breakpoint
+   can't be determined from the stylesheet alone. */
+.as_card_media {
+	position: relative;
+	aspect-ratio: 4 / 3;
+	border-radius: 12px;
+	overflow: hidden;
+}
+.as_card_media img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.as_card_content {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+.as_card_header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-bottom: 16px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid rgba(184, 154, 107, 0.2);
+}
+/* 32px base — Orisa gives this element no font-size above its own $lg
+   breakpoint (same absent-base situation as .as_card_media); 24px is its
+   real value AT $lg (1200-1399px), so 32px here is a defensible step up for
+   the wider range above that, roughly matching how far apart its other
+   defined steps (24/22/20px) sit from one another. */
+.as_card_title {
+	margin: 0;
+	color: var(--vv-off-white);
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: -0.03em;
+}
+.as_card_meta {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-shrink: 0;
+}
+.as_card_meta_text {
+	color: var(--vv-off-white);
+	font-size: 1rem;
+	font-weight: 600;
+}
+/* Lighter weight/opacity than its parent .as_card_meta_text, even though
+   Orisa's own CSS never restyles this nested span away from inheriting its
+   parent's bold — with no distinct rule to carry over faithfully, "duration,
+   then a plain-weight description" (bold word, muted label) is the more
+   legible pairing, and it's what the visual role of the two clearly wants. */
+.as_card_meta_label {
+	display: inline-block;
+	margin-left: 4px;
+	font-weight: 400;
+	opacity: 0.6;
+}
+.as_card_meta_icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	color: var(--vv-gold);
+	border: 1px solid rgba(184, 154, 107, 0.35);
+}
+.as_card_desc {
+	margin: 0;
+	color: var(--vv-off-white);
+	opacity: 0.75;
+	font-size: 1rem;
+	line-height: 1.6;
+	letter-spacing: -0.005em;
+}
+.as_card_desc + .as_card_desc {
+	margin-top: 0.75rem;
+}
+
+@media screen and (max-width: 1199px) {
+	.as_story_head_row {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.25rem;
+	}
+	.as_story_statement {
+		text-align: left;
+		margin-left: 0;
+		max-width: none;
+	}
+	.as_card_title {
+		font-size: 26px;
+	}
+}
+@media screen and (max-width: 991px) {
+	.as_card_inner {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.5rem;
+	}
+	/* Content above the photo on a single column — Orisa's own mobile order
+	   (about-3/sec-2.html: `order-lg-2 order-1` on the content column,
+	   `order-lg-1 order-2` on the image column). Desktop's order is the
+	   reverse of this, which is why it needs no override of its own: the
+	   markup's plain DOM order (media, then content — AboutStory.astro)
+	   already puts the photo first/left there. */
+	.as_card_content {
+		order: 1;
+	}
+	.as_card_media {
+		order: 2;
+		aspect-ratio: 16 / 10;
+	}
+}
+@media screen and (max-width: 767px) {
+	.as_story {
+		padding: 56px 0 40px;
+	}
+	.as_story_head {
+		padding-bottom: 32px;
+	}
+	.as_card_title {
+		font-size: 22px;
+	}
+	.as_card_desc {
+		font-size: 0.9375rem;
+	}
+	.as_card_media {
+		aspect-ratio: 4 / 3;
+	}
+}
