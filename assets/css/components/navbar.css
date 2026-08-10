@@ -437,8 +437,59 @@
 	.navbar_nav {
 		flex-flow: row-reverse;
 	}
+	/* Desktop centres the logo by taking it OUT of flow entirely (position:
+	   absolute, left: 50%, up above) so it can sit dead-centre between two
+	   independently-balanced link groups either side of it — see that rule's
+	   own comment. Both groups are display: none below this width (next
+	   rule), so there's nothing left either side to centre BETWEEN any more,
+	   and the absolute positioning just kept parking it in the middle of an
+	   otherwise-empty row instead of flush left the way a plain two-item
+	   mobile header (logo / menu button) is expected to read. Putting it
+	   back in normal flow is what lets flex-flow: row-reverse (above) +
+	   .navbar_nav's own justify-content: space-between (base rule) push it
+	   and the MENU button to the row's two opposite edges — logo at the
+	   true left edge, button at the true right, rather than centre versus
+	   corner. */
+	.navbar_logo {
+		display: inline-flex;
+		position: static;
+		top: auto;
+		left: auto;
+		transform: none;
+	}
+	/* base.css's global `img { max-width: 100% }` reset never mattered here
+	   before — an absolutely-positioned auto-width element (the rule this
+	   replaces) shrink-fits against its containing block's own available
+	   width, a definite reference, so 100% of it was never the binding
+	   constraint. Back in normal flex flow (above), that 100% now resolves
+	   against the FLEX ITEM's own width — which is exactly the width this
+	   img's intrinsic aspect ratio is supposed to be establishing in the
+	   first place. Percentage-of-an-auto-sized-parent is circular, and the
+	   browser's own way out of that circularity is to treat the percentage
+	   as against nothing, i.e. 0 — which is exactly the "logo has zero
+	   width, MENU sits alone" bug this was measured producing. max-width:
+	   none breaks the circularity; width: auto + height: var(--nav-logo-h)
+	   (nav_logo_img's own base rule) is already the real sizing logic and
+	   needs no help once the global reset stops fighting it. */
+	.nav_logo_img {
+		max-width: none;
+	}
 	.hide-mobile,
 	.navbar_mobile_link {
+		display: none;
+	}
+	/* Hiding the LINKS above (.hide-mobile/.navbar_mobile_link) leaves their
+	   two wrapper divs behind, empty but still real flex items in
+	   .navbar_nav — and still carrying their own desktop 130px side padding
+	   each (reserved there to keep About/Services/etc. clear of the centred
+	   logo, above), which space-between then read as real width to
+	   distribute around. That, not the logo itself, was what kept it short
+	   of the row's true left edge even once it was back in normal flow
+	   (the .navbar_logo rule above) — an invisible ~130px spacer sitting
+	   between it and the edge. Nothing readable is lost hiding the wrappers
+	   too: every link inside either one is already display: none. */
+	.navbar_nav_left,
+	.navbar_nav_right {
 		display: none;
 	}
 	.u-menu-btn {
