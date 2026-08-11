@@ -862,5 +862,37 @@
 		width: 100%;
 		max-width: 100%;
 		padding: 70px 24px 32px;
+		/* Column flex, with the nav list (below) taking the flex: 1 slack —
+		   .menu2_panel itself was plain block flow, so .menu2_top (the
+		   logo/close row) and .menu2_nav (the six links) just stacked at
+		   the TOP of the panel with nothing to fill the rest of a tall
+		   phone screen underneath — a big flat dead area below CONTACT
+		   before the browser's own chrome, "κενό κάτω κάτω" even though
+		   the panel's own dark background already did reach the bottom.
+		   Distributing the list into the remaining space is what actually
+		   makes the menu read as using the whole screen instead of a
+		   short list pinned to the top of one. */
+		display: flex;
+		flex-direction: column;
+	}
+	.menu2_nav {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		margin-bottom: 0;
+	}
+	/* Bigger and more spaced out than the desktop card's own clamp(20px,
+	   2.4vw, 32px) floor — centring the list (above) alone still read as a
+	   short block of small text floating in a mostly empty screen, just
+	   with the emptiness now split evenly above and below instead of
+	   massed at the bottom. Six rows set genuinely large is what actually
+	   reads as "this menu fills the screen" rather than a list that
+	   happens to be centred within one — closer to how a full-screen
+	   mobile nav is normally set (Orisa's own offcanvas is a desktop-width
+	   panel to begin with, so its numbers never had to answer this). */
+	.menu2_nav_link {
+		font-size: clamp(32px, 9vw, 46px);
+		padding: 14px 0;
 	}
 }
