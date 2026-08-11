@@ -70,15 +70,12 @@
 	padding-bottom: 40px;
 	background-color: #232a35;
 }
-/* min-width: 992px — matching about-page.js's own matchMedia gate; see the
-   long version of this comment in services-page.css (the same bug, found
-   there first: applied unconditionally, cards 2/3 collapsed onto card 1 on
-   mobile instead of flowing normally, since nothing sets a transform on them
-   below the width where the JS that would runs at all). */
-@media screen and (min-width: 992px) {
-	.as_card:not(:first-child) {
-		position: absolute;
-	}
+/* No width gate any more — about-page.js now runs this stacking deck at
+   every width (see its own comment), so every card after the first needs to
+   be absolutely positioned regardless of viewport, the same way WhyUs's own
+   deck (whyus.css) dropped its matching gate for the same reason. */
+.as_card:not(:first-child) {
+	position: absolute;
 }
 .as_card > .container {
 	width: 100%;
@@ -199,22 +196,94 @@
 	}
 }
 @media screen and (max-width: 991px) {
+	/* The deck's own pinned box, sized in --vh — same technique and same
+	   reasoning as .whyus_stack_list (whyus.css): with every card now
+	   absolutely positioned (above), nothing is left in normal flow to give
+	   .as_story_deck a real height of its own, so it has to be stated
+	   explicitly, and stated against the ACTUAL viewport (a mobile browser's
+	   toolbar comes and goes) rather than plain vh, which over-counts by
+	   however much of it is currently showing.
+	   overflow: hidden is what actually confines the deck to one visible
+	   card at a time — without it, cards still waiting their turn (sitting
+	   at yPercent: 100, i.e. fully below this box) paint straight through
+	   into the ordinary page underneath the pin instead of being clipped,
+	   which is what let more than one card show on screen at once. */
+	.as_story_deck {
+		position: relative;
+		overflow: hidden;
+		/* 86, not WhyUs's 82 — card 1 here carries three description
+		   paragraphs (AboutStory.astro) against WhyUs's own five-bullet cap,
+		   so the box gets a bit more of the viewport before falling back to
+		   the inner scroll below. */
+		min-height: calc(var(--vh) * 86);
+	}
+	.as_card {
+		position: absolute;
+		inset: 0;
+		min-height: 0;
+		height: 100%;
+		padding-bottom: 0;
+		align-items: stretch;
+	}
+	.as_card > .container {
+		height: 100%;
+		display: flex;
+		align-items: center;
+	}
 	.as_card_inner {
 		grid-template-columns: minmax(0, 1fr);
 		gap: 1.5rem;
+		width: 100%;
+		max-height: 100%;
+		/* Packs content at the top of the card's box instead of centring it —
+		   the next card rises over THIS one from the bottom, so anything
+		   sitting low in the box (padding, whitespace) is what gets covered
+		   first, and the actual content stays visible longer. Same fix,
+		   same reasoning as .whyus_card_inner (whyus.css). */
+		align-content: start;
+		align-items: start;
+		/* overflow-y: auto, not hidden — these three cards are not evenly
+		   sized (card 1 alone carries three description paragraphs, cards 2
+		   and 3 one and two), and with overflow: hidden the fixed box that
+		   fits cards 2-3 comfortably clipped card 1's own copy mid-sentence,
+		   with its photo never shown at all — the box ran out of room before
+		   getting to it. Same fix as services-page.css's own deck, and the
+		   same reasoning: a card that genuinely doesn't fit can still be
+		   scrolled inside its own box rather than silently losing content,
+		   and the pin still confines the page to one card on screen at a
+		   time either way, which is the part that actually needed fixing. */
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		padding-block: 1.5rem;
 	}
-	/* Content above the photo on a single column — Orisa's own mobile order
+	/* Photo BEFORE the content now, reversed from Orisa's own mobile order
 	   (about-3/sec-2.html: `order-lg-2 order-1` on the content column,
-	   `order-lg-1 order-2` on the image column). Desktop's order is the
-	   reverse of this, which is why it needs no override of its own: the
-	   markup's plain DOM order (media, then content — AboutStory.astro)
-	   already puts the photo first/left there. */
+	   `order-lg-1 order-2` on the image). That ordering assumed a card in
+	   ordinary document flow, where being second just means scrolling a bit
+	   further to reach it — inside this fixed-height pinned box (above),
+	   "second" can mean "past the end of what .as_card_inner's own
+	   overflow-y: auto shows without scrolling," which for card 1's three
+	   paragraphs it was: the photo sat below content that alone nearly
+	   filled the box, so it never appeared without a viewer scrolling
+	   inside the card, which is what "οι εικόνες δεν φαίνονται" was
+	   reporting. Photo first guarantees it's always the first thing shown,
+	   whatever the card's copy length; the copy is what scrolls if it runs
+	   long, not the one element every card actually has. */
 	.as_card_content {
-		order: 1;
+		order: 2;
 	}
 	.as_card_media {
-		order: 2;
-		aspect-ratio: 16 / 10;
+		order: 1;
+		/* A fixed height, not the free-flowing aspect-ratio box this was —
+		   that sized itself off the column's own width with no ceiling, fine
+		   for a card in ordinary document flow but not for one now confined
+		   to a fixed-height pinned box alongside a full three-paragraph
+		   description (card 1 has three; see AboutStory.astro). A capped
+		   height keeps the image substantial while guaranteeing the copy
+		   below still gets real room. */
+		aspect-ratio: auto;
+		height: 9rem;
+		flex-shrink: 0;
 	}
 }
 @media screen and (max-width: 767px) {
@@ -229,8 +298,5 @@
 	}
 	.as_card_desc {
 		font-size: 0.9375rem;
-	}
-	.as_card_media {
-		aspect-ratio: 4 / 3;
 	}
 }

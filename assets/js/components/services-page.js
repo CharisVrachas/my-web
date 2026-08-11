@@ -71,104 +71,111 @@ function initServicesPage() {
 		gsap.to(chars, { opacity: 1, x: 0, duration: 0.7, stagger: { amount: 0.35 }, ease: "power1.out", overwrite: true });
 	}
 
-	// Below this width the cards are a plain vertical list — pinning a deck
-	// this tall on a phone means a very long stretch where scrolling appears
-	// to do nothing. matchMedia (not a bare innerWidth check) so the pin is
-	// built and torn down properly when the viewport crosses the boundary,
-	// including the ScrollTrigger it creates.
+	// matchMedia (not a bare innerWidth check) so the pin is built and torn
+	// down properly when the viewport crosses the boundary, including the
+	// ScrollTrigger it creates. The deck now runs at every width — it used
+	// to be desktop-only, on the theory that a phone has no room for a
+	// pinned deck this tall, but leaving mobile with a plain unstacked list
+	// is what actually reads as "the desktop effect is missing here".
 	const mm = gsap.matchMedia();
 
-	mm.add("(min-width: 992px)", () => {
-		cards.forEach((card, index) => {
-			// z-index by index so the card arriving is always painted over the
-			// one it is covering, whatever their DOM order.
-			gsap.set(card, { zIndex: index });
-			// 101, not 100: at exactly 100 the card's top edge lands on the
-			// viewport's bottom edge, and sub-pixel rounding between the card's
-			// own height and the pinned deck's left a 2-3px sliver of the card
-			// showing along the bottom — enough to catch the top edge of its
-			// photo and read as a thin broken strip under the current card. The
-			// extra 1% is ~8px of clearance; it tweens to 0 either way, so
-			// nothing about the arrival looks different.
-			if (index !== 0) gsap.set(card, { yPercent: 101 });
-		});
+	mm.add(
+		{
+			desktop: "(min-width: 992px)",
+			mobile: "(max-width: 991px)",
+		},
+		(context) => {
+			const { desktop } = context.conditions;
 
-		const timeline = gsap.timeline({
-			scrollTrigger: {
-				// The DECK is pinned, not the whole section — Orisa pins its
-				// .scroll-section element, which holds only the cards; the
-				// "Things we offer" header above it is a sibling that scrolls
-				// away normally. Pinning the section instead (what this did at
-				// first) froze the header inside the pinned viewport too, so it
-				// took ~300px off the top and every card's own content ran off
-				// the bottom of the screen and got cut mid-list.
-				trigger: deck,
-				pin: deck,
-				start: "top top",
-				end: () => `+=${cards.length * 50}%`,
-				scrub: 1,
-				invalidateOnRefresh: true,
-				// Card 1's own reveal: fires the first time the deck scrolls into
-				// its pinned range, not immediately at setup — which would let it
-				// finish before the section was ever actually on screen.
-				onEnter: () => revealCard(cards[0]),
-			},
-			// Orisa sets this explicitly, and it matters: core.js already sets
-			// gsap.defaults({ ease: "none" }) globally, but stating it here keeps
-			// the deck linear even if that global default is ever changed.
-			defaults: { ease: "none" },
-		});
+			cards.forEach((card, index) => {
+				// z-index by index so the card arriving is always painted over the
+				// one it is covering, whatever their DOM order.
+				gsap.set(card, { zIndex: index });
+				// 101, not 100: at exactly 100 the card's top edge lands on the
+				// viewport's bottom edge, and sub-pixel rounding between the card's
+				// own height and the pinned deck's left a 2-3px sliver of the card
+				// showing along the bottom — enough to catch the top edge of its
+				// photo and read as a thin broken strip under the current card. The
+				// extra 1% is ~8px of clearance; it tweens to 0 either way, so
+				// nothing about the arrival looks different.
+				if (index !== 0) gsap.set(card, { yPercent: 101 });
+			});
 
-		cards.forEach((card, index) => {
-			const next = cards[index + 1];
+			const timeline = gsap.timeline({
+				scrollTrigger: {
+					// The DECK is pinned, not the whole section — Orisa pins its
+					// .scroll-section element, which holds only the cards; the
+					// "Things we offer" header above it is a sibling that scrolls
+					// away normally. Pinning the section instead (what this did at
+					// first) froze the header inside the pinned viewport too, so it
+					// took ~300px off the top and every card's own content ran off
+					// the bottom of the screen and got cut mid-list.
+					trigger: deck,
+					pin: deck,
+					// Mobile clears the fixed navbar's own MENU button the same way
+					// WhyUs's and /about's own mobile pins do — desktop's header
+					// sits above the deck in normal flow already and needs no offset.
+					start: desktop ? "top top" : "top top+=72",
+					end: () => `+=${cards.length * 50}%`,
+					scrub: 1,
+					invalidateOnRefresh: true,
+					// Card 1's own reveal: fires the first time the deck scrolls into
+					// its pinned range, not immediately at setup — which would let it
+					// finish before the section was ever actually on screen.
+					onEnter: () => revealCard(cards[0]),
+				},
+				// Orisa sets this explicitly, and it matters: core.js already sets
+				// gsap.defaults({ ease: "none" }) globally, but stating it here keeps
+				// the deck linear even if that global default is ever changed.
+				defaults: { ease: "none" },
+			});
 
-			// The last card is never scaled down. Orisa scales every item,
-			// including its last, but there it does not matter: nothing follows,
-			// so nobody sees the result. Here it did — with nothing arriving to
-			// cover it, the final card just shrank on screen and left the deck's
-			// own background showing in a band around it.
-			if (!next) return;
+			cards.forEach((card, index) => {
+				const next = cards[index + 1];
 
-			// Scale the INNER box, not the whole card. The card carries the
-			// opaque background (services-page.css) and must keep covering the
-			// full viewport for as long as it is the top card; scaling the card
-			// itself shrank that background too, opening a ~40px band along the
-			// top and bottom edges. The next card is mid-slide through exactly
-			// that band, so a strip of its photo showed through underneath the
-			// current card — the "broken image" along the bottom edge. Scaling
-			// only the content keeps the visual (the card receding) with the
-			// cover intact.
-			timeline.to(card.querySelector(".sv_offer_card_inner"), { scale: 0.9, duration: SEGMENT });
-			timeline.to(next, { yPercent: 0, duration: SEGMENT }, "<");
+				// The last card is never scaled down. Orisa scales every item,
+				// including its last, but there it does not matter: nothing follows,
+				// so nobody sees the result. Here it did — with nothing arriving to
+				// cover it, the final card just shrank on screen and left the deck's
+				// own background showing in a band around it.
+				if (!next) return;
 
-			// Each card's own copy reveals as that card arrives. reveal.js's
-			// generic [data-reveal-text] handling cannot work in here at all —
-			// it positions each element's trigger from where the element sits
-			// in the document, and every card in this deck is stacked at the
-			// same absolute position inside a pinned container. All nine
-			// resolved to nearly the same start (~1700) and end (~2200) inside
-			// a pin that spans 1232-4517, so every card from the fourth on had
-			// already finished revealing, at full opacity, long before it was
-			// scrolled into view. .call(), not .to() — this needs to be a
-			// discrete trigger the scrubbed playhead fires in passing, not a
-			// tween the scrub itself drives; see revealCard()'s own comment.
-			timeline.call(() => revealCard(next), [], "<");
-		});
+				// Scale the INNER box, not the whole card. The card carries the
+				// opaque background (services-page.css) and must keep covering the
+				// full viewport for as long as it is the top card; scaling the card
+				// itself shrank that background too, opening a ~40px band along the
+				// top and bottom edges. The next card is mid-slide through exactly
+				// that band, so a strip of its photo showed through underneath the
+				// current card — the "broken image" along the bottom edge. Scaling
+				// only the content keeps the visual (the card receding) with the
+				// cover intact.
+				timeline.to(card.querySelector(".sv_offer_card_inner"), { scale: 0.9, duration: SEGMENT });
+				timeline.to(next, { yPercent: 0, duration: SEGMENT }, "<");
 
-		// Cleanup for the matchMedia teardown — clears the inline transforms the
-		// tweens left behind, so the plain stacked list below 992px starts from
-		// the stylesheet's own values rather than yPercent: 100.
-		return () => {
-			gsap.set(cards, { clearProps: "transform,zIndex" });
-		};
-	});
+				// Each card's own copy reveals as that card arrives. reveal.js's
+				// generic [data-reveal-text] handling cannot work in here at all —
+				// it positions each element's trigger from where the element sits
+				// in the document, and every card in this deck is stacked at the
+				// same absolute position inside a pinned container. All nine
+				// resolved to nearly the same start (~1700) and end (~2200) inside
+				// a pin that spans 1232-4517, so every card from the fourth on had
+				// already finished revealing, at full opacity, long before it was
+				// scrolled into view. .call(), not .to() — this needs to be a
+				// discrete trigger the scrubbed playhead fires in passing, not a
+				// tween the scrub itself drives; see revealCard()'s own comment.
+				timeline.call(() => revealCard(next), [], "<");
+			});
 
-	// Below the pinning breakpoint there is no stack timeline to hang the
-	// reveals on, so the parked characters would simply stay dimmed forever.
-	// Each card is fully visible in a plain list there anyway.
-	mm.add("(max-width: 991px)", () => {
-		revealChars.forEach((chars) => gsap.set(chars, { opacity: 1, x: 0 }));
-	});
+			// Cleanup for the matchMedia teardown — clears the inline transforms
+			// the tweens left behind, and resets the reveal chars, so crossing
+			// back over the breakpoint starts clean rather than carrying over
+			// whatever state the other branch left mid-transition.
+			return () => {
+				gsap.set(cards, { clearProps: "transform,zIndex" });
+				revealChars.forEach((chars) => gsap.set(chars, { clearProps: "opacity,x" }));
+			};
+		},
+	);
 
 	// The per-letter hover effect Orisa puts on each card's own title
 	// (`text-scale-anim` on the <h1> in home-2/sec-4.html): hovering a letter

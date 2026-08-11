@@ -499,11 +499,33 @@
 		padding-left: 0.5rem;
 		padding-right: 0.5rem;
 	}
-	/* Compact mode's absolute top-right placement is a desktop-row concern —
-	   at this width .navbar_nav is already row-reverse (the rule above), so
-	   the button belongs back in normal flow with everything else instead. */
-	.u-navbar.is-compact .u-menu-btn {
+	/* Compact mode's absolute top-right placement, AND its fade/shrink
+	   transition, are both a desktop-row concern that has no equivalent
+	   here. Desktop's whole point is a button that pops into the corner
+	   once the inline links scroll out of the way, and pops back out again
+	   scrolling up — worth animating in and out (opacity + transform: scale)
+	   because it is genuinely appearing/disappearing at a NEW position. At
+	   this width .navbar_nav is already row-reverse (the rule above) and
+	   the inline links are display: none outright (not something is-compact
+	   ever collapses here) — the button is a plain, permanent flex item
+	   with nothing to pop in or out of, so both the desktop rule's position
+	   override AND its opacity/transform animation need cancelling, not
+	   just the position.
+	   Missing this was the "στιγμιαία δεξιά και μετά αριστερά" bug: with
+	   only position overridden, is-leaving-compact's opacity: 0 / transform:
+	   scale(0.5) still ran (scrolling down still SET them, scrolling back up
+	   still ANIMATED off them over the class's 0.3s hold, navbar.js) —
+	   scale(0.5) shrinks toward the button's own centre, so its right edge
+	   visibly slid inward (reading as "moved right") for that 0.3s before
+	   snapping back to full size in its actual static position once the
+	   class cleared. opacity/transform: none here removes the animation
+	   entirely rather than just relocating where it plays out; the button
+	   simply stays put and fully visible through the whole scroll. */
+	.u-navbar.is-compact .u-menu-btn,
+	.u-navbar.is-leaving-compact .u-menu-btn {
 		position: static;
+		opacity: 1;
+		transform: none;
 	}
 }
 .u-navbar,

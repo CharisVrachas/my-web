@@ -315,20 +315,11 @@
 	padding-bottom: 40px;
 	background-color: #232a35;
 }
-/* min-width: 992px — matching services-page.js's own matchMedia gate on the
-   pin/yPercent JS that actually positions cards 2+ once this applies. Below
-   that width the JS never runs (the deck is a plain scrolling list there on
-   purpose — see the comment in services-page.js), but this rule doesn't know
-   that: applied unconditionally, cards 2+ still went absolute with no
-   transform ever set on them, so they collapsed to the exact same spot as
-   card 1 instead of flowing normally underneath it — all nine's own eyebrow
-   number badges stacked directly on top of each other. Gating it here to the
-   same width the JS itself uses is what actually pairs the CSS with the
-   behaviour that positions it. */
-@media screen and (min-width: 992px) {
-	.sv_offer_card:not(:first-child) {
-		position: absolute;
-	}
+/* No width gate any more — services-page.js now runs this deck at every
+   width (see its own comment), so every card after the first needs to be
+   absolutely positioned regardless of viewport. */
+.sv_offer_card:not(:first-child) {
+	position: absolute;
 }
 /* The wrapper .container div between the card and its grid (see
    ServicesOffer.astro) is a flex child here, so it needs to be told to take
@@ -530,4 +521,80 @@
 	.sv_ticker_list {
 		gap: 1.25rem;
 	}
+}
+
+/* ===== The deck's pinned mobile box =======================================
+   Placed after every other breakpoint in this file (rather than alongside
+   the 1199px one, where about-page.css's equivalent block sits) specifically
+   so its own rules win even at ≤767px, where the block just above sets
+   .sv_offer_lists back to a single column — card 1's own two 6-item lists at
+   one column apiece is 12 stacked rows, and this deck's cards need to fit a
+   FIXED box now (services-page.js pins .sv_offer_deck at every width, not
+   just ≥992px any more). Keeping two columns here caps that at 6 rows
+   regardless of how narrow the phone is.
+
+   Same technique as .whyus_stack_list/.as_story_deck: --vh for the real,
+   current viewport height (not vh, which over-counts by however much of the
+   mobile toolbar happens to be showing), overflow: hidden so a card still
+   waiting its turn (sitting off-screen at yPercent: 100) is actually
+   clipped rather than painting straight through into the page underneath
+   the pin — see whyus.css's own comment on that exact bug. 88, not 82 like
+   WhyUs's — these nine cards carry far more copy than WhyUs's five ever do
+   (card 1 alone: an intro paragraph plus two 6-item lists), so the box gets
+   more of the viewport to work with. */
+.sv_offer_deck {
+	position: relative;
+	overflow: hidden;
+	min-height: calc(var(--vh) * 88);
+}
+.sv_offer_card {
+	position: absolute;
+	inset: 0;
+	min-height: 0;
+	height: 100%;
+	padding-bottom: 0;
+	align-items: stretch;
+}
+.sv_offer_card > .container {
+	height: 100%;
+	display: flex;
+	align-items: center;
+}
+/* overflow-y: auto, not hidden — unlike WhyUs's/about's own decks, this
+   one's nine cards are wildly uneven (Orisa's own comment above measures
+   card 1 at ~870px against ~430px for most others), and no single fixed
+   box height fits the longest without either leaving the shorter eight
+   mostly empty or clipping card 1's own second list outright. A card that
+   genuinely doesn't fit can still be scrolled INSIDE its own box rather
+   than silently losing content — the deck's own pin keeps confining it to
+   one card on screen at a time either way, which is the part that was
+   actually reported broken ("τρεις κάρτες φαίνονται"), not how any one
+   card's overflow is handled. */
+.sv_offer_card_inner {
+	width: 100%;
+	max-height: 100%;
+	align-content: start;
+	align-items: start;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+	padding-block: 1.25rem;
+}
+.sv_offer_media,
+.sv_offer_media img {
+	min-height: 0;
+}
+.sv_offer_media {
+	height: 8.5rem;
+	flex-shrink: 0;
+}
+.sv_offer_text {
+	padding: 0.5rem 0.25rem;
+	gap: 1rem;
+}
+.sv_offer_lists {
+	grid-template-columns: 1fr 1fr;
+	gap: 0.375rem 1rem;
+}
+.sv_offer_list {
+	gap: 0.375rem;
 }
