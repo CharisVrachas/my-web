@@ -423,14 +423,28 @@
 	   far enough and the content starts flush at the top with nothing dead
 	   above it — any leftover room shows as ordinary breathing space below
 	   the last row instead, which reads as a normal footer rather than a
-	   gap that looks broken. dvh, not vh — vh includes the mobile browser's
-	   own address bar in its 100%, which is what "100vh" traditionally
-	   over-counts by; the vh line stays only as the fallback for browsers
-	   without dvh support. */
+	   gap that looks broken.
+
+	   var(--vh) (head.js: window.innerHeight * 0.01, refreshed on resize),
+	   NOT native vh/dvh — this first shipped as 100dvh and produced the
+	   OPPOSITE bug on a real phone: dvh is a genuinely LIVE value that
+	   shrinks as the address bar is visible and grows again once scrolling
+	   collapses it, but footer.js's own translate distance
+	   (footer.offsetHeight) is a single measurement taken once, not
+	   continuously re-read against a moving target. Scroll to the bottom
+	   with the toolbar still up, and it collapses out of the way over that
+	   same scroll — dvh grows after the box's real height was already
+	   measured and translated by, so <main> ends up pulled up by LESS than
+	   the box's now-taller real height, cutting the TOP off (the logo) with
+	   the shortfall showing as dead space at the bottom instead — the
+	   inverse of the gap this rule was written to fix. --vh doesn't have
+	   that problem: every other viewport-height layout on this page already
+	   measures against it rather than vh/dvh for exactly this reason (see
+	   about.css, pillars.css, whyus.css) — one source of truth for "how
+	   tall is the viewport" instead of two disagreeing ones. */
 	.footer_area {
 		padding-top: 4rem;
-		min-height: 100vh;
-		min-height: 100dvh;
+		min-height: calc(var(--vh) * 100);
 	}
 	.footer_top {
 		grid-template-columns: 1fr;

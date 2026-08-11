@@ -480,8 +480,19 @@
 		height: 100%;
 		margin-bottom: 0;
 	}
+	/* 82, not 74 — measured (all five cards, every card's copy differs in
+	   length): at 74 the box came out 625px against ~623px of actual content
+	   in every card, a slack of under 2px. That's not "the image sits close
+	   to the fold", that's zero clearance at all — the incoming card's very
+	   FIRST pixel of rise was already eating into the outgoing one's image,
+	   which is what "οι εικόνες κόβονται" and "η επόμενη κάρτα κάτω κάτω"
+	   were both reporting: no settled moment ever existed between one card
+	   finishing its rise and the next one starting its own. 82vh plus the
+	   trims below (image height, a few margins) opens real clearance —
+	   ~100px+ measured — so each card gets an actual beat fully visible
+	   before the next one starts covering it. */
 	.whyus_stack_list {
-		min-height: calc(var(--vh) * 74);
+		min-height: calc(var(--vh) * 82);
 	}
 	/* Fills the card's own box rather than shrink-wrapping its content —
 	   without this the five cards would each be a different height (their
@@ -514,10 +525,27 @@
 	   tall as they liked. Inside a viewport-height card the image is the one
 	   part that can give room back to the copy, which must not be clipped —
 	   min-height: 0 lets it actually shrink below its content size, which a
-	   grid item otherwise refuses to do. */
+	   grid item otherwise refuses to do. 8rem, not the earlier 11rem — part
+	   of opening up the deck's own clearance (.whyus_stack_list above), the
+	   image is still the single biggest thing on the card, just not so big
+	   that it alone eats most of the slack the 82vh box now has to give. */
 	.whyus_card_media {
-		max-height: 11rem;
+		max-height: 8rem;
 		min-height: 0;
+	}
+	/* Tightened alongside the media height above — the same clearance push,
+	   spread across the rest of the card rather than taken entirely from
+	   one element: a little off the icon's own bottom gap, the title's
+	   margin, and the list's, each still generous, just no longer sized for
+	   a card with room to spare. */
+	.whyus_card_icon {
+		padding-bottom: 12px;
+	}
+	.whyus_card_title {
+		margin-bottom: 1rem;
+	}
+	.whyus_card_list {
+		margin-bottom: 0.75rem;
 	}
 	.whyus_head {
 		grid-template-columns: 1fr;
