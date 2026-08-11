@@ -228,7 +228,24 @@
 	.as_card > .container {
 		height: 100%;
 		display: flex;
-		align-items: center;
+		/* flex-start, not center. .as_card_inner's own align-content: start
+		   (below) only packs ITS children at the top of ITSELF — this outer
+		   wrapper was still centring that whole block within the 90vh box,
+		   so a card shorter than the box floated in the middle with slack
+		   above AND below it instead of starting flush at the top.
+		   That is what actually broke the LAST card at the very end of the
+		   deck: once the pin's own scroll distance runs out, the box (still
+		   90vh) keeps moving with the page like anything else, and the
+		   footer sits right after it in the document — a centred card had
+		   already scrolled the reader past its own top edge (image, title,
+		   the gold "+" icon: "δεν φαίνονται οι χρυσοί σταυροί") by the time
+		   the bottom of the box, and the footer behind it, came into view.
+		   Top-aligned, the card's own top edge lines up with the pinned
+		   box's top edge — i.e. the viewport's own top — for as long as the
+		   pin holds, so scrolling past the pin's end reveals the card's
+		   OWN remaining slack underneath it before the footer ever gets
+		   there, not the card's already-passed top content. */
+		align-items: flex-start;
 	}
 	.as_card_inner {
 		grid-template-columns: minmax(0, 1fr);

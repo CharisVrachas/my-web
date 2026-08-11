@@ -558,7 +558,17 @@
 .sv_offer_card > .container {
 	height: 100%;
 	display: flex;
-	align-items: center;
+	/* flex-start, not center — same fix and same reason as about-page.css's
+	   own .as_card > .container: centring left a shorter card floating with
+	   slack above AND below inside the pinned box, so once the pin's own
+	   scroll distance ran out on the LAST card, the reader had already
+	   scrolled past its own top (photo, title) before the box's bottom
+	   edge — and the footer right behind it — ever came into view. Top-
+	   aligned, the card's top tracks the pinned box's top (the viewport's
+	   own top, for as long as the pin holds), so the card's own remaining
+	   slack is what shows after the pin releases, not content already
+	   scrolled by. */
+	align-items: flex-start;
 }
 /* overflow: hidden, NOT auto. auto briefly seemed like the safer choice for
    these nine wildly uneven cards (Orisa's own comment above measures card 1
@@ -580,24 +590,29 @@
 	align-content: start;
 	align-items: start;
 	overflow: hidden;
-	padding-block: 1.25rem;
+	padding-block: 0.75rem;
 }
 .sv_offer_media,
 .sv_offer_media img {
 	min-height: 0;
 }
+/* 7rem, not 8.5 — measured: card 1 (two 6-item lists, the tallest of the
+   nine) still ran a few dozen px past the box even at 92vh, clipping its
+   own second list's last row. Trimmed here plus the tighter gaps below
+   rather than shrinking the box further, so the eight shorter cards don't
+   lose the breathing room that already fit them fine. */
 .sv_offer_media {
-	height: 8.5rem;
+	height: 7rem;
 	flex-shrink: 0;
 }
 .sv_offer_text {
 	padding: 0.5rem 0.25rem;
-	gap: 1rem;
+	gap: 0.75rem;
 }
 .sv_offer_lists {
 	grid-template-columns: 1fr 1fr;
-	gap: 0.375rem 1rem;
+	gap: 0.25rem 1rem;
 }
 .sv_offer_list {
-	gap: 0.375rem;
+	gap: 0.25rem;
 }

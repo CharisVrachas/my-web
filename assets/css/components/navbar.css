@@ -554,7 +554,21 @@
 	top: 0;
 	right: 0;
 	left: 100%;
+	/* 100dvh, with 100% as the fallback for browsers without it — NOT --vh,
+	   the fix the footer needed for a similar-sounding problem. Those are
+	   opposite cases: the footer PRE-MEASURES its own height once in JS and
+	   uses that fixed number as an exact translate target, so a LIVE value
+	   (dvh) that keeps changing after the measurement is what broke it there
+	   — --vh's own frozen snapshot was the fix. This panel has no such
+	   measurement to go stale; it just needs to keep covering whatever the
+	   viewport currently is for as long as it's open, which is exactly what
+	   dvh tracks continuously and --vh (deliberately frozen against
+	   height-only resizes, head.js) does not — opening the menu while the
+	   mobile toolbar is still visible left --vh's snapshot short of the
+	   REAL height once the toolbar auto-hid a moment later, leaving a gap
+	   at the bottom instead of covering the whole screen. */
 	height: 100%;
+	height: 100dvh;
 	width: 680px;
 	max-width: 100vw;
 	z-index: 1000;
@@ -772,8 +786,18 @@
 	visibility: hidden;
 	/* 1.5s duration kept as Orisa's own — only the DELAY above is now scoped
 	   to opening. The .is-closing rule below overrides this whole property
-	   on the way out, so the 1.5s here only ever governs the entrance. */
-	transition: all 1.5s ease-in-out !important;
+	   on the way out, so the 1.5s here only ever governs the entrance.
+	   Listed explicitly (transform/opacity/visibility), NOT "all" — "all"
+	   was also sweeping up `color`, the ONE other property this element
+	   transitions (:hover below), so hovering a link inherited the same
+	   1.5s meant for the drop-in entrance: "αργεί πάρα πολύ το Hover" was
+	   this, not anything about the hover rule itself. color gets its own
+	   short entry instead, independent of how long the entrance takes. */
+	transition:
+		transform 1.5s ease-in-out,
+		opacity 1.5s ease-in-out,
+		visibility 1.5s ease-in-out,
+		color 0.25s ease !important;
 }
 .menu2_area.is-open .menu2_nav_link {
 	transform: translateY(0);
