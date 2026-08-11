@@ -36,85 +36,82 @@ function initWhyUsStack(section) {
 	const navItems = nav.querySelectorAll(".whyus_nav_item");
 	if (!cards.length) return;
 
-	// Same 992px cutoff the rest of this codebase pins at (hero-stack.js,
-	// about-stack.js, services.js). Orisa left this one ungated, which on a
-	// phone pinned a full-height stack with no room to show it.
+	const stack = section.querySelector(".whyus_stack");
+
+	// The deck now runs at EVERY width, not just ≥992px. It used to be gated
+	// off on the grounds that a phone has no room for it — true of the
+	// desktop shape of the effect, which pins .whyus_pin, i.e. the numbered
+	// nav column AND the three-piece mark AND the cards all together. On a
+	// phone .whyus_body is a single column, so pinning that wrapper means
+	// holding the mark and the cards on screen at once, and the cards alone
+	// already fill most of a phone viewport.
+	//
+	// Pinning .whyus_stack instead is what makes it fit: the mark scrolls in
+	// and breaks apart normally on its way past (reveal.js's own
+	// [data-svg-break], untouched), then the card column alone pins and deals
+	// the five cards over one another exactly as on desktop. Same timeline,
+	// same tween values, same "like a deck" read — only the pinned element
+	// differs per width, which is the one thing that genuinely had to.
 	const mm = gsap.matchMedia();
-	mm.add("(min-width: 992px)", () => {
-		gsap.set(Array.from(cards).slice(1), { yPercent: 100 });
+	mm.add(
+		{
+			desktop: "(min-width: 992px)",
+			mobile: "(max-width: 991px)",
+		},
+		(context) => {
+			const { desktop } = context.conditions;
+			const pinTarget = desktop ? pin : stack;
+			if (!pinTarget) return;
 
-		const scrollDistance = cards.length * 50;
+			gsap.set(Array.from(cards).slice(1), { yPercent: 100 });
 
-		const tl = gsap.timeline({
-			scrollTrigger: {
-				trigger: pin,
-				pin: true,
-				start: "top top",
-				end: () => `+=${scrollDistance}%`,
-				scrub: 1,
-				invalidateOnRefresh: true,
-				onUpdate: (self) => {
-					// Clamped just below 1 so the final frame still maps into the
-					// last card's slot instead of overflowing the array.
-					const progress = Math.min(Math.max(self.progress, 0), 0.9999);
-					const index = Math.min(Math.floor(progress * cards.length), cards.length - 1);
-					cards.forEach((el, i) => el.classList.toggle("active", i === index));
-					navItems.forEach((el, i) => el.classList.toggle("active", i === index));
-				},
-			},
-			defaults: { ease: "none", duration: 1 },
-		});
+			const scrollDistance = cards.length * 50;
 
-		cards.forEach((card, index) => {
-			tl.to(card, { scale: 0.9 });
-			if (cards[index + 1]) {
-				tl.to(cards[index + 1], { yPercent: 0 }, "<");
-			}
-		});
-
-		// First row starts lit — before any scroll the first card is the one on
-		// screen, and onUpdate hasn't fired yet to say so.
-		navItems[0]?.classList.add("active");
-
-		return () => {
-			tl.scrollTrigger?.kill();
-			tl.kill();
-			gsap.set(cards, { clearProps: "transform" });
-			navItems.forEach((el) => el.classList.remove("active"));
-		};
-	});
-
-	// Below 992px there's no pin and the cards are ordinary in-flow blocks
-	// (whyus.css) — Orisa's stack-and-highlight effect genuinely doesn't
-	// translate to a phone (it needs vertical scroll room a short viewport
-	// doesn't have), which is why the desktop branch above stays gated. But
-	// leaving mobile with nothing at all is what read as no effect —
-	// same fix as services.js/testimonials.js already use for their own
-	// desktop-only pins: each card gets its own plain scroll-in reveal
-	// instead, once, as it actually arrives on screen.
-	mm.add("(max-width: 991px)", () => {
-		gsap.set(cards, { clearProps: "opacity,transform" });
-		const tweens = Array.from(cards).map((card) =>
-			gsap.from(card, {
-				autoAlpha: 0,
-				y: 40,
-				duration: 0.9,
-				ease: "power2.out",
+			const tl = gsap.timeline({
 				scrollTrigger: {
-					trigger: card,
-					start: "top 88%",
-					once: true,
+					trigger: pinTarget,
+					pin: true,
+					// Desktop holds the whole body flush to the top of the
+					// viewport; on mobile the pinned column is only the cards, so
+					// it gets a little clearance for the fixed navbar's own MENU
+					// button rather than sitting under it. ScrollTrigger parses px
+					// but not rem in these strings (see services.js), so this is a
+					// number, not "1rem".
+					start: desktop ? "top top" : "top top+=72",
+					end: () => `+=${scrollDistance}%`,
+					scrub: 1,
+					invalidateOnRefresh: true,
+					onUpdate: (self) => {
+						// Clamped just below 1 so the final frame still maps into the
+						// last card's slot instead of overflowing the array.
+						const progress = Math.min(Math.max(self.progress, 0), 0.9999);
+						const index = Math.min(Math.floor(progress * cards.length), cards.length - 1);
+						cards.forEach((el, i) => el.classList.toggle("active", i === index));
+						navItems.forEach((el, i) => el.classList.toggle("active", i === index));
+					},
 				},
-			}),
-		);
-		return () => {
-			tweens.forEach((tween) => {
-				tween.scrollTrigger?.kill();
-				tween.kill();
+				defaults: { ease: "none", duration: 1 },
 			});
-			gsap.set(cards, { clearProps: "all" });
-		};
-	});
+
+			cards.forEach((card, index) => {
+				tl.to(card, { scale: 0.9 });
+				if (cards[index + 1]) {
+					tl.to(cards[index + 1], { yPercent: 0 }, "<");
+				}
+			});
+
+			// First row starts lit — before any scroll the first card is the one on
+			// screen, and onUpdate hasn't fired yet to say so.
+			navItems[0]?.classList.add("active");
+
+			return () => {
+				tl.scrollTrigger?.kill();
+				tl.kill();
+				gsap.set(cards, { clearProps: "transform" });
+				navItems.forEach((el) => el.classList.remove("active"));
+			};
+		},
+	);
 }
 
 // Splits each .text-scale-anim heading into per-word / per-letter spans, then

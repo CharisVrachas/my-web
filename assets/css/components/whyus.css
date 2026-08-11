@@ -331,19 +331,17 @@
 	min-height: 100%;
 	height: 100%;
 }
-/* min-width: 992px — matching whyus.js's own matchMedia gate on the pin/
-   yPercent JS that positions cards 2+ once this applies. Below that width
-   the JS never runs, but this rule applied regardless: cards 2+ went
-   absolute with no transform ever set on them, so they sat exactly on top of
-   card 1 instead of flowing normally down the page on mobile. Same bug,
-   found later and independently in services-page.css/about-page.css/
-   faq-page.css, all three copied from this file's own pattern — fixed here
-   too now that the root cause is known, rather than leaving the original
-   carrying the bug its own copies were caught for. */
-@media screen and (min-width: 992px) {
-	.whyus_card:not(:first-child) {
-		position: absolute;
-	}
+/* No width gate on this any more. It used to be @media (min-width: 992px),
+   matching whyus.js's own matchMedia gate back when the deck was
+   desktop-only — below that the JS never ran, so leaving cards 2+ absolute
+   would have stacked them on top of card 1 with no transform to separate
+   them. whyus.js now runs the same stacking timeline at every width (only
+   the PINNED element differs — see its comment), so the absolute positioning
+   the effect depends on has to follow it down. The mobile block at the
+   bottom of this file is what gives the stack a viewport-sized box to deal
+   the cards inside. */
+.whyus_card:not(:first-child) {
+	position: absolute;
 }
 /* Orisa's .container.bg-neutral-50.rounded-4 — a lifted, OPAQUE panel against
    the page. Solid is not optional here the way it might be elsewhere: every
@@ -456,28 +454,70 @@
 		padding-top: 0;
 		padding-bottom: 0;
 	}
-	/* Below the pin's own breakpoint (see whyus.js) nothing is pinned and
-	   nothing stacks: the cards go back to being ordinary blocks in flow, so
-	   the absolute positioning and the 100vh floor both have to come off or
-	   they'd pile on top of each other with no script to separate them. */
 	.whyus_body {
 		grid-template-columns: 1fr;
 	}
 	.whyus_nav {
 		display: none;
 	}
+	/* The cards DO stack here now (whyus.js pins .whyus_stack at this width
+	   and deals them exactly as on desktop), so this is no longer the
+	   "unstack them back into normal flow" block it used to be — every card
+	   is absolutely positioned in the same box, and .whyus_stack_list below
+	   is what gives that box a real height, since with all five out of flow
+	   there is no in-flow child left to size it.
+	   --vh, not vh: this is inside a PINNED element, so its height has to
+	   match what the viewport really is on a mobile browser whose toolbar
+	   comes and goes — plain vh over-counts by the toolbar and the last card
+	   would sit cut off at the bottom. 74 rather than 100 leaves room for the
+	   navbar's own MENU button above (whyus.js starts this pin 72px down) and
+	   a little air under the deck. */
 	.whyus_card,
 	.whyus_card:first-child {
-		position: relative;
+		position: absolute;
+		inset: 0;
 		min-height: 0;
-		height: auto;
-		margin-bottom: 1.5rem;
+		height: 100%;
+		margin-bottom: 0;
 	}
+	.whyus_stack_list {
+		min-height: calc(var(--vh) * 74);
+	}
+	/* Fills the card's own box rather than shrink-wrapping its content —
+	   without this the five cards would each be a different height (their
+	   copy differs), and a deck whose cards don't share one silhouette reads
+	   as five loose panels rather than a stack.
+
+	   align-content: start (and .whyus_card_copy's flex-start below) is what
+	   keeps the CONTENT packed at the top of that full-height box instead of
+	   distributed down it. Desktop can distribute freely — its card is two
+	   columns side by side and short. Here the card is one tall column and
+	   the next card rises over it from the BOTTOM, so anything spread to the
+	   bottom edge is the first thing covered: with the desktop
+	   space-between still applying, the media image sat at the very bottom
+	   behind a large gap and was occluded almost the instant it arrived —
+	   measured, and visible as a thin dark strip under the bullets rather
+	   than a photo. Packed to the top, the image follows straight after the
+	   bullets and the slack collects at the bottom, where the incoming card
+	   eats empty space first and the content stays readable far longer. */
 	.whyus_card_inner {
 		grid-template-columns: 1fr;
+		height: 100%;
+		align-content: start;
+		overflow: hidden;
 	}
+	.whyus_card_copy {
+		height: auto;
+		justify-content: flex-start;
+	}
+	/* 16rem before, when these were free-scrolling blocks that could be as
+	   tall as they liked. Inside a viewport-height card the image is the one
+	   part that can give room back to the copy, which must not be clipped —
+	   min-height: 0 lets it actually shrink below its content size, which a
+	   grid item otherwise refuses to do. */
 	.whyus_card_media {
-		max-height: 16rem;
+		max-height: 11rem;
+		min-height: 0;
 	}
 	.whyus_head {
 		grid-template-columns: 1fr;

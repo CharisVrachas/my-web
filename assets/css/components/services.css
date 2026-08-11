@@ -283,8 +283,38 @@
 	.services_item_thumb {
 		text-align: left;
 	}
+	/* Full width, not the desktop 190px chip. With .services_media (the big
+	   hover-swapped column) gone at this width, this IS the section's image
+	   for a given service rather than a thumbnail beside a bigger one — at
+	   190px on a single-column row it read as a stray postage stamp under
+	   the copy, which is most of why the whole section felt static: the one
+	   element that actually moves on scroll here was too small for its
+	   movement to register. max-width: none overrides the desktop cap; the
+	   aspect-ratio keeps every row's image the same shape regardless of
+	   whether its source file is landscape or a cropped portrait (three of
+	   the five were reframed — see Services.astro). */
+	/* 3/2 is these files' own native ratio (all five -sm.jpg are 600×400), so
+	   this reserves the right box without object-fit having to crop anything
+	   off. Stated rather than left to the intrinsic ratio because the
+	   desktop rule above sets an explicit height: auto against a 190px
+	   max-width, and this needs to win cleanly at full width. */
 	.services_item_thumb img {
 		margin-left: 0;
+		width: 100%;
+		max-width: none;
+		aspect-ratio: 3 / 2;
+		object-fit: cover;
+		border-radius: 12px;
+	}
+	/* 0.25rem (the desktop .services_item_content gap) is tuned for a row
+	   where the description is REVEALED on hover out of a collapsed
+	   max-height — it opens into its own space, so a hairline gap reads as
+	   deliberate. Here the description is permanently open (this file's own
+	   ≤991px block), so that same hairline just left the caps-set body copy
+	   sitting directly on the display-face title's baseline with no
+	   separation between two very different typefaces. */
+	.services_item_content {
+		gap: 0.5rem;
 	}
 }
 @media screen and (max-width: 479px) {

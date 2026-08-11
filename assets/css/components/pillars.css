@@ -249,10 +249,16 @@
 	/* padding-bottom: 0, not 4rem — cancels so Brands' own mobile padding-top
 	   (3rem, brands.css) is the whole Pillars→Brands gap, matching the same
 	   ownership rule as every other boundary in this chain. */
+	/* 3rem, not 4rem — every other mobile section boundary on this page is
+	   3rem (brands.css's own padding, services.css, whyus.css,
+	   testimonials.css all match it), and measuring the built page showed
+	   this one at 64px against everyone else's 48px: the About→Pillars gap
+	   read a third deeper than every gap below it. Same value now, so the
+	   whole column steps at one rhythm. */
 	.section_pillars {
 		height: auto;
 		min-height: calc(var(--vh) * 100);
-		padding-top: 4rem;
+		padding-top: 3rem;
 		padding-bottom: 0;
 		overflow: hidden;
 	}

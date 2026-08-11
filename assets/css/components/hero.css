@@ -208,6 +208,43 @@
 		font-size: 5.5vw;
 	}
 }
+/* Centred rather than justified-and-edge-anchored below 768px. Both of the
+   desktop treatments here are width-dependent tricks that stop paying off on
+   a phone:
+
+   text-align: justify (the base .hero_heading rule) only looks deliberate
+   while each line lands 82-99% full — that was measured at desktop widths.
+   Over a narrow column the same sentence breaks into many short lines, and
+   justification's own rule of stretching every line BUT the last then blows
+   the word gaps open on most of them, which is the ragged, off-centre look
+   in the phone screenshots.
+
+   .hero_labels' space-between likewise reads as "MINOS ... HOST" pinned to
+   opposite corners of a wide frame; at 390px those two words sit marooned at
+   the far edges of an otherwise empty row with nothing between them to
+   justify the span. Centring both puts the whole lockup on one axis. */
+@media screen and (max-width: 767px) {
+	.hero_heading.u-h1-review {
+		text-align: center;
+		/* Cancels the justify above — text-align alone would be overridden by
+		   it since both target the same element at equal specificity, and this
+		   rule only wins by being later in the file. Stated explicitly so the
+		   intent survives a future reorder. */
+		text-align-last: center;
+	}
+	.hero_labels {
+		justify-content: center;
+		gap: 1rem;
+	}
+	.hero_decor_content,
+	.hero_decor_content.first {
+		justify-content: center;
+		/* The .first variant carries a 0.25rem right pad to nudge it off the
+		   frame's left edge — meaningless once it is no longer at that edge,
+		   and it would push the centred pair very slightly left of true. */
+		padding-right: 0;
+	}
+}
 @media screen and (max-width: 479px) {
 	.hero_wrapper {
 		/* The headline runs to eight lines here — there is no room to lift it. */

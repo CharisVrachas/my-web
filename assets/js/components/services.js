@@ -90,19 +90,32 @@ function initServices() {
 		});
 	}
 
-	// Each row's small thumb fades and un-scales in the first time it enters
-	// the viewport — the template's .anim-zoomin, ported 1:1 in spirit
-	// (start: "top 100%", scale 1.2 → 1, opacity 0 → 1) but as a `once`
-	// ScrollTrigger instead of a jQuery-wrapped ScrollTrigger timeline.
+	// Each row's image arriving on scroll — the template's .anim-zoomin
+	// (scale 1.2 → 1, opacity 0 → 1) with two changes, both aimed at the
+	// same complaint that this section reads as static on a phone:
+	//
+	//   start "top 88%", not Orisa's "top 100%". At 100% the trigger point
+	//   is the viewport's own bottom EDGE, so the tween starts the instant
+	//   the image's first pixel appears and has effectively finished by the
+	//   time it has scrolled far enough up to actually be looked at — the
+	//   motion happened, just entirely in the corner of the screen. 88%
+	//   starts it once the image is properly on screen.
+	//
+	//   y, and 0.85 rather than 1.2 — a slide-and-scale UP, matching the
+	//   vertical slide the desktop media column does on its own swap
+	//   (setActiveImage above: outgoing drops 200px at 0.8 scale, incoming
+	//   rides up to 0). Same visual language, triggered by scroll here
+	//   because there is no hover on touch to trigger it with.
 	DOM.thumbs.forEach((thumb) => {
 		gsap.from(thumb, {
 			autoAlpha: 0,
-			scale: 1.2,
-			duration: 1.2,
+			y: 60,
+			scale: 0.85,
+			duration: 1,
 			ease: "power2.out",
 			scrollTrigger: {
 				trigger: thumb,
-				start: "top 100%",
+				start: "top 88%",
 				once: true,
 			},
 		});
