@@ -329,6 +329,27 @@
 	.pillar_content_num {
 		display: none;
 	}
+	/* DOM order for the four interlaced items is Villas(01)/Remote(03)/
+	   Rentals(02)/Hosts(04) — NOT 01-02-03-04 — because that's the order the
+	   DESKTOP 2-column grid needs (Pillars.astro: two columns × two rows,
+	   placed by DOM order, so item 2 has to be Remote to land beside Villas
+	   in row 1). .pillars_wrapper switches to a single-column flex here
+	   (above), which — with no order of its own — just laid the four out in
+	   that same raw DOM sequence: 01, 03, 02, 04, visibly out of order top
+	   to bottom. flex's own `order` property re-sequences the visual column
+	   without touching the markup the desktop grid depends on. */
+	.pillar:nth-child(1) {
+		order: 1;
+	}
+	.pillar:nth-child(2) {
+		order: 3;
+	}
+	.pillar:nth-child(3) {
+		order: 2;
+	}
+	.pillar:nth-child(4) {
+		order: 4;
+	}
 }
 @media screen and (max-width: 767px) {
 	.heading-h2-review {

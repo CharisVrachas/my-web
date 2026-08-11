@@ -24,11 +24,49 @@ function initFooter() {
 
 	const footerInner = footer.querySelector(".footer_area");
 
+	// footer.css's own min-height: calc(var(--vh) * 100) (≤991px) is what
+	// this section relies on to fill the viewport with no dead gap above the
+	// logo (see that rule's own comment) — but --vh itself (head.js) is
+	// DELIBERATELY frozen against height-only resizes: on a phone, the
+	// address bar showing/hiding fires a resize event with the same width
+	// and a different height, and head.js's own guard skips recalculating
+	// for exactly that case, on purpose — everywhere ELSE on this page that
+	// reads --vh, a value that jumps every time the toolbar toggles mid-
+	// scroll is the actual bug (visible content resizing under the user's
+	// thumb), so freezing it there is correct.
+	//
+	// It is exactly the wrong choice for THIS min-height specifically,
+	// because this is the one place on the page that measures its own
+	// rendered size in JS (footer.offsetHeight, right below) and uses that
+	// exact number as a pixel-for-pixel scroll-and-translate target. If the
+	// CSS height it measures is stale, the translate distance is wrong by
+	// however much the toolbar has since moved — under-translating and
+	// cutting the top (the logo) off if the real viewport grew since
+	// --vh was last set, which is exactly what scrolling to the bottom
+	// naturally causes (the toolbar collapses out of the way on the way
+	// down). A dedicated inline min-height, read fresh on every resize
+	// with no width-match guard, keeps this one measurement honest without
+	// touching --vh's own frozen behavior for every other section that
+	// deliberately wants it that way. */
+	const syncFooterMinHeight = () => {
+		footerInner.style.minHeight = window.innerHeight + "px";
+	};
 	const syncPlaceholderHeight = () => {
+		syncFooterMinHeight();
 		placeholder.style.height = footer.offsetHeight + "px";
 	};
 	syncPlaceholderHeight();
 	window.addEventListener("resize", () => {
+		syncPlaceholderHeight();
+		ScrollTrigger.refresh();
+	});
+	// The more precise, purpose-built version of the same signal — fires as
+	// the toolbar itself animates in/out, not just once it settles, so the
+	// placeholder/translate distance stays current a little sooner than
+	// waiting on window's own resize alone. Feature-detected: unsupported
+	// browsers just fall back to the window listener above, which still
+	// covers this correctly on its own.
+	window.visualViewport?.addEventListener("resize", () => {
 		syncPlaceholderHeight();
 		ScrollTrigger.refresh();
 	});

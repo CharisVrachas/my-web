@@ -272,14 +272,28 @@ function initAbout() {
 					},
 				);
 
+				// trigger: head/p itself, not DOM.pillars (the whole, tall section)
+				// — that was the bug. "top bottom" against the SECTION fires the
+				// instant its first pixel appears at the very bottom edge of the
+				// screen, which for a section this tall is well before any of its
+				// five rows have scrolled anywhere near readable — every heading
+				// and paragraph on the page fired together, in one burst, long
+				// before there was anything to watch: technically present, but
+				// timed to finish before the user could ever see it happen, which
+                // is indistinguishable from "no effect" ("θέλω να έχει το εφέ...
+                // όπως στο desktop"). Triggering off each row's OWN element with
+                // "top 85%" is what Services/WhyUs's mobile passes already settled
+                // on for the same reason — each row animates in as IT actually
+                // scrolls into view, not all five at once off a trigger point
+                // none of them individually sit near.
 				document.querySelectorAll("[data-heading-pillars]").forEach((head) => {
 					gsap.from(head.querySelectorAll(".pillar-line"), {
 						yPercent: 110,
 						duration: 1,
 						ease: "power4.inOut",
 						scrollTrigger: {
-							trigger: DOM.pillars,
-							start: "top bottom",
+							trigger: head,
+							start: "top 85%",
 							toggleActions: "play none none reverse",
 						},
 					});
@@ -293,8 +307,8 @@ function initAbout() {
 						duration: 1,
 						ease: "power4.inOut",
 						scrollTrigger: {
-							trigger: DOM.pillars,
-							start: "top bottom",
+							trigger: p,
+							start: "top 90%",
 							toggleActions: "play none none reverse",
 						},
 					});

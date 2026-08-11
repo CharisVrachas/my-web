@@ -480,17 +480,22 @@
 		height: 100%;
 		margin-bottom: 0;
 	}
-	/* 82, not 74 — measured (all five cards, every card's copy differs in
-	   length): at 74 the box came out 625px against ~623px of actual content
-	   in every card, a slack of under 2px. That's not "the image sits close
-	   to the fold", that's zero clearance at all — the incoming card's very
-	   FIRST pixel of rise was already eating into the outgoing one's image,
-	   which is what "οι εικόνες κόβονται" and "η επόμενη κάρτα κάτω κάτω"
-	   were both reporting: no settled moment ever existed between one card
-	   finishing its rise and the next one starting its own. 82vh plus the
-	   trims below (image height, a few margins) opens real clearance —
-	   ~100px+ measured — so each card gets an actual beat fully visible
-	   before the next one starts covering it. */
+	/* .whyus_stack is the pin TARGET at this width (whyus.js), but it never
+	   had its own overflow rule — nothing on desktop needed one, since
+	   .whyus_pin (desktop's own pin target, a different, larger element)
+	   already clips everything relevant through its own box. Cards 2-5 sit
+	   at yPercent: 100 (fully below the box) until their own turn to rise;
+	   without overflow: hidden HERE, "below the box" is not "off-screen",
+	   it is just the ordinary page underneath the pin, and every one of
+	   those waiting cards painted straight through into it at once — the
+	   "3 κάρτες φαίνονται κάτω κάτω" bug, and it was never really about how
+	   much slack any single card had, which is why the -stack_list rule's
+	   own vh bump right below only ever partly helped it. Clipping the pin
+	   target itself is what actually confines the deck to one visible card
+	   at a time, the way it already reads on desktop. */
+	.whyus_stack {
+		overflow: hidden;
+	}
 	.whyus_stack_list {
 		min-height: calc(var(--vh) * 82);
 	}
@@ -525,12 +530,17 @@
 	   tall as they liked. Inside a viewport-height card the image is the one
 	   part that can give room back to the copy, which must not be clipped —
 	   min-height: 0 lets it actually shrink below its content size, which a
-	   grid item otherwise refuses to do. 8rem, not the earlier 11rem — part
-	   of opening up the deck's own clearance (.whyus_stack_list above), the
-	   image is still the single biggest thing on the card, just not so big
-	   that it alone eats most of the slack the 82vh box now has to give. */
+	   grid item otherwise refuses to do.
+	   13rem, not the 8rem this briefly dropped to — that trim was reaching
+	   for clearance by shrinking the image, back when overflow: hidden was
+	   still missing on .whyus_stack (above) and every waiting card was
+	   bleeding straight through the page regardless of how much slack any
+	   one card had. With that actually fixed, the box has room to spare
+	   (measured ~280-340px even at the smaller size), so the image gets
+	   most of it back — "η εικόνα δεν φαίνεται ολόκληρη" was this crop
+	   being tighter than it needed to be, not the box being too short. */
 	.whyus_card_media {
-		max-height: 8rem;
+		max-height: 13rem;
 		min-height: 0;
 	}
 	/* Tightened alongside the media height above — the same clearance push,
