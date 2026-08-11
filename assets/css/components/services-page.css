@@ -545,7 +545,7 @@
 .sv_offer_deck {
 	position: relative;
 	overflow: hidden;
-	min-height: calc(var(--vh) * 88);
+	min-height: calc(var(--vh) * 92);
 }
 .sv_offer_card {
 	position: absolute;
@@ -560,23 +560,26 @@
 	display: flex;
 	align-items: center;
 }
-/* overflow-y: auto, not hidden — unlike WhyUs's/about's own decks, this
-   one's nine cards are wildly uneven (Orisa's own comment above measures
-   card 1 at ~870px against ~430px for most others), and no single fixed
-   box height fits the longest without either leaving the shorter eight
-   mostly empty or clipping card 1's own second list outright. A card that
-   genuinely doesn't fit can still be scrolled INSIDE its own box rather
-   than silently losing content — the deck's own pin keeps confining it to
-   one card on screen at a time either way, which is the part that was
-   actually reported broken ("τρεις κάρτες φαίνονται"), not how any one
-   card's overflow is handled. */
+/* overflow: hidden, NOT auto. auto briefly seemed like the safer choice for
+   these nine wildly uneven cards (Orisa's own comment above measures card 1
+   at ~870px against ~430px for most others) — a card that doesn't fit could
+   still be scrolled inside its own box instead of silently losing content.
+   On a REAL touch device it broke something worse: this box covers nearly
+   the whole screen, so almost any touch-drag meant to advance the pinned
+   deck starts with a finger physically over it, and a nested overflow-y:
+   auto region captures that drag for ITSELF before it ever reaches the
+   page's own scroll — the deck simply stopped responding to scroll at all
+   ("κολλάει φουλ"). Wheel/programmatic scroll in testing never exercised
+   this, since neither one starts "over" any particular element the way a
+   real touch point does. Back to hidden: card 1's own second list losing
+   its last row or two on the shortest phones is the acceptable trade
+   against the deck not scrolling at all. */
 .sv_offer_card_inner {
 	width: 100%;
 	max-height: 100%;
 	align-content: start;
 	align-items: start;
-	overflow-y: auto;
-	-webkit-overflow-scrolling: touch;
+	overflow: hidden;
 	padding-block: 1.25rem;
 }
 .sv_offer_media,

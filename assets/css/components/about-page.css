@@ -215,7 +215,7 @@
 		   paragraphs (AboutStory.astro) against WhyUs's own five-bullet cap,
 		   so the box gets a bit more of the viewport before falling back to
 		   the inner scroll below. */
-		min-height: calc(var(--vh) * 86);
+		min-height: calc(var(--vh) * 90);
 	}
 	.as_card {
 		position: absolute;
@@ -242,18 +242,23 @@
 		   same reasoning as .whyus_card_inner (whyus.css). */
 		align-content: start;
 		align-items: start;
-		/* overflow-y: auto, not hidden — these three cards are not evenly
-		   sized (card 1 alone carries three description paragraphs, cards 2
-		   and 3 one and two), and with overflow: hidden the fixed box that
-		   fits cards 2-3 comfortably clipped card 1's own copy mid-sentence,
-		   with its photo never shown at all — the box ran out of room before
-		   getting to it. Same fix as services-page.css's own deck, and the
-		   same reasoning: a card that genuinely doesn't fit can still be
-		   scrolled inside its own box rather than silently losing content,
-		   and the pin still confines the page to one card on screen at a
-		   time either way, which is the part that actually needed fixing. */
-		overflow-y: auto;
-		-webkit-overflow-scrolling: touch;
+		/* overflow: hidden, NOT auto. auto briefly seemed like the safer
+		   choice — a card that doesn't fit could still be scrolled inside
+		   its own box instead of silently losing content — but on a REAL
+		   touch device it broke something worse: this box covers nearly the
+		   whole screen, so almost any touch-drag to advance the pinned deck
+		   starts with a finger physically over it, and a nested
+		   overflow-y: auto region captures that drag for ITSELF before it
+		   ever reaches the page's own scroll — the deck simply stopped
+		   responding to scroll at all ("κολλάει φουλ"). Wheel/programmatic
+		   scroll in testing never exercised this because neither one starts
+		   "over" any particular element the way a touch point does — a
+		   real device found it immediately. Back to hidden: the photo-first
+		   reorder below is what actually keeps the one element every card
+		   has visible regardless of copy length; a very long card's last
+		   line or two clipping is the acceptable trade against the deck not
+		   scrolling at all. */
+		overflow: hidden;
 		padding-block: 1.5rem;
 	}
 	/* Photo BEFORE the content now, reversed from Orisa's own mobile order
@@ -261,14 +266,14 @@
 	   `order-lg-1 order-2` on the image). That ordering assumed a card in
 	   ordinary document flow, where being second just means scrolling a bit
 	   further to reach it — inside this fixed-height pinned box (above),
-	   "second" can mean "past the end of what .as_card_inner's own
-	   overflow-y: auto shows without scrolling," which for card 1's three
-	   paragraphs it was: the photo sat below content that alone nearly
-	   filled the box, so it never appeared without a viewer scrolling
-	   inside the card, which is what "οι εικόνες δεν φαίνονται" was
-	   reporting. Photo first guarantees it's always the first thing shown,
-	   whatever the card's copy length; the copy is what scrolls if it runs
-	   long, not the one element every card actually has. */
+	   "second" can mean "past the end of what the box shows before its own
+	   overflow: hidden clips it," which for card 1's three paragraphs it
+	   was: the photo sat below content that alone nearly filled the box, so
+	   it never appeared at all, which is what "οι εικόνες δεν φαίνονται"
+	   was reporting. Photo first guarantees it's always the first thing
+	   shown, whatever the card's copy length; the copy is what loses its
+	   own tail end if it runs long, not the one element every card
+	   actually has. */
 	.as_card_content {
 		order: 2;
 	}
