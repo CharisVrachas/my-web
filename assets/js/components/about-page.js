@@ -51,29 +51,40 @@ function initAboutStory() {
 				if (index !== 0) gsap.set(card, { yPercent: 101 });
 			});
 
-			// One SplitText call per card, kept even if reduced-motion skips the
-			// tween below — the DOM still needs the char spans for the plain
-			// solid-opacity fallback (gsap.set right after) to target.
+			// This is reveal.js's [data-reveal-text] effect, reproduced here
+			// rather than delegated to it — every VISUAL value below is
+			// initRevealText's own (split "lines,words,chars", chars parked at
+			// opacity 0.3 / x -7, tweened to 1 / 0, and the 0.7:0.2
+			// duration-to-stagger ratio preserved as the 3.5x below). Only the
+			// TRIGGER differs, and it has to:
+			//
+			// reveal.js positions each element's ScrollTrigger from where that
+			// element sits IN THE DOCUMENT. Every card in this deck is
+			// absolutely stacked at the same position inside a PINNED
+			// container, so all three resolve to nearly the same start/end —
+			// cards 2 and 3 would finish revealing long before they were ever
+			// scrolled into view. Measured and documented on the /services deck
+			// first (see services-page.js's own note; nine cards there all
+			// landed in the same ~500px window inside a 3300px pin). Hanging
+			// the same tween on the deck's own pinned timeline is what makes
+			// each card's reveal happen when THAT card is actually on screen.
+			//
+			// Title AND body, in one array: querySelectorAll returns document
+			// order, so the title's chars come first and the stagger runs
+			// straight through into the paragraphs — the heading fills in, then
+			// the copy under it, as one continuous sweep rather than two
+			// unrelated reveals.
 			const cardChars = Array.from(cards).map((card) => {
-				const descs = card.querySelectorAll(".as_card_desc");
-				if (!descs.length) return null;
-				// "words,chars", not just "chars" — chars alone gives every
-				// letter its own independent inline-block div with nothing
-				// grouping the ones that make up one word, so the browser's own
-				// line-breaking treated each CHARACTER as a wrap point instead
-				// of each word — confirmed visually ("more" breaking as "mor" /
-				// "e" across a line end). reveal.js's own initRevealText splits
-				// "lines,words,chars" for the same reason; this needs the
-				// words level too, just not the lines one (nothing here reveals
-				// per line).
-				const split = new SplitText(descs, { type: "words,chars" });
+				const targets = card.querySelectorAll(".as_card_title, .as_card_desc");
+				if (!targets.length) return null;
+				const split = new SplitText(targets, { type: "lines,words,chars", linesClass: "split-line" });
 				return split.chars && split.chars.length ? split.chars : null;
 			});
 
 			if (reduced) {
-				cardChars.forEach((chars) => chars && gsap.set(chars, { opacity: 1 }));
+				cardChars.forEach((chars) => chars && gsap.set(chars, { opacity: 1, x: 0 }));
 			} else {
-				cardChars.forEach((chars) => chars && gsap.set(chars, { opacity: 0.25 }));
+				cardChars.forEach((chars) => chars && gsap.set(chars, { opacity: 0.3, x: -7 }));
 			}
 
 			// READ is what actually answers "θέλω... να προλαβαίνει να διαβάζει
@@ -125,6 +136,19 @@ function initAboutStory() {
 			cards.forEach((card, index) => {
 				const chars = cardChars[index];
 				if (chars && !reduced) {
+					// reveal.js runs duration 0.7 against stagger 0.2 — a fixed
+					// 3.5:1 ratio, and that ratio (not the raw seconds) is what
+					// the effect actually LOOKS like: roughly 3.5 characters sit
+					// mid-fade at any moment, giving a crisp, narrow gradient
+					// edge sweeping through the text. Its raw numbers can't be
+					// reused verbatim here — on a scrubbed timeline "duration"
+					// is share-of-scroll, so 0.2 per char across a card's few
+					// hundred characters would be tens of units against TRANS's
+					// 1, i.e. a pin thousands of percent long. Solving
+					// (N-1)*s + 3.5s = READ for s keeps reveal.js's exact
+					// gradient shape while fitting the card's own allotted
+					// reading window.
+					//
 					// from: "start" — the char array is already in reading order
 					// (SplitText walks the DOM front to back), so staggering from
 					// its own start is what makes the FIRST character the first
@@ -132,10 +156,12 @@ function initAboutStory() {
 					// από την πρώτη λέξη και όχι από το τέλος σχεδόν" was this,
 					// stated as a constraint rather than a bug — easy to get
 					// backwards with a stagger, so it's spelled out explicitly.
+					const step = READ / (chars.length + 2.5);
 					timeline.to(chars, {
 						opacity: 1,
-						duration: 0.3,
-						stagger: { each: Math.max(0.002, (READ - 0.3) / chars.length), from: "start" },
+						x: 0,
+						duration: step * 3.5,
+						stagger: { each: step, from: "start" },
 					});
 				} else {
 					// Reduced motion (or no description found): still spends the
@@ -164,7 +190,11 @@ function initAboutStory() {
 
 			return () => {
 				gsap.set(cards, { clearProps: "transform,zIndex" });
-				cardChars.forEach((chars) => chars && gsap.set(chars, { clearProps: "opacity" }));
+				// opacity AND x — the tween now moves both (reveal.js's own
+				// x: -7 slide came along with its opacity fade), so clearing
+				// only opacity would leave every character stuck 7px left of
+				// where it belongs after a breakpoint change tears this down.
+				cardChars.forEach((chars) => chars && gsap.set(chars, { clearProps: "opacity,x" }));
 			};
 		},
 	);
