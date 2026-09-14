@@ -1,0 +1,203 @@
+/* ==========================================================================
+   MINOS HOST — type system
+
+   The one place that decides font family, size, weight and case for every
+   kind of text on the site. Component stylesheets own layout and colour;
+   this file owns type, by ROLE, from the tokens in base.css :root. Loaded
+   last (Layout.astro), so these rules win over the older per-component font
+   declarations and their own breakpoint overrides — which is what let the
+   same kind of text drift to five different sizes on five pages before.
+
+   Selectors are matched to (or deliberately above) the specificity of the
+   component rule they replace. If a new component adds text, give it a role
+   here rather than a font-size of its own.
+
+   Roles and faces:
+     H1       page titles                  Jost 900, uppercase
+     DISPLAY  big decorative words          Playfair Display 400
+     H2       section titles               Playfair Display 400
+     CARD     card titles (every deck)     Jost 500
+     H3       sub-titles inside a block    Jost 600
+     LEAD     intro statements, quotes     Jost 400
+     TEXT     paragraphs, bullets, answers Jost 400
+     LABEL    eyebrows, tags, small print  Jost, uppercase where it's a tag
+
+   Deliberately NOT here — interface controls and exact geometry keep their
+   own measured px: the navbar and menu panel, buttons (.u-btn), the Pillars
+   interlace words (their vw offsets are computed from their size), the
+   pricing figures, the service-row index numbers and About's SVG wordmark.
+   ========================================================================== */
+
+/* ----- H1: page titles ------------------------------------------------- */
+.hero_heading.u-h1-review,
+.sv_hero_title {
+	font-family: Jost, Arial, sans-serif;
+	font-size: var(--type-h1);
+	font-weight: 900;
+	line-height: 0.92;
+	text-transform: uppercase;
+}
+
+/* ----- DISPLAY: decorative words ----------------------------------------
+   Definitions' "Owners"/"Chania", the Films panel headings, the footer's
+   "Let's Talk". Line-height stays with each component — the footer's hover
+   flip is measured in multiples of its own 1.1. */
+.u-h2-feature,
+.film_heading,
+.footer_connect {
+	font-family: "Playfair Display", Georgia, serif;
+	font-size: var(--type-display);
+	font-weight: 400;
+	text-transform: none;
+}
+/* The footer's tracking was a fixed -9px tuned to its old 128px. */
+.footer_connect {
+	letter-spacing: -0.06em;
+}
+
+/* ----- H2: section titles ---------------------------------------------- */
+.whyus_heading,
+.testimonials_heading.u-h3-review,
+.about_heading.u-h3-review,
+.pillars_title,
+.as_story_heading,
+.pr_table_heading,
+.ct_title,
+.services_item_title.u-h2-feature,
+.u-h5-feature {
+	font-family: "Playfair Display", Georgia, serif;
+	font-size: var(--type-h2);
+	font-weight: 400;
+	line-height: 1.1;
+	letter-spacing: 0;
+	text-transform: none;
+}
+
+/* ----- CARD: card titles in every stacking deck ------------------------- */
+.sv_offer_title,
+.whyus_card_title,
+.as_card_title,
+.fq_title {
+	font-family: Jost, Arial, sans-serif;
+	font-size: var(--card-title-size);
+	font-weight: 500;
+	line-height: 1.05;
+	letter-spacing: -0.04em;
+	text-transform: none;
+}
+
+/* ----- H3: sub-titles inside a block ------------------------------------ */
+.pr_card_title,
+.pr_note_title,
+.pr_addon_title,
+.ct_info_title,
+.as_card_meta_text,
+.testimonial_author_name,
+.footer_hours_value {
+	font-family: Jost, Arial, sans-serif;
+	font-size: var(--type-h3);
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: 0;
+	text-transform: none;
+}
+
+/* ----- LEAD: intro statements and quotes -------------------------------- */
+.sv_hero_lead,
+.as_story_statement,
+.ct_lead,
+.pr_addons_cta,
+.testimonial_quote {
+	font-family: Jost, Arial, sans-serif;
+	font-size: var(--type-lead);
+	font-weight: 400;
+	line-height: 1.5;
+	letter-spacing: 0;
+	text-transform: none;
+}
+
+/* ----- TEXT: every paragraph, bullet and answer ------------------------- */
+.about_p,
+.vv_content .u-p1,
+.pillar_content p,
+.pillars_fifth_body,
+.testimonials_sub,
+.services_item_text,
+.sv_ticker_item,
+.sv_offer_desc,
+.sv_offer_list li,
+.whyus_card_list,
+.as_card_desc,
+.fq_subtitle,
+.fq_item_question,
+.fq_item_panel_inner p,
+.pr_card_desc,
+.pr_card_features li,
+.pr_note_desc,
+.pr_addon_subtitle,
+.pr_addon_list li,
+.pr_contact_line,
+.pr_contact_link,
+.ct_info_text,
+.ct_social_link,
+.ct_form_input,
+.footer_contact_line {
+	font-family: Jost, Arial, sans-serif;
+	font-size: var(--type-text);
+	font-weight: 400;
+	line-height: 1.5;
+	letter-spacing: 0;
+	text-transform: none;
+}
+/* A question is set apart from its answer by weight, not by a size of its own. */
+.fq_item_question {
+	font-weight: 600;
+}
+/* The Pillars interlace paragraphs sit at fixed vw offsets beside the next
+   row's headings; they keep their tighter leading so their height doesn't
+   grow into those headings. */
+.pillar_content p,
+.pillars_fifth_body {
+	line-height: 1.25;
+}
+/* Home Services rows open their description on hover out of a max-height
+   (services.css) that was sized for the old 16px uppercase text; at the
+   shared text size the longest ones need more room to show in full. */
+@media (hover: hover) and (pointer: fine) {
+	.services_item:hover .services_item_text,
+	.services_item:focus-visible .services_item_text {
+		max-height: 12em;
+	}
+}
+
+/* ----- LABEL: eyebrows, tags, small print ------------------------------- */
+.u-p2,
+.sv_eyebrow_text,
+.whyus_eyebrow_text,
+.whyus_nav_num,
+.whyus_nav_label,
+.footer_tag_text,
+.footer_hours_label,
+.footer_copyright,
+.pr_card_badge,
+.sv_offer_list_label,
+.testimonial_author_role,
+.testimonial_author_place,
+.testimonials_badge_text {
+	font-family: Jost, Arial, sans-serif;
+	font-size: var(--type-label);
+	line-height: 1.2;
+	letter-spacing: 0.025rem;
+	text-transform: uppercase;
+}
+/* Small print in sentence case — same size, no forced capitals. */
+.sv_offer_count,
+.pr_card_price_period,
+.ct_form_disclaimer,
+.ct_form_link {
+	font-family: Jost, Arial, sans-serif;
+	font-size: var(--type-label);
+	font-weight: 400;
+	line-height: 1.5;
+	text-transform: none;
+}

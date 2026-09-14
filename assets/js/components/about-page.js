@@ -1,20 +1,12 @@
 // The "process card" stacking deck on /about — ported from Orisa's shared
 // initScroll() (main.js block 51, ".scroll-section card stacking"), the same
-// mechanic already used for WhyUs (initWhyUsStack, whyus.js) and the
-// /services offer deck (initServicesPage, services-page.js).
+// mechanic already used for WhyUs (initWhyUsStack, whyus.js) and the /services
+// offer deck (initServicesPage, services-page.js).
 //
-// Orisa's about-3/sec-2.html gives none of its .process-card titles/
-// descriptions a reveal-text or text-scale-anim class (unlike home-2/sec-4,
-// the source of the /services deck, which gives its own heading and
-// paragraph both effects) — so this had no per-card reveal to key off each
-// card's arrival, unlike services-page.js's own char-by-char one. Added
-// below: each card's own description now reveals character by character,
-// SCRUBBED directly to scroll position (not services-page.js's fixed 0.7s
-// real-time reveal) — first character first, and the reveal itself is what
-// the reader scrolls THROUGH before the deck moves on to the next card, so
-// scrolling slowly to actually read it plays the reveal at exactly that
-// pace instead of racing ahead of it. See the READ/TRANS split below for how
-// that reading room is built into the timeline.
+// Each card's title and paragraphs reveal character by character before the
+// next card arrives — the one card reveal every deck on the site shares
+// (splitCardText / parkCardText / addCardReveal and CARD_REVEAL's READ/TRANS
+// pacing, all in reveal.js), so it's identical to WhyUs, /services and /faq.
 function initAboutStory() {
 	const section = document.querySelector("[data-as-stack]");
 	if (!section) return;
@@ -24,14 +16,17 @@ function initAboutStory() {
 	if (!cards.length) return;
 
 	const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+	const { READ, TRANS } = CARD_REVEAL;
+	const totalUnits = cards.length * READ + Math.max(0, cards.length - 1) * TRANS;
+
+	// Split once, up front — not inside the matchMedia callback, which re-runs
+	// on every breakpoint crossing and would split already-split text.
+	const cardChars = Array.from(cards).map(splitCardText);
 
 	const mm = gsap.matchMedia();
 
-	// Same 992px cutover as the /services deck for the DESKTOP tween below —
-	// but this deck now runs at every width (see the mobile branch further
-	// down), the same fix WhyUs's own stacking deck already went through:
-	// leaving mobile with a plain list read as "no effect at all", when the
-	// actual desktop effect is what was being asked for everywhere.
+	// The deck runs at every width — leaving mobile with a plain list read as
+	// "no effect at all", when the desktop effect is what was wanted everywhere.
 	mm.add(
 		{
 			desktop: "(min-width: 992px)",
@@ -42,90 +37,24 @@ function initAboutStory() {
 
 			cards.forEach((card, index) => {
 				gsap.set(card, { zIndex: index });
-				// 101%, not 100 — at exactly 100 the incoming card's own top edge
-				// lands flush with the viewport's bottom edge, and sub-pixel
-				// rounding between its height and the pinned deck's left a sliver of
-				// it (and its photo) visible along the bottom before it was meant to
-				// arrive. Found and fixed once already on the /services deck; same
-				// fix here since this is the same mechanic.
+				// 101%, not 100 — at exactly 100 sub-pixel rounding left a sliver of
+				// the incoming card (and its photo) visible along the bottom before
+				// it was meant to arrive. Same fix as the /services deck.
 				if (index !== 0) gsap.set(card, { yPercent: 101 });
 			});
 
-			// This is reveal.js's [data-reveal-text] effect, reproduced here
-			// rather than delegated to it — every VISUAL value below is
-			// initRevealText's own (split "lines,words,chars", chars parked at
-			// opacity 0.3 / x -7, tweened to 1 / 0, and the 0.7:0.2
-			// duration-to-stagger ratio preserved as the 3.5x below). Only the
-			// TRIGGER differs, and it has to:
-			//
-			// reveal.js positions each element's ScrollTrigger from where that
-			// element sits IN THE DOCUMENT. Every card in this deck is
-			// absolutely stacked at the same position inside a PINNED
-			// container, so all three resolve to nearly the same start/end —
-			// cards 2 and 3 would finish revealing long before they were ever
-			// scrolled into view. Measured and documented on the /services deck
-			// first (see services-page.js's own note; nine cards there all
-			// landed in the same ~500px window inside a 3300px pin). Hanging
-			// the same tween on the deck's own pinned timeline is what makes
-			// each card's reveal happen when THAT card is actually on screen.
-			//
-			// Title AND body, in one array: querySelectorAll returns document
-			// order, so the title's chars come first and the stagger runs
-			// straight through into the paragraphs — the heading fills in, then
-			// the copy under it, as one continuous sweep rather than two
-			// unrelated reveals.
-			const cardChars = Array.from(cards).map((card) => {
-				const targets = card.querySelectorAll(".as_card_title, .as_card_desc");
-				if (!targets.length) return null;
-				const split = new SplitText(targets, { type: "lines,words,chars", linesClass: "split-line" });
-				return split.chars && split.chars.length ? split.chars : null;
-			});
-
-			if (reduced) {
-				cardChars.forEach((chars) => chars && gsap.set(chars, { opacity: 1, x: 0 }));
-			} else {
-				cardChars.forEach((chars) => chars && gsap.set(chars, { opacity: 0.3, x: -7 }));
-			}
-
-			// READ is what actually answers "θέλω... να προλαβαίνει να διαβάζει
-			// ολόκληρο το κείμενο ο αναγνώστης" (I want the reader to have time
-			// to read the whole text) — a dedicated span of the scrubbed timeline
-			// per card, spent solely on revealing ITS OWN text character by
-			// character, before TRANS (the existing scale-down/rise-up tween)
-			// ever starts. Without it, a card's reveal and the transition INTO
-			// the next one were the same instant of scroll — scrolling at any
-			// normal pace could carry the reader past a card before its own text
-			// had even finished fading in. 1.4:1 against TRANS's own implicit
-			// duration of 1 is roughly how much longer "read a few sentences"
-			// takes versus "watch a card slide" at this deck's established
-			// pace (the original cards.length*50% end distance, i.e. 50% of a
-			// viewport's height of scroll per TRANS-sized unit) — end is scaled
-			// by the same ratio below so that per-unit pace doesn't change,
-			// only the total scroll distance the extra READ units add. */
-			const READ = 1.4;
-			const TRANS = 1;
-			const totalUnits = cards.length * READ + Math.max(0, cards.length - 1) * TRANS;
+			cardChars.forEach((chars) => parkCardText(chars, reduced));
 
 			const timeline = gsap.timeline({
 				scrollTrigger: {
-					// Pin the DECK, not the section — .as_story_head above it (the
-					// eyebrow/heading/statement) has to stay in normal scrolling flow.
-					// Pinning the whole section once froze that header inside the
-					// pinned viewport too, eating into the height every card had to
-					// fit its own content in. Found and fixed on the /services deck
-					// first; same fix, same reason, here.
+					// Pin the DECK, not the section — .as_story_head above it (eyebrow,
+					// heading, statement) has to stay in normal scrolling flow, or it
+					// eats into the height every card has for its own content.
 					trigger: deck,
 					pin: deck,
-					// Mobile clears the fixed navbar's own MENU button the same way
-					// WhyUs's mobile pin does (whyus.js) — desktop's header sits
-					// above the deck in normal flow already, so it needs no offset.
+					// Mobile clears the fixed navbar's MENU pill, like WhyUs's own
+					// mobile pin; desktop's header sits above the deck in normal flow.
 					start: desktop ? "top top" : "top top+=72",
-					// 50% per unit — the ORIGINAL pacing (cards.length*50% against a
-					// cards.length-1-unit timeline of TRANS-only tweens), carried
-					// over unchanged now that READ units are part of the total too,
-					// so the scroll distance a TRANS transition takes still feels
-					// the same as it always did; the READ units are what make the
-					// timeline — and the scroll distance — longer overall.
 					end: () => `+=${totalUnits * 50}%`,
 					scrub: 1,
 					invalidateOnRefresh: true,
@@ -134,67 +63,23 @@ function initAboutStory() {
 			});
 
 			cards.forEach((card, index) => {
-				const chars = cardChars[index];
-				if (chars && !reduced) {
-					// reveal.js runs duration 0.7 against stagger 0.2 — a fixed
-					// 3.5:1 ratio, and that ratio (not the raw seconds) is what
-					// the effect actually LOOKS like: roughly 3.5 characters sit
-					// mid-fade at any moment, giving a crisp, narrow gradient
-					// edge sweeping through the text. Its raw numbers can't be
-					// reused verbatim here — on a scrubbed timeline "duration"
-					// is share-of-scroll, so 0.2 per char across a card's few
-					// hundred characters would be tens of units against TRANS's
-					// 1, i.e. a pin thousands of percent long. Solving
-					// (N-1)*s + 3.5s = READ for s keeps reveal.js's exact
-					// gradient shape while fitting the card's own allotted
-					// reading window.
-					//
-					// from: "start" — the char array is already in reading order
-					// (SplitText walks the DOM front to back), so staggering from
-					// its own start is what makes the FIRST character the first
-					// one to reveal, not the last: "πάντα αυτό το εφέ να ξεκινάει
-					// από την πρώτη λέξη και όχι από το τέλος σχεδόν" was this,
-					// stated as a constraint rather than a bug — easy to get
-					// backwards with a stagger, so it's spelled out explicitly.
-					const step = READ / (chars.length + 2.5);
-					timeline.to(chars, {
-						opacity: 1,
-						x: 0,
-						duration: step * 3.5,
-						stagger: { each: step, from: "start" },
-					});
-				} else {
-					// Reduced motion (or no description found): still spends the
-					// card's own READ share of the timeline, just with nothing
-					// animating during it — otherwise this card's whole reading
-					// window would collapse to zero and the deck would jump
-					// straight from the previous card's transition into this
-					// card's own, with no pause between them.
-					timeline.to({}, { duration: READ });
-				}
+				addCardReveal(timeline, cardChars[index], reduced);
 
 				const next = cards[index + 1];
 				// The last card is never scaled — nothing arrives after it to cover
-				// the result, so scaling it down would just shrink it in place with
-				// the deck's own background showing around it.
+				// the result.
 				if (!next) return;
 
-				// Scale the INNER content, not the card itself — the card carries
-				// the opaque background that has to keep covering the full viewport
-				// for as long as it's the top card. Scaling the card's own box
-				// shrank that background too and opened a band top and bottom where
-				// the next card (already sliding up underneath) showed through.
+				// Scale the INNER content, not the card itself — the card carries the
+				// opaque background that has to keep covering the full box while it's
+				// the top card.
 				timeline.to(card.querySelector(".as_card_inner"), { scale: 0.9, duration: TRANS });
 				timeline.to(next, { yPercent: 0, duration: TRANS }, "<");
 			});
 
 			return () => {
 				gsap.set(cards, { clearProps: "transform,zIndex" });
-				// opacity AND x — the tween now moves both (reveal.js's own
-				// x: -7 slide came along with its opacity fade), so clearing
-				// only opacity would leave every character stuck 7px left of
-				// where it belongs after a breakpoint change tears this down.
-				cardChars.forEach((chars) => chars && gsap.set(chars, { clearProps: "opacity,x" }));
+				cardChars.forEach((chars) => chars.length && gsap.set(chars, { clearProps: "opacity,x" }));
 			};
 		},
 	);

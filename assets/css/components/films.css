@@ -85,14 +85,6 @@
 .film_heading .line {
 	column-gap: 0.25em;
 }
-/* .long was only ever paired with .primary here — .red.long (Services'
-   "Get in touch", which needs .red rather than .primary because it sits on
-   flat charcoal instead of a photograph) needs the same taller padding, and
-   colour/size should be independent modifiers on this component anyway. */
-.u-btn-ellipse.long {
-	padding-top: 0.875rem;
-	padding-bottom: 0.875rem;
-}
 /* Both source files are cut to 0.89 — the panel's own proportion — so cover
    fills the frame edge to edge with almost nothing trimmed, and the two panels
    read as a matched pair. Letterboxing them instead left one with bars down the

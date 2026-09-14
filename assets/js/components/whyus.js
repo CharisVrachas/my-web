@@ -2,28 +2,33 @@
 //   32. section-fix (pin section-title + stacking cards)
 //   21. text-scale-anim
 //
-// The stacking timeline is Orisa's, tween for tween: every card after the
-// first starts at yPercent 100, the pin runs for `cards.length * 50`% of
-// viewport height, and each step scales the outgoing card to 0.9 while
-// bringing the next one up to yPercent 0 at the same position ("<"). The
-// nav's active row is set from the timeline's own progress in onUpdate, which
-// is why it can never drift out of sync with the card on top.
+// The stacking is Orisa's: every card after the first starts at yPercent
+// 100, and each step scales the outgoing card to 0.9 while bringing the next
+// one up to yPercent 0 at the same position ("<"). The nav's active row is
+// set from the timeline's own progress in onUpdate, which is why it can never
+// drift out of sync with the card on top.
 //
-// Two things had to change on the way in, neither of them behavioural:
+// Each card's title and bullets reveal character by character before the
+// next card arrives — the one card reveal every deck on the site shares
+// (splitCardText / parkCardText / addCardReveal and CARD_REVEAL's READ/TRANS
+// pacing, in reveal.js), so it's identical to /services, /about and /faq.
+//
+// Two things changed on the way in from Orisa, neither of them behavioural:
 //   - Orisa re-runs its active-row update on every ScrollTrigger 'scroll'
-//     event as well as in onUpdate. That was there to cover the case where
-//     scroll happens without the timeline updating; with ScrollSmoother
-//     driving scroll here, onUpdate already fires on every frame the pin is
-//     active, so the extra global listener is redundant — and it was a leak,
-//     since nothing ever removed it.
+//     event as well as in onUpdate. With ScrollSmoother driving scroll here,
+//     onUpdate already fires on every frame the pin is active, so the extra
+//     global listener was redundant — and a leak, since nothing removed it.
 //   - text-scale-anim bound its per-letter hover with jQuery. Same two
 //     events, addEventListener instead.
 function initWhyUs() {
 	const section = document.querySelector(".section_whyus");
 	if (!section) return;
 
-	initWhyUsStack(section);
+	// Letter spans first: the deck's character reveal reuses the
+	// .at-letter-span letters this creates on each card title rather than
+	// splitting the title a second time.
 	initTextScaleAnim(section);
+	initWhyUsStack(section);
 }
 
 function initWhyUsStack(section) {
@@ -37,21 +42,19 @@ function initWhyUsStack(section) {
 	if (!cards.length) return;
 
 	const stack = section.querySelector(".whyus_stack");
+	const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+	const { READ, TRANS } = CARD_REVEAL;
+	const totalUnits = cards.length * READ + Math.max(0, cards.length - 1) * TRANS;
 
-	// The deck now runs at EVERY width, not just ≥992px. It used to be gated
-	// off on the grounds that a phone has no room for it — true of the
-	// desktop shape of the effect, which pins .whyus_pin, i.e. the numbered
-	// nav column AND the three-piece mark AND the cards all together. On a
-	// phone .whyus_body is a single column, so pinning that wrapper means
-	// holding the mark and the cards on screen at once, and the cards alone
-	// already fill most of a phone viewport.
-	//
-	// Pinning .whyus_stack instead is what makes it fit: the mark scrolls in
-	// and breaks apart normally on its way past (reveal.js's own
-	// [data-svg-break], untouched), then the card column alone pins and deals
-	// the five cards over one another exactly as on desktop. Same timeline,
-	// same tween values, same "like a deck" read — only the pinned element
-	// differs per width, which is the one thing that genuinely had to.
+	// Split once, up front — not inside the matchMedia callback, which re-runs
+	// on every breakpoint crossing and would split already-split text.
+	const cardChars = Array.from(cards).map(splitCardText);
+
+	// The deck runs at EVERY width. Desktop pins .whyus_pin (the numbered nav,
+	// the three-piece mark and the cards together); on a phone .whyus_body is a
+	// single column, so .whyus_stack alone pins instead — the mark scrolls in
+	// and breaks apart on its way past, then the card column deals the five
+	// cards exactly as on desktop. Only the pinned element differs per width.
 	const mm = gsap.matchMedia();
 	mm.add(
 		{
@@ -64,40 +67,64 @@ function initWhyUsStack(section) {
 			if (!pinTarget) return;
 
 			gsap.set(Array.from(cards).slice(1), { yPercent: 100 });
+			cardChars.forEach((chars) => parkCardText(chars, reducedMotion));
 
-			const scrollDistance = cards.length * 50;
+			// Desktop pins the whole body (nav, mark, cards) centred in the
+			// viewport rather than flush against its top edge — flush left the
+			// block jammed under the top of the screen with a band of empty
+			// charcoal below it for the entire deck. Never closer than 120px to
+			// the top, so the navbar's MENU pill (top: 40px) stays clear of the
+			// cards on short screens where centring alone would push it higher.
+			const pinOffset = () => Math.max(120, (window.innerHeight - pin.offsetHeight) / 2);
+
+			// The three-piece mark sits INSIDE the desktop pin, and reveal.js's
+			// generic timing ended its break almost exactly as the pin started —
+			// the mark was still assembling as card 1 began to move. Ending it at
+			// the pin's own start means the logo is whole before the cards begin.
+			// Created before the pin's timeline, so its positions are measured
+			// without the pin's spacer. Phones pin only the card column (the mark
+			// scrolls past above it), so they keep the generic window.
+			const mark = section.querySelector("[data-svg-break]");
+			if (mark && !reducedMotion && typeof createSvgBreak === "function") {
+				createSvgBreak(mark, desktop ? { endTrigger: pin, end: () => `top top+=${pinOffset()}` } : {});
+			}
 
 			const tl = gsap.timeline({
 				scrollTrigger: {
 					trigger: pinTarget,
 					pin: true,
-					// Desktop holds the whole body flush to the top of the
-					// viewport; on mobile the pinned column is only the cards, so
-					// it gets a little clearance for the fixed navbar's own MENU
-					// button rather than sitting under it. ScrollTrigger parses px
-					// but not rem in these strings (see services.js), so this is a
-					// number, not "1rem".
-					start: desktop ? "top top" : "top top+=72",
-					end: () => `+=${scrollDistance}%`,
+					// Desktop sits the whole body centred (pinOffset(), above); on
+					// mobile the pinned column is only the cards, so it gets a
+					// little clearance for the fixed navbar's own MENU button
+					// rather than sitting under it. ScrollTrigger parses px but
+					// not rem in these strings (see services.js), so these are
+					// numbers, not "1rem".
+					start: desktop ? () => `top top+=${pinOffset()}` : "top top+=72",
+					end: () => `+=${totalUnits * 50}%`,
 					scrub: 1,
 					invalidateOnRefresh: true,
 					onUpdate: (self) => {
-						// Clamped just below 1 so the final frame still maps into the
-						// last card's slot instead of overflowing the array.
-						const progress = Math.min(Math.max(self.progress, 0), 0.9999);
-						const index = Math.min(Math.floor(progress * cards.length), cards.length - 1);
+						// Card i owns the timeline from the middle of the transition
+						// that brings it in to the middle of the one that covers it:
+						// its READ stretch sits at i × (READ + TRANS).
+						const time = Math.min(Math.max(self.progress, 0), 1) * totalUnits;
+						const index = Math.min(cards.length - 1, Math.floor((time + TRANS / 2) / (READ + TRANS)));
 						cards.forEach((el, i) => el.classList.toggle("active", i === index));
 						navItems.forEach((el, i) => el.classList.toggle("active", i === index));
 					},
 				},
-				defaults: { ease: "none", duration: 1 },
+				defaults: { ease: "none" },
 			});
 
 			cards.forEach((card, index) => {
-				tl.to(card, { scale: 0.9 });
-				if (cards[index + 1]) {
-					tl.to(cards[index + 1], { yPercent: 0 }, "<");
-				}
+				addCardReveal(tl, cardChars[index], reducedMotion);
+
+				const next = cards[index + 1];
+				// The last card is never scaled down — nothing arrives to cover it,
+				// the same rule as the /services and /about decks.
+				if (!next) return;
+				tl.to(card, { scale: 0.9, duration: TRANS });
+				tl.to(next, { yPercent: 0, duration: TRANS }, "<");
 			});
 
 			// First row starts lit — before any scroll the first card is the one on
@@ -108,6 +135,7 @@ function initWhyUsStack(section) {
 				tl.scrollTrigger?.kill();
 				tl.kill();
 				gsap.set(cards, { clearProps: "transform" });
+				cardChars.forEach((chars) => chars.length && gsap.set(chars, { clearProps: "opacity,x" }));
 				navItems.forEach((el) => el.classList.remove("active"));
 			};
 		},

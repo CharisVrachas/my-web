@@ -26,6 +26,11 @@ function initPageTransition() {
 			if (
 				!href ||
 				href.startsWith("#") ||
+				// A hash link into the page that's already open (the navbar's
+				// Services dropdown while on /services) doesn't navigate at all
+				// — an exit transition would leave the loader covering the page
+				// for good. services-page.js scrolls to those instead.
+				(link.hash && link.pathname.replace(/\/+$/, "") === location.pathname.replace(/\/+$/, "")) ||
 				link.target === "_blank" ||
 				link.hostname !== location.hostname ||
 				link.hasAttribute("data-no-preloader")
@@ -89,6 +94,11 @@ function initPreloader() {
 					if (isSmoother()) window.smoother.paused(false);
 					ScrollTrigger.refresh();
 					gsap.set(preloader, { display: "none" });
+					// services-page.js waits on this before scrolling a
+					// /services#<slug> arrival to its card — until here the page
+					// is scroll-locked and the deck's pin positions unsettled.
+					window.preloaderDone = true;
+					window.dispatchEvent(new Event("minos:preloader-done"));
 				},
 			})
 			.to(

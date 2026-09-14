@@ -81,7 +81,7 @@
    was blowing this pill out to the card's full width instead of hugging
    "MOST COMPETITIVE RATE". inline-flex only ever controlled the badge's
    OWN internal layout, never the outer box the parent was stretching —
-   same fix, same reason, as .pr_btn's own align-self just below. */
+   same fix, same reason, as .pr_card_cta's own align-self just below. */
 .pr_card_badge {
 	display: inline-flex;
 	align-self: flex-start;
@@ -105,7 +105,7 @@
    description left three still-different totals: Digital's own natural
    height, Hybrid's padded up to Digital's floor, Absolute's padded floor
    PLUS its badge on top of that.
-   flex column + .pr_btn's own margin-top: auto (below) is what actually
+   flex column + .pr_card_cta's own margin-top: auto (below) is what actually
    locks the three together now: whatever a card's real content adds up to
    short of min-height, the CTA absorbs it by sitting flush at the bottom
    instead of wherever the text happens to end — so the three buttons line
@@ -165,95 +165,16 @@
 	margin: 0 0 24px;
 }
 
-/* The CTA pill — Orisa's .at-btn (text-1/text-2 hover swap + dual-arrow icon,
-   the same mechanic .sv_eyebrow and .footer_tag already carry), styled solid
-   rather than plain-text since this one is a real call to action, not a
-   section label. */
-/* align-self: flex-start, not the stretch .pr_card_body's own flex-direction:
-   column would otherwise apply — without it the button grew to the full
-   width of the card body instead of staying a shrink-wrapped pill.
-   margin-top: auto is the actual alignment fix: it eats whatever space is
-   left over in the column below the description, pinning the button to the
-   body's own bottom edge (now a shared min-height across all three cards,
-   see .pr_card_body) instead of sitting wherever the text happened to end
-   — the three CTAs now line up in a row, not just the boxes around them. */
-.pr_btn {
-	display: inline-flex;
-	align-items: center;
+/* The CTA is the site-wide Button (.u-btn, base.css). Two things only this
+   slot needs on top of it: align-self: flex-start, or .pr_card_body's flex
+   column would stretch the pill to the card's full width; and margin-top:
+   auto, which eats whatever space is left below the description and pins
+   the pill to the body's own bottom edge (a shared min-height across all
+   three cards, see .pr_card_body) — so the three CTAs line up in a row, not
+   just the boxes around them. */
+.pr_card_cta {
 	align-self: flex-start;
 	margin-top: auto;
-	gap: 10px;
-	padding: 12px 24px;
-	border-radius: 9999px;
-	background-color: var(--vv-gold);
-	color: var(--vv-charcoal);
-	text-decoration: none;
-	font-family: Jost, Arial, sans-serif;
-	font-size: 0.8125rem;
-	font-weight: 900;
-	letter-spacing: 0.02em;
-	text-transform: uppercase;
-	transition: opacity 0.3s ease;
-}
-.pr_btn:hover {
-	opacity: 0.85;
-}
-.pr_btn_label {
-	position: relative;
-	z-index: 1;
-	overflow: hidden;
-	display: inline-block;
-	height: 1em;
-}
-/* white-space: nowrap — .pr_btn_label is height: 1em with overflow: hidden
-   (needed for the text-1/text-2 vertical swap below), and without it the
-   three-word CTAs ("Choose Fixed Monthly") wrapped onto a second line at
-   narrower widths that the 1em-tall label then silently clipped: the button
-   read as "CHOOSE FIXED" with "Monthly" simply gone. nowrap keeps every CTA
-   on one line and lets the button's own width grow to fit it instead —
-   already how "Get Started" and "Request a Quote" behave, just not visibly
-   different until a longer label exposed the missing rule. */
-.pr_btn_label .text-1,
-.pr_btn_label .text-2 {
-	display: block;
-	white-space: nowrap;
-	transition: 0.3s;
-}
-.pr_btn_label .text-2 {
-	position: absolute;
-	top: 100%;
-	left: 0;
-}
-.pr_btn:hover .pr_btn_label .text-1 {
-	transform: translateY(-150%);
-}
-.pr_btn:hover .pr_btn_label .text-2 {
-	top: 0;
-}
-.pr_btn_icon {
-	position: relative;
-	overflow: hidden;
-	width: 11px;
-	height: 11px;
-	display: inline-flex;
-	flex-shrink: 0;
-}
-.pr_btn_icon svg {
-	position: absolute;
-	inset: 0;
-	transition: all 0.2s ease-out;
-}
-.pr_btn_icon svg:last-child {
-	opacity: 0;
-	transform: translate(-12px, 12px);
-}
-.pr_btn:hover .pr_btn_icon svg:first-child {
-	transform: translate(12px, -12px);
-	opacity: 0;
-}
-.pr_btn:hover .pr_btn_icon svg:last-child {
-	opacity: 1;
-	transform: translate(0, 0);
 }
 
 .pr_card_features {

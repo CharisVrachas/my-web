@@ -21,7 +21,12 @@
 	   first pillar row rendered underneath it. 9rem clears that across the whole
 	   desktop fluid-type range (checked from 992px up); the ≤991px rule below
 	   already carries its own padding-top and overrides this. */
-	padding-top: 9rem;
+	/* 7rem, not the 9rem this was sized for the old centred 8rem logo: the
+	   header is now Orisa's short bar (and by the time Pillars is on screen,
+	   only the MENU pill, top 40px), and the 2rem freed here is what
+	   .pillars_wrapper's extra bottom clearance (below) spends — this section
+	   is exactly one viewport tall, so the two have to balance. */
+	padding-top: 7rem;
 	/* No background video. Apertura's own was an agency placeholder clip with
 	   "APERTURE STUDIO — PLACEHOLDER" burned into the frame, in their red.
 	   There's no Minos Host footage to put in its place, so this is flat
@@ -221,7 +226,12 @@
 	   gap plus a small margin, so .pillars_fifth below can never land on top of
 	   it. Rescale if .pillar_heading's font-size changes again — see the
 	   comment on the interlace offsets themselves for the same dependency. */
-	padding-bottom: 5.1vw;
+	/* + 32px since the type pass: the interlaced paragraphs are set at the
+	   site-wide text size now (type.css), and the deepest one ("Hosts…") ran
+	   15-23px past the old 5.1vw into the 5th item below, measured at
+	   1920/1440/1280px wide. The flat 32px covers the worst of those with
+	   margin to spare. */
+	padding-bottom: calc(5.1vw + 32px);
 	display: grid;
 	position: relative;
 }

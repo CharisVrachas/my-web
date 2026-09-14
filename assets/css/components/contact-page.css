@@ -2,9 +2,8 @@
    ported from Orisa's contact-1.html (its own inline banner markup) and
    about-1/sec-4.html (the form section it pulls in).
 
-   Class prefix is ct_ (Contact). The submit button reuses .pr_btn from
-   pricing-page.css rather than a third copy of the same text-1/text-2 +
-   dual-arrow pill — same button, same class, different page.
+   Class prefix is ct_ (Contact). The submit button is the site-wide Button
+   (Button.astro / .u-btn in base.css), like every other CTA here.
 
    Numbers that carry real meaning — the 800px banner height, the form's
    16px vertical padding, the 120px textarea min-height, the 14px
@@ -218,8 +217,8 @@
 	margin-bottom: 16px;
 }
 .ct_form_btn {
-	/* .pr_btn is already a fully-styled pill; nothing to add here beyond
-	   spacing at the callsite, kept for a hook if that ever changes. */
+	/* Button.astro's .u-btn (base.css) is already a fully-styled pill;
+	   nothing to add here, kept as a hook if that ever changes. */
 }
 .ct_form_disclaimer {
 	margin: 0;

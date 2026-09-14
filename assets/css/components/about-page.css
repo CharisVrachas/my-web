@@ -124,17 +124,15 @@
 	margin-bottom: 10px;
 	border-bottom: 1px solid rgba(184, 154, 107, 0.2);
 }
-/* 32px base — Orisa gives this element no font-size above its own $lg
-   breakpoint (same absent-base situation as .as_card_media); 24px is its
-   real value AT $lg (1200-1399px), so 32px here is a defensible step up for
-   the wider range above that, roughly matching how far apart its other
-   defined steps (24/22/20px) sit from one another. */
+/* The site-wide card title (base.css), shared with every other card deck. */
 .as_card_title {
 	margin: 0;
 	color: var(--vv-off-white);
-	font-weight: 600;
-	line-height: 1.1;
-	letter-spacing: -0.03em;
+	font-family: Jost, Arial, sans-serif;
+	font-size: var(--card-title-size);
+	font-weight: 500;
+	line-height: 1.05;
+	letter-spacing: -0.04em;
 }
 .as_card_meta {
 	display: flex;
@@ -169,13 +167,16 @@
 	color: var(--vv-gold);
 	border: 1px solid rgba(184, 154, 107, 0.35);
 }
+/* The site-wide card text (base.css) — same size, weight, leading and full
+   off-white as every other deck's paragraphs and bullets. */
 .as_card_desc {
 	margin: 0;
 	color: var(--vv-off-white);
-	opacity: 0.75;
-	font-size: 1rem;
-	line-height: 1.6;
-	letter-spacing: -0.005em;
+	font-family: Jost, Arial, sans-serif;
+	font-size: var(--card-text-size);
+	font-weight: 400;
+	line-height: 1.5;
+	letter-spacing: 0;
 }
 .as_card_desc + .as_card_desc {
 	margin-top: 0.75rem;
@@ -191,9 +192,7 @@
 		margin-left: 0;
 		max-width: none;
 	}
-	.as_card_title {
-		font-size: 26px;
-	}
+
 }
 @media screen and (max-width: 991px) {
 	/* The deck's own pinned box, sized in --vh — same technique and same
@@ -315,10 +314,5 @@
 	.as_story_head {
 		padding-bottom: 32px;
 	}
-	.as_card_title {
-		font-size: 22px;
-	}
-	.as_card_desc {
-		font-size: 0.9375rem;
-	}
+
 }

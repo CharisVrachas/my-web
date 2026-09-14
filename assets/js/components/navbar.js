@@ -72,15 +72,12 @@ function initNavbar() {
 	});
 }
 
-// Collapses the inline About/Pillars/Lineage/Shop row to the same "Menu"
-// button [data-collapse="tiny"] already shows below 479px — triggered here
-// by scroll position instead of viewport width. See the .is-compact comment
-// in navbar.css for why: past the hero, the fixed navbar and the fixed
-// footer (once its own reveal starts — see footer.js) both sit at their own
-// permanent position in the viewport regardless of scroll, and on a short
-// window the footer's own top row has nowhere to go that doesn't collide
-// with a full-width nav still spread out above it. One button in the corner
-// has nothing left to collide with.
+// Swaps the header bar (logo, centred menu, grid button) for the lone
+// "MENU" pill once you've scrolled past the top — Orisa's own header simply
+// scrolls away and leaves that pill behind; this navbar is fixed, so
+// .is-compact recreates the same end state (see navbar.css). It also keeps
+// the fixed bar from colliding with the fixed footer's top row once the
+// footer's own reveal starts (footer.js).
 function initNavCompact() {
 	const navbar = document.querySelector(".u-navbar");
 	if (!navbar) return;

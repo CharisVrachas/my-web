@@ -366,6 +366,28 @@ label {
 
 	/* Viewport unit fix (set from JS in assets/js/head.js) */
 	--vh: 1vh;
+
+	/* Card-deck type — ONE title size and ONE text size shared by every
+	   stacking card deck on the site (WhyUs, /services, /about, /faq), so a
+	   card title, or a card paragraph/bullet, never renders at two different
+	   sizes on two pages. Held to the viewport's height as well as its width,
+	   since each card is pinned inside a single screen: 72px / 20px at
+	   1920×1080, down to 32px / 16px on a phone. Bullets use the text size,
+	   the same as paragraphs. */
+	--card-title-size: clamp(32px, min(3.75vw, 6.7vh), 72px);
+	--card-text-size: clamp(16px, min(1.05vw, 1.9vh), 20px);
+
+	/* The site-wide type scale — one size per text ROLE, applied to every
+	   component in assets/css/type.css. Values are the 1920px size, scaling
+	   down with the viewport. Card titles and all body text (paragraphs,
+	   bullets, answers) use the two card tokens above. */
+	--type-h1: clamp(28px, 3vw, 62px); /* page titles: Jost 900, uppercase */
+	--type-display: clamp(44px, 5.2vw, 100px); /* decorative display words: Playfair */
+	--type-h2: clamp(30px, 2.9vw, 56px); /* section titles: Playfair */
+	--type-h3: clamp(18px, 1.25vw, 24px); /* sub-titles inside a block: Jost 600 */
+	--type-lead: clamp(18px, 1.3vw, 25px); /* intro statements and quotes: Jost 400 */
+	--type-text: var(--card-text-size); /* all body text: Jost 400 */
+	--type-label: clamp(12px, 0.75vw, 14px); /* eyebrows, tags, small print: Jost */
 }
 .layout-hflex {
 	flex-direction: row;
@@ -538,47 +560,109 @@ figcaption {
 	font-weight: 400;
 	line-height: 120%;
 }
-.u-btn-ellipse {
-	text-align: center;
-	letter-spacing: 0;
-	text-transform: uppercase;
-	cursor: pointer;
-	border-radius: 50%;
-	padding: 0.75rem 1rem;
+/* ===== .u-btn — the one CTA pill every button on the site uses ==========
+   Orisa's .at-btn (scss/components/_buttons.scss), ported number for number
+   — 17px/25px padding, 50px radius, 8px gap, the 16px arrow window and its
+   16px/13px fly-out — in px, not rem, since this page's root font-size is
+   fluid. Markup: src/components/Button.astro.
+
+   Only the palette is Minos's. Orisa's pill is #1D1D1D on a light page; here
+   it is gold fill with charcoal type, the one pairing that holds up on every
+   ground a button lands on (photographs, charcoal, the lifted #333c4b cards)
+   — see the design-tokens comment above. Uppercase Jost, since that is this
+   site's voice for short labels (Orisa's own markup is uppercase too). */
+.u-btn {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 17px 25px;
+	border: 0;
+	border-radius: 50px;
+	background-color: var(--vv-gold);
+	color: var(--vv-charcoal);
 	font-family: Jost, Arial, sans-serif;
-	font-size: 0.75rem;
-	font-weight: 900;
-	line-height: 90%;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: -0.02em;
+	text-transform: uppercase;
 	text-decoration: none;
-	transition:
-		color 0.3s cubic-bezier(0.23, 1, 0.32, 1),
-		background-color 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+	white-space: nowrap;
+	cursor: pointer;
 }
-/* Charcoal pill, gold label. The template had this the other way round — a
-   light pill with accent type — which gold cannot carry. */
-.u-btn-ellipse.primary {
-	z-index: 2;
-	background-color: var(--vv-charcoal);
-	color: var(--vv-gold);
-	text-decoration: none;
+/* Two stacked copies of the label inside an overflow: hidden window —
+   .text-2 parked one line below, both sliding up together on hover. */
+.u-btn_label {
+	position: relative;
+	z-index: 1;
+	display: inline-block;
+	overflow: hidden;
+}
+.u-btn_label .text-1,
+.u-btn_label .text-2 {
+	display: block;
+	transition: 0.3s;
+}
+.u-btn_label .text-1 {
 	position: relative;
 }
-.u-btn-ellipse.primary:hover {
-	background-color: var(--vv-gold);
-	color: var(--vv-charcoal);
+.u-btn_label .text-2 {
+	position: absolute;
+	top: 100%;
+	left: 0;
 }
-.u-btn-ellipse.red {
-	background-color: var(--vv-gold);
-	color: var(--vv-charcoal);
+/* A 16px window holding two arrows: the first flies out top-right while the
+   second, parked bottom-left and invisible, flies in to take its place. */
+.u-btn_icon {
+	position: relative;
+	display: inline-flex;
+	flex-shrink: 0;
+	width: 16px;
+	height: 16px;
+	margin-left: 4px;
+	overflow: hidden;
 }
-.u-btn-ellipse.red:hover,
-.u-btn-ellipse.black {
-	background-color: var(--vv-charcoal);
-	color: var(--vv-gold);
+.u-btn_icon svg {
+	position: absolute;
+	bottom: -1px;
+	left: 1px;
+	transform: translateY(-2px);
+	transition: all 0.2s ease-out;
 }
-.u-btn-ellipse.black:hover {
-	background-color: var(--vv-gold);
-	color: var(--vv-charcoal);
+.u-btn_icon svg:last-child {
+	left: -12px;
+	bottom: -12px;
+	transform: translate(0, 0);
+	opacity: 0;
+}
+/* .u-btn-host: for a pill that sits inside a larger link (Films' whole
+   panel is the <a>) — hovering anywhere on the host plays the roll too. */
+.u-btn:hover .u-btn_label .text-1,
+.u-btn-host:hover .u-btn_label .text-1 {
+	transform: translateY(-150%);
+}
+.u-btn:hover .u-btn_label .text-2,
+.u-btn-host:hover .u-btn_label .text-2 {
+	top: 50%;
+	transform: translateY(-50%);
+}
+.u-btn:hover .u-btn_icon svg:first-child,
+.u-btn-host:hover .u-btn_icon svg:first-child {
+	transform: translate(16px, -16px);
+}
+.u-btn:hover .u-btn_icon svg:last-child,
+.u-btn-host:hover .u-btn_icon svg:last-child {
+	opacity: 1;
+	transform: translate(13px, -13px);
+}
+@media (prefers-reduced-motion: reduce) {
+	.u-btn_label .text-1,
+	.u-btn_label .text-2,
+	.u-btn_icon svg {
+		transition: none;
+	}
 }
 .vv_decor,
 .film_decor {
@@ -663,14 +747,6 @@ figcaption {
 	}
 	.u-h2-feature {
 		font-size: 4rem;
-	}
-	.u-btn-ellipse.primary:hover {
-		background-color: var(--vv-charcoal);
-		color: var(--vv-gold);
-	}
-	.u-btn-ellipse.black:hover {
-		background-color: var(--vv-charcoal);
-		color: var(--vv-gold);
 	}
 	.u-link:hover {
 		color: var(--vv-gold);

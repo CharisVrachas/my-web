@@ -134,78 +134,14 @@
 	max-width: 48rem;
 	margin: 0;
 }
-/* ===== Orisa's .at-btn-group — circle / pill / circle =====
-   The whole trick is in the first and third children. At rest child 1 is at
-   half scale and pulled -52px into the pill, so it reads as a single button
-   with one trailing circle; on hover the two swap roles, and because both
-   the scale and the negative margin animate, the arrow looks like it hops
-   from one end to the other. Orisa's numbers exactly (0.5 scale, 52px).
-
-   Colours are Minos's: Orisa builds these in #1D1D1D on a light page, which
-   on charcoal would be a near-invisible pill. Gold fill with charcoal type is
-   the same figure/ground relationship the other way up — and it is the one
-   pairing that clears contrast on this background (see base.css). */
+/* The CTA beside the heading — the site-wide Button (.u-btn, base.css). Was
+   Orisa's circle/pill/circle .at-btn-group; every CTA on the site now shares
+   the one .at-btn pill instead. The data-fade-* attributes on this wrapper
+   (WhyUs.astro) still fade it in (reveal.js). */
 .whyus_head_aside {
 	display: flex;
-	width: fit-content;
 	flex-shrink: 0;
 	margin-left: auto;
-}
-.whyus_head_aside > *:nth-child(1) {
-	transform: scale3d(0.5, 0.5, 1);
-	margin-inline-end: -52px;
-}
-.whyus_head_aside > *:nth-child(2),
-.whyus_head_aside > *:nth-child(3) {
-	transform: scale3d(1, 1, 1);
-}
-.whyus_head_aside:hover > *:nth-child(1) {
-	transform: scale3d(1, 1, 1);
-	margin-inline-end: 0;
-}
-.whyus_head_aside:hover > *:nth-child(3) {
-	transform: scale3d(0.5, 0.5, 1);
-	margin-inline-start: -52px;
-}
-.whyus_btn,
-.whyus_btn_circle {
-	background-color: var(--vv-gold);
-	color: var(--vv-charcoal);
-	text-decoration: none;
-	transition:
-		transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
-		margin 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-}
-/* position/z-index are Orisa's `.at-btn.z-index-1` on this element, and they
-   are load-bearing: the circle that tucks -52px into the pill on hover has to
-   pass BEHIND it. Without this the pill and the circle share a stacking
-   context in DOM order, the circle wins, and it sits on top of the label —
-   clipping "What we handle" to "What we handl" mid-hover. */
-.whyus_btn {
-	position: relative;
-	z-index: 1;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: 8px;
-	padding: 17px 25px;
-	border-radius: 50px;
-	font-family: Jost, Arial, sans-serif;
-	font-size: 0.875rem;
-	font-weight: 900;
-	line-height: 1;
-	letter-spacing: 0;
-	text-transform: uppercase;
-	white-space: nowrap;
-}
-.whyus_btn_circle {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 50px;
-	height: 50px;
-	border-radius: 100%;
-	flex-shrink: 0;
 }
 
 /* ===== The three-piece mark =====
@@ -383,13 +319,16 @@
 .whyus_card_icon svg {
 	display: block;
 }
+/* The site-wide card title (base.css) — Jost, not the Playfair this used to
+   be, so it matches the card titles on /services, /about and /faq exactly. */
 .whyus_card_title {
 	display: block;
 	color: var(--vv-off-white);
-	font-family: "Playfair Display", Georgia, serif;
-	font-size: 1.75rem;
-	font-weight: 400;
-	line-height: 1.15;
+	font-family: Jost, Arial, sans-serif;
+	font-size: var(--card-title-size);
+	font-weight: 500;
+	line-height: 1.05;
+	letter-spacing: -0.04em;
 	margin-bottom: 1.5rem;
 }
 /* Sentence case, not this page's usual uppercase micro-copy — Orisa's own
@@ -403,7 +342,9 @@
    labels) is short 1-3 word tags, not run-on sentences. */
 .whyus_card_list {
 	color: var(--vv-off-white);
-	font-size: 0.8125rem;
+	font-family: Jost, Arial, sans-serif;
+	font-size: var(--card-text-size);
+	font-weight: 400;
 	line-height: 1.5;
 	margin: 0 0 1rem;
 	padding-left: 1.1rem;
@@ -595,7 +536,5 @@
 	.whyus_card_copy {
 		padding: 1.5rem;
 	}
-	.whyus_card_title {
-		font-size: 1.375rem;
-	}
+
 }

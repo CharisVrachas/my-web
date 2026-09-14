@@ -56,43 +56,26 @@
 .fq_number {
 	margin-bottom: 12px;
 }
-/* Dimmed-then-revealed, plain CSS transition — see faq-page.js's own
-   comment for why this replaced a GSAP/SplitText version that only ever
-   worked reliably for the first card. .is-revealed is one class, added
-   once to .fq_deck by a single plain ScrollTrigger with nothing pinned or
-   scrubbed about it; every .fq_title shares this exact rule, so all four
-   are guaranteed to look identical rather than depending on separate
-   per-card bookkeeping that could go right for one and wrong for the
-   others. */
+/* Title and subtitle at the site-wide card sizes (base.css), revealed
+   character by character by the same deck reveal every card deck shares
+   (reveal.js's card helpers, wired up in faq-page.js). */
 .fq_title {
 	margin: 0 0 1rem;
 	color: var(--vv-off-white);
-	font-family: "Playfair Display", Georgia, serif;
-	font-size: clamp(28px, 2.8vw, 42px);
-	font-weight: 400;
-	line-height: 1.1;
-	opacity: 0.3;
-	transform: translateX(-7px);
-	transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-.fq_deck.is-revealed .fq_title {
-	opacity: 1;
-	transform: translateX(0);
-}
-@media (prefers-reduced-motion: reduce) {
-	.fq_title {
-		opacity: 1;
-		transform: none;
-		transition: none;
-	}
+	font-family: Jost, Arial, sans-serif;
+	font-size: var(--card-title-size);
+	font-weight: 500;
+	line-height: 1.05;
+	letter-spacing: -0.04em;
 }
 .fq_subtitle {
 	margin: 0;
 	color: var(--vv-off-white);
-	opacity: 0.7;
-	font-size: 1rem;
-	line-height: 1.55;
-	max-width: 22rem;
+	font-family: Jost, Arial, sans-serif;
+	font-size: var(--card-text-size);
+	font-weight: 400;
+	line-height: 1.5;
+	max-width: 26rem;
 }
 
 /* ===== Accordion ===========================================================
@@ -138,12 +121,14 @@
 	font-size: 14px;
 	font-weight: 700;
 }
+/* Card text size (base.css); weight is what sets a question apart from its
+   answer, not a size of its own. */
 .fq_item_question {
 	flex: 1 1 auto;
 	color: var(--vv-off-white);
-	font-size: 1.25rem;
+	font-size: var(--card-text-size);
 	font-weight: 600;
-	line-height: 1.3;
+	line-height: 1.4;
 }
 /* The +/− toggle — two bars forming a plus; the vertical one fades/rotates
    away on open, leaving the horizontal bar as a minus. Orisa's own version is
@@ -202,9 +187,9 @@
 	margin: 0;
 	padding: 4px 0 20px 46px;
 	color: var(--vv-off-white);
-	opacity: 0.7;
-	font-size: 0.9375rem;
-	line-height: 1.6;
+	font-size: var(--card-text-size);
+	font-weight: 400;
+	line-height: 1.5;
 }
 /* min(220px, 28vh) cap, own scrollbar past that — ≥992px only (see the
    media query below): this deck is pinned by faq-page.js for the whole time
@@ -240,9 +225,7 @@
 	}
 }
 @media screen and (max-width: 767px) {
-	.fq_item_question {
-		font-size: 1.0625rem;
-	}
+
 	.fq_item_panel_inner p {
 		padding-left: 0;
 	}

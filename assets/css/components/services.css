@@ -196,17 +196,8 @@
 	outline-offset: 0.25rem;
 }
 
-/* display: flex is load-bearing, not cosmetic. .u-btn-ellipse (base.css) never
-   sets `display` — it inherits whatever its parent gives it, and every working
-   instance of it on this site is a flex item: Films' buttons are <div>s inside
-   .film_inner (display: flex), which blockifies and shrink-wraps them, and
-   that box is what border-radius: 50% turns into the pill.
-   As a plain block parent, this left the <a> at display: inline, where
-   vertical padding doesn't open the line box and border-radius: 50% renders as
-   a broken sliver of a curve rather than an ellipse — it never actually drew
-   the pill. Making this a flex container gives the anchor the same blockified,
-   shrink-wrapped box Films' divs get, so the same classes finally produce the
-   same button. */
+/* Centres the "View more" pill (Button.astro, .u-btn in base.css) under the
+   list. */
 .services_cta {
 	display: flex;
 	justify-content: center;

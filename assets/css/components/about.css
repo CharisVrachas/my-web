@@ -75,7 +75,7 @@
    two paragraphs above it — 0.75rem from .about_copy's own gap reads too
    tight between body copy and a button, so it gets a bit more room of its
    own on top of that. */
-.about_copy > .u-btn-ellipse {
+.about_copy > .u-btn {
 	margin-top: 1rem;
 }
 /* Gold, not the inherited off-white (.about_wrapper) — off-white read fine

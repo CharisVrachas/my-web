@@ -247,148 +247,129 @@
 	opacity: 0.6;
 }
 
-/* ===== "Things we offer" deck (Orisa home-2/sec-4) ======================= */
+/* ===== "Things we offer" deck (Orisa home-2/sec-4) =======================
+   Rebuilt to Orisa's own card, measured off services-2.html at 1920px: a
+   rounded panel (pt-120 pb-80) holding a pinned stack of full-viewport
+   items, each one a vertically centred two-column row — col-lg-6 text,
+   offset-lg-1, col-lg-5 image. The text column is the title over the
+   paragraphs and bullet lists, all at the site-wide card type sizes
+   (--card-title-size / --card-text-size, base.css) that every other card
+   deck on the site shares.
+
+   Content is Minos's (src/data/services.ts). Orisa's four cards are all
+   description + lists; of these nine only card 1 has lists — the other
+   eight have a second paragraph instead, set exactly like the first (same
+   class, same reveal), directly under it.
+
+   Palette is this page's: the panel is the lifted #232a35 charcoal where
+   Orisa has its neutral-50 grey, type off-white where Orisa's is
+   neutral-950. Jost 500 stands in for Orisa's DM Sans 500 on the title —
+   the same heavy, tightly tracked sans.
+
+   Mechanics (pin, scale, yPercent 101, per-card reveal, /services#slug
+   scrolling) live in services-page.js. px throughout, not rem, for the
+   usual fluid-root reason. */
 .sv_offer {
 	background-color: var(--vv-charcoal);
 	padding: 90px 0 0;
 }
-/* Orisa wraps this in .bg-neutral-50.rounded-5 inset from the page edge — a
-   panel floating on the background rather than a full-bleed band, the same
-   treatment .testimonials_panel already uses here. */
+/* Orisa's .at-service-area.rounded-5.mx-lg-3.pt-120.pb-80 — a panel floating
+   on the page rather than a full-bleed band. */
 .sv_offer_inner {
 	background-color: #232a35;
 	border-radius: 2rem;
 	margin: 0 0.75rem;
-	padding: 70px 0 0;
+	padding: 120px 0 80px;
 }
+/* Orisa's .at-service-subtitle-wrap: eyebrow left, a small underlined note
+   right, 50px above the deck, no rule under it. */
 .sv_offer_head {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 1rem;
-	padding-bottom: 28px;
-	margin-bottom: 40px;
-	border-bottom: 1px solid rgba(184, 154, 107, 0.2);
+	margin-bottom: 50px;
 }
 .sv_offer_count {
 	color: var(--vv-off-white);
-	opacity: 0.5;
-	font-size: 0.875rem;
+	font-size: 16px;
+	font-weight: 500;
 	text-decoration: underline;
 	text-underline-offset: 3px;
 }
 
-/* The deck itself. Every card after the first is absolutely positioned on top
-   of the one before it and starts at yPercent 100 (services-page.js); the
-   deck is what gets pinned. Height is driven by the first card, which is the
-   only one still in normal flow — exactly the arrangement whyus.css uses for
-   the same mechanic, including the same reason the cards must be opaque. */
+/* The deck. Every card after the first is absolutely positioned on top of
+   the one before it and starts at yPercent 101 (services-page.js); the deck
+   is what gets pinned, and its height comes from the first card, the only
+   one still in normal flow. */
 .sv_offer_deck {
 	position: relative;
 }
-/* min-height: 100vh, and the flex centring, are what make the stack read as
-   one card at a time — the same shape .whyus_card uses. Without a height
-   every card was only as tall as its own content, so `yPercent: 100` (the
-   off-screen start position services-page.js sets) put each one just one
-   CONTENT height down rather than a full screen down: several cards were
-   visible at once, at uneven offsets, since the cards are not all the same
-   length. A shared viewport height makes that offset uniform and off-screen. */
-/* The background lives HERE, on the full-height card box — not on the inner
-   grid. That is the one place this deviates from Orisa, and deliberately:
-   Orisa paints the background on its inner `.container.bg-neutral-50` and
-   leaves `.item` transparent, which works there because its four cards are
-   near enough the same height that each incoming card's opaque area covers
-   the outgoing one's. These nine are not — the first card carries a
-   twelve-item list and runs ~870px while most of the others are ~430px — so
-   with the fill on the inner box the taller card's top and bottom bands sat
-   outside the shorter card's, and its title and photo stayed visible above
-   the card that was supposed to have replaced it. Filling the whole 100vh
-   box makes every card cover every other one whatever its content length. */
+/* Orisa's .scroll-section .item: min-height 100vh, which is what makes the
+   stack read as one card at a time.
+
+   The background lives HERE, on the full-height card box, not on the inner
+   row — the one deliberate departure from Orisa, whose fill is on the inner
+   .container. Each outgoing card is only scaled (never hidden), and these
+   nine differ a lot in height (card 1 carries two lists), so with the fill
+   on the inner box a taller card's edges stayed visible around a shorter
+   one sliding over it. A fill on the whole 100vh box covers every card
+   whatever its content length. */
 .sv_offer_card {
-	min-height: 100vh;
+	display: flex;
+	align-items: center;
 	width: 100%;
+	min-height: 100vh;
 	top: 0;
 	left: 0;
 	right: 0;
-	display: flex;
-	align-items: center;
-	padding-bottom: 40px;
 	background-color: #232a35;
 }
-/* No width gate any more — services-page.js now runs this deck at every
-   width (see its own comment), so every card after the first needs to be
-   absolutely positioned regardless of viewport. */
 .sv_offer_card:not(:first-child) {
 	position: absolute;
 }
-/* The wrapper .container div between the card and its grid (see
-   ServicesOffer.astro) is a flex child here, so it needs to be told to take
-   the full width — its own `margin: auto` would otherwise shrink-wrap it. */
+/* The .container wrapper (ServicesOffer.astro) is a flex child here, and its
+   own margin: auto would otherwise shrink-wrap it. */
 .sv_offer_card > .container {
 	width: 100%;
 }
-/* Background is the SAME colour as the panel behind it (.sv_offer_inner), and
-   there is deliberately no border and no radius — this is Orisa's own card,
-   whose classes are `container bg-neutral-50` where bg-neutral-50 is exactly
-   the background of the section it sits in (home-2/sec-4.html).
-
-   That is not a cosmetic detail, it is what makes the stack work. Each card
-   is only scaled down to 0.9 as the next one covers it — never hidden — so
-   an outgoing card that looks different from its background stays visible as
-   a shrinking rectangle peeking out around the incoming one. A first pass
-   here gave the card its own lifted #333c4b panel with a gold border, and
-   that edge was plainly visible behind every transition. Matching the
-   background means the shrink has nothing to show.
-
-   Still fully opaque, for the reason .whyus_card_inner documents: the card
-   underneath has to be occluded, and only a solid fill does that. */
+/* Orisa's .container.pt-20.pb-40 > .row.align-items-center with col-lg-6 +
+   offset-lg-1 col-lg-5 — as a grid: 6fr / 5fr with one twelfth of the row
+   between them. 1750px is Orisa's own .container ceiling at ≥1400px. No
+   background here — it's on .sv_offer_card above. */
 .sv_offer_card_inner {
 	display: grid;
-	grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-	gap: 2.5rem;
+	grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+	column-gap: calc(100% / 12);
 	align-items: center;
-	/* px, and margin-inline: auto now that .container sits on a wrapper above
-	   rather than on this element (see ServicesOffer.astro) — that wrapper no
-	   longer centres this for us. 1320px is Orisa's own .container ceiling;
-	   the 78rem this used to be resolved to ~1716px at this page's fluid root
-	   (22px, not 16px), i.e. a card half again as wide as the original. */
-	max-width: 1320px;
+	max-width: 1750px;
 	margin-inline: auto;
-	/* 20px top / 40px bottom — Orisa's own pt-20 pb-40 on this element. */
 	padding: 20px 0 40px;
-	/* No background here — it is on .sv_offer_card above; see the note there. */
 }
+/* Orisa's .d-flex.flex-column.justify-content-between.h-100.py-4.px-2 */
 .sv_offer_text {
 	display: flex;
 	flex-direction: column;
-	gap: 1.5rem;
-	padding: 1rem 0.5rem;
+	justify-content: space-between;
+	height: 100%;
+	padding: 24px 8px;
 }
-/* Feature Display, not Review: these are sentence-case service names of very
-   uneven length ("Property management" vs "Review response and online
-   reputation"), and the wide display face turns the longer ones into three
-   cramped lines. Same call, for the same reason, as .footer_connect. */
-/* Orisa's own size for this heading is .fz-ds-1 — 80px, rising to 124px above
-   1400px (main.css:55/75). clamp() tracks that rather than the 52px cap this
-   had, which was well under half the original and made the card read as a
-   list item instead of the display heading it is. */
+/* Orisa's .fz-ds-1.fw-500 title, at this site's shared card title size
+   rather than its 124px, 24px under it. text-scale-anim wraps
+   every letter in its own span (services-page.js); they have to be
+   inline-block for scaleY to apply, and word spans keep words whole. */
 .sv_offer_title {
 	margin: 0;
+	padding-bottom: 24px;
 	color: var(--vv-off-white);
-	font-family: "Playfair Display", Georgia, serif;
-	/* Trimmed ~15% from 104px for the site-wide title pass — stays well
-	   above the old 52px cap the paragraph above was written against (the
-	   one that read as a list item, not a display heading); this isn't a
-	   return to that, just a size step down from the current ceiling. */
-	font-size: clamp(30px, 4.6vw, 88px);
-	font-weight: 400;
+	font-family: Jost, Arial, sans-serif;
+	/* The site-wide card title size (base.css) — the same token WhyUs,
+	   /about and /faq use, so every card title matches exactly. */
+	font-size: var(--card-title-size);
+	font-weight: 500;
 	line-height: 1.05;
-	letter-spacing: -0.01em;
+	letter-spacing: -0.04em;
 }
-/* text-scale-anim wraps every letter in its own span (services-page.js). They
-   have to be inline-block for scaleY/y to apply at all — transforms are a
-   no-op on a plain inline box — and the word spans keep whole words from
-   breaking apart across a line end. */
 .sv_offer_title .at-word-span {
 	display: inline-block;
 	white-space: nowrap;
@@ -397,80 +378,80 @@
 	display: inline-block;
 	transform-origin: center bottom;
 }
-.sv_offer_body {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr);
-	gap: 1.25rem;
-}
+/* Paragraphs at the site-wide card text size (base.css) — the same size,
+   weight and leading as the bullets below and as every other deck's card
+   copy. */
 .sv_offer_desc {
-	margin: 0;
+	margin: 0 0 16px;
 	color: var(--vv-off-white);
-	opacity: 0.8;
-	font-size: 1rem;
-	line-height: 1.55;
+	font-size: var(--card-text-size);
+	font-weight: 400;
+	line-height: 1.5;
+	letter-spacing: 0;
 }
-.sv_offer_aside {
-	margin: 0;
-	color: var(--vv-off-white);
-	opacity: 0.6;
-	font-size: 0.9375rem;
-	line-height: 1.55;
-	padding-left: 1.25rem;
-	border-left: 1px solid rgba(184, 154, 107, 0.35);
+/* The lists' slot (card 1 only), directly under the paragraphs with no
+   indent of its own — the bullets hang in each list's own padding. */
+.sv_offer_side {
+	display: flex;
+	flex-direction: column;
 }
 .sv_offer_list_label {
-	margin: 0 0 0.75rem;
+	margin: 0 0 12px;
 	color: var(--vv-gold);
 	letter-spacing: 0.025rem;
 	text-transform: uppercase;
 	font-family: Jost, Arial, sans-serif;
-	font-size: 0.75rem;
+	font-size: 12px;
 }
+/* Orisa's pair of bullet lists, side by side. The bullets are set exactly
+   like the paragraphs above (--card-text-size, 400, 1.5) and wrap like them,
+   rather than Orisa's smaller nowrap lists. */
 .sv_offer_lists {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 0.5rem 1.5rem;
+	display: flex;
+	flex-direction: row;
+	gap: 4px 48px;
 }
 .sv_offer_list {
-	list-style: none;
+	flex: 1 1 0;
+	min-width: 0;
 	margin: 0;
-	padding: 0;
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
+	padding-left: 18px;
+	list-style: disc;
+	color: var(--vv-off-white);
 }
 .sv_offer_list li {
-	position: relative;
-	padding-left: 1rem;
-	color: var(--vv-off-white);
-	opacity: 0.7;
-	font-size: 0.875rem;
-	line-height: 1.4;
+	margin: 0;
+	font-size: var(--card-text-size);
+	line-height: 1.5;
 }
-.sv_offer_list li::before {
-	content: "";
-	position: absolute;
-	left: 0;
-	top: 0.5em;
-	width: 5px;
-	height: 5px;
-	border-radius: 50%;
-	background-color: var(--vv-gold);
+.sv_offer_list li::marker {
+	color: var(--vv-gold);
 }
+/* Orisa's .rounded-4.overflow-hidden > img.img-cover. A shared 12:7 frame
+   (Orisa's own photos render at ~705×411) so the nine photos — landscape and
+   reframed portrait alike — sit in one consistent shape. */
 .sv_offer_media {
-	border-radius: 12px;
+	border-radius: 16px;
 	overflow: hidden;
-	align-self: stretch;
-	min-height: 320px;
 }
 .sv_offer_media img {
 	display: block;
 	width: 100%;
-	height: 100%;
-	min-height: 320px;
+	height: auto;
+	aspect-ratio: 12 / 7;
 	object-fit: cover;
 }
 
+/* Paragraphs and lists stay stacked at every width: at the shared card text
+   size, Orisa's side-by-side (d-xxl-flex) would squeeze the paragraphs into
+   a column a few words wide beside two full-size lists. */
+/* Orisa's own spacing step below 1400px: pt-120 → 80px. Its type steps are
+   covered by the fluid sizes on .sv_offer_title / .sv_offer_desc. */
+@media screen and (max-width: 1399px) {
+	.sv_offer_inner {
+		padding: 80px 0 40px;
+	}
+}
 @media screen and (max-width: 1199px) {
 	.sv_hero {
 		padding-top: 130px;
@@ -480,19 +461,76 @@
 		gap: 1.5rem;
 		align-items: start;
 	}
+}
+
+/* ===== Below 992px: Orisa's columns stack, and the deck gets a fixed box ==
+   services-page.js pins .sv_offer_deck at every width, so on a phone every
+   card has to fit one FIXED box rather than grow with its content. Type
+   sizes come from the shared card tokens (base.css) at every width.
+
+   --vh, not vh: the real current viewport height (vh over-counts by however
+   much mobile toolbar is showing). overflow: hidden so a card still waiting
+   its turn (at yPercent 101) is clipped rather than painting through into
+   the page beneath the pin. The card's own inner box is overflow: hidden
+   too, NOT auto — a nested scrollable region under the finger captured
+   touch-drags meant for the page on real devices, and the deck stopped
+   scrolling altogether. */
+@media screen and (max-width: 991px) {
+	.sv_offer_deck {
+		overflow: hidden;
+		min-height: calc(var(--vh) * 92);
+	}
+	.sv_offer_card {
+		position: absolute;
+		inset: 0;
+		min-height: 0;
+		height: 100%;
+		align-items: stretch;
+	}
+	/* flex-start, not centre: a centred shorter card left slack above it, so
+	   once the pin released on the last card its top (photo, title) had
+	   already scrolled past before the footer came into view. */
+	.sv_offer_card > .container {
+		height: 100%;
+		display: flex;
+		align-items: flex-start;
+	}
 	.sv_offer_card_inner {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 1.5rem;
+		row-gap: 12px;
+		width: 100%;
+		max-height: 100%;
+		align-content: start;
+		align-items: start;
+		overflow: hidden;
+		padding-block: 0.75rem;
 	}
-	/* The photo goes first on a single-column card — the title reading before
-	   an image it sits beside is fine, reading before an image stacked under
-	   three paragraphs of copy is not. */
+	/* Photo first on a single-column card — reading an image stacked under
+	   three paragraphs of copy is not the same as reading one beside them. */
 	.sv_offer_media {
 		order: -1;
-		min-height: 220px;
+		height: 7rem;
 	}
 	.sv_offer_media img {
-		min-height: 220px;
+		height: 100%;
+		aspect-ratio: auto;
+	}
+	.sv_offer_text {
+		padding: 8px 4px;
+	}
+	.sv_offer_title {
+		padding-bottom: 12px;
+	}
+	.sv_offer_desc {
+		margin-bottom: 12px;
+	}
+	.sv_offer_side {
+		padding-left: 0;
+	}
+	/* Two columns even on the narrowest phones: card 1's two 6-item lists at
+	   one column apiece would be 12 stacked rows in a fixed box. */
+	.sv_offer_lists {
+		gap: 4px 16px;
 	}
 }
 @media screen and (max-width: 767px) {
@@ -511,8 +549,12 @@
 		align-items: flex-start;
 		gap: 0.75rem;
 	}
-	.sv_offer_lists {
-		grid-template-columns: 1fr;
+
+	/* A shorter photo on phones, since the type pass set bullets at the
+	   site-wide text size (16px, was 13px): card 1's twelve bullets ran 24px
+	   past its pinned box at 390×844 with the 7rem photo. */
+	.sv_offer_media {
+		height: 5rem;
 	}
 	.sv_ticker_item {
 		font-size: 16px;
@@ -521,98 +563,4 @@
 	.sv_ticker_list {
 		gap: 1.25rem;
 	}
-}
-
-/* ===== The deck's pinned mobile box =======================================
-   Placed after every other breakpoint in this file (rather than alongside
-   the 1199px one, where about-page.css's equivalent block sits) specifically
-   so its own rules win even at ≤767px, where the block just above sets
-   .sv_offer_lists back to a single column — card 1's own two 6-item lists at
-   one column apiece is 12 stacked rows, and this deck's cards need to fit a
-   FIXED box now (services-page.js pins .sv_offer_deck at every width, not
-   just ≥992px any more). Keeping two columns here caps that at 6 rows
-   regardless of how narrow the phone is.
-
-   Same technique as .whyus_stack_list/.as_story_deck: --vh for the real,
-   current viewport height (not vh, which over-counts by however much of the
-   mobile toolbar happens to be showing), overflow: hidden so a card still
-   waiting its turn (sitting off-screen at yPercent: 100) is actually
-   clipped rather than painting straight through into the page underneath
-   the pin — see whyus.css's own comment on that exact bug. 88, not 82 like
-   WhyUs's — these nine cards carry far more copy than WhyUs's five ever do
-   (card 1 alone: an intro paragraph plus two 6-item lists), so the box gets
-   more of the viewport to work with. */
-.sv_offer_deck {
-	position: relative;
-	overflow: hidden;
-	min-height: calc(var(--vh) * 92);
-}
-.sv_offer_card {
-	position: absolute;
-	inset: 0;
-	min-height: 0;
-	height: 100%;
-	padding-bottom: 0;
-	align-items: stretch;
-}
-.sv_offer_card > .container {
-	height: 100%;
-	display: flex;
-	/* flex-start, not center — same fix and same reason as about-page.css's
-	   own .as_card > .container: centring left a shorter card floating with
-	   slack above AND below inside the pinned box, so once the pin's own
-	   scroll distance ran out on the LAST card, the reader had already
-	   scrolled past its own top (photo, title) before the box's bottom
-	   edge — and the footer right behind it — ever came into view. Top-
-	   aligned, the card's top tracks the pinned box's top (the viewport's
-	   own top, for as long as the pin holds), so the card's own remaining
-	   slack is what shows after the pin releases, not content already
-	   scrolled by. */
-	align-items: flex-start;
-}
-/* overflow: hidden, NOT auto. auto briefly seemed like the safer choice for
-   these nine wildly uneven cards (Orisa's own comment above measures card 1
-   at ~870px against ~430px for most others) — a card that doesn't fit could
-   still be scrolled inside its own box instead of silently losing content.
-   On a REAL touch device it broke something worse: this box covers nearly
-   the whole screen, so almost any touch-drag meant to advance the pinned
-   deck starts with a finger physically over it, and a nested overflow-y:
-   auto region captures that drag for ITSELF before it ever reaches the
-   page's own scroll — the deck simply stopped responding to scroll at all
-   ("κολλάει φουλ"). Wheel/programmatic scroll in testing never exercised
-   this, since neither one starts "over" any particular element the way a
-   real touch point does. Back to hidden: card 1's own second list losing
-   its last row or two on the shortest phones is the acceptable trade
-   against the deck not scrolling at all. */
-.sv_offer_card_inner {
-	width: 100%;
-	max-height: 100%;
-	align-content: start;
-	align-items: start;
-	overflow: hidden;
-	padding-block: 0.75rem;
-}
-.sv_offer_media,
-.sv_offer_media img {
-	min-height: 0;
-}
-/* 7rem, not 8.5 — measured: card 1 (two 6-item lists, the tallest of the
-   nine) still ran a few dozen px past the box even at 92vh, clipping its
-   own second list's last row. Trimmed here plus the tighter gaps below
-   rather than shrinking the box further, so the eight shorter cards don't
-   lose the breathing room that already fit them fine. */
-.sv_offer_media {
-	height: 7rem;
-	flex-shrink: 0;
-}
-.sv_offer_text {
-	padding: 0.5rem 0.25rem;
-	gap: 0.75rem;
-}
-.sv_offer_lists {
-	grid-template-columns: 1fr 1fr;
-	gap: 0.25rem 1rem;
-}
-.sv_offer_list {
-	gap: 0.25rem;
 }
