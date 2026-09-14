@@ -472,9 +472,10 @@
 }
 /* Not part of the interlace — that layout only works in matched left/right
    pairs, and five don't pair evenly. Sits below the grid instead: centred,
-   plain. .pillars_wrapper's own padding-bottom already clears the deepest
-   interlaced paragraph with margin to spare (see that comment) — this is a
-   small additional gap for visual separation, not load-bearing. */
+   plain. .pillars_wrapper's own padding-bottom clears the deepest interlaced
+   paragraph for the English copy; where a paragraph runs longer (the Greek
+   copy, narrower desktops) about-stack.js measures the overhang and adds it
+   to this margin inline. The 0.25vw here is just the visual gap. */
 .pillars_fifth {
 	margin-top: 0.25vw;
 	cursor: default;

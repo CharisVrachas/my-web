@@ -101,7 +101,10 @@ function initFooterClock() {
 	const el = document.querySelector("[data-footer-time]");
 	if (!el) return;
 
-	const formatter = new Intl.DateTimeFormat("en-GB", {
+	// The page's own language (Layout.astro sets <html lang>): "Δευ" on the
+	// Greek pages, "Mon" on the English ones.
+	const locale = document.documentElement.lang === "el" ? "el-GR" : "en-GB";
+	const formatter = new Intl.DateTimeFormat(locale, {
 		timeZone: "Europe/Athens",
 		weekday: "short",
 		hour: "2-digit",
@@ -110,10 +113,12 @@ function initFooterClock() {
 	});
 
 	function tick() {
-		// en-GB's own output is "Mon, 14:32" — the comma read as a stray mark
-		// next to the em dash the rest of this footer's labels use, so it's
-		// swapped for one to match.
-		el.textContent = formatter.format(new Date()).replace(",", " –");
+		// Assembled from parts as "Mon – 14:32": each locale puts its own
+		// separator between day and time (en-GB a comma), and the en dash is
+		// what the rest of this footer's labels use.
+		const parts = formatter.formatToParts(new Date());
+		const part = (type) => parts.find((p) => p.type === type)?.value ?? "";
+		el.textContent = `${part("weekday")} – ${part("hour")}:${part("minute")}`;
 	}
 
 	tick();

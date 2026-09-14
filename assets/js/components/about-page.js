@@ -25,8 +25,11 @@ function initAboutStory() {
 
 	const mm = gsap.matchMedia();
 
-	// The deck runs at every width — leaving mobile with a plain list read as
-	// "no effect at all", when the desktop effect is what was wanted everywhere.
+	// Below 992px the cards sit in normal flow (about-page.css) and each one
+	// reveals against its own scroll position (addInFlowCardReveal) — the same
+	// character reveal, the same way /faq does it on phones. A pinned card has
+	// one screen of height, and the About copy (card 1 especially, and more so
+	// in Greek) needs several on a phone: pinned, most of it was clipped.
 	mm.add(
 		{
 			desktop: "(min-width: 992px)",
@@ -34,6 +37,15 @@ function initAboutStory() {
 		},
 		(context) => {
 			const { desktop } = context.conditions;
+
+			cardChars.forEach((chars) => parkCardText(chars, reduced));
+
+			if (!desktop) {
+				cards.forEach((card, index) => addInFlowCardReveal(card, cardChars[index], reduced));
+				return () => {
+					cardChars.forEach((chars) => chars.length && gsap.set(chars, { clearProps: "opacity,x" }));
+				};
+			}
 
 			cards.forEach((card, index) => {
 				gsap.set(card, { zIndex: index });
@@ -43,8 +55,6 @@ function initAboutStory() {
 				if (index !== 0) gsap.set(card, { yPercent: 101 });
 			});
 
-			cardChars.forEach((chars) => parkCardText(chars, reduced));
-
 			const timeline = gsap.timeline({
 				scrollTrigger: {
 					// Pin the DECK, not the section — .as_story_head above it (eyebrow,
@@ -52,9 +62,7 @@ function initAboutStory() {
 					// eats into the height every card has for its own content.
 					trigger: deck,
 					pin: deck,
-					// Mobile clears the fixed navbar's MENU pill, like WhyUs's own
-					// mobile pin; desktop's header sits above the deck in normal flow.
-					start: desktop ? "top top" : "top top+=72",
+					start: "top top",
 					end: () => `+=${totalUnits * 50}%`,
 					scrub: 1,
 					invalidateOnRefresh: true,

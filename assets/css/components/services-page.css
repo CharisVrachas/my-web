@@ -527,8 +527,9 @@
 	.sv_offer_side {
 		padding-left: 0;
 	}
-	/* Two columns even on the narrowest phones: card 1's two 6-item lists at
-	   one column apiece would be 12 stacked rows in a fixed box. */
+	/* Two columns on tablets: card 1's two 6-item lists at one column apiece
+	   would be 12 stacked rows in a fixed box. Phones (≤767px) flow them as
+	   one run of text instead — see the rule at the end of this file. */
 	.sv_offer_lists {
 		gap: 4px 16px;
 	}
@@ -562,5 +563,80 @@
 	}
 	.sv_ticker_list {
 		gap: 1.25rem;
+	}
+}
+/* Phones: card 1's two six-item lists, set as two narrow columns, ran past
+   the bottom of the fixed card box (in Greek by a wide margin). Below 768px
+   the twelve bullets flow as one run of text instead, each led by the same
+   gold dot, so they take a few lines rather than two tall columns. Same text
+   size and weight as before (type.css). The no-break space keeps each dot
+   with its item; the trailing space is the line-break point between items. */
+@media screen and (max-width: 767px) {
+	.sv_offer_lists {
+		display: block;
+	}
+	.sv_offer_list {
+		display: inline;
+		padding-left: 0;
+		list-style: none;
+	}
+	.sv_offer_list li {
+		display: inline;
+	}
+	.sv_offer_list li::before {
+		content: "\2022\00a0";
+		color: var(--vv-gold);
+	}
+	.sv_offer_list li::after {
+		content: " ";
+	}
+}/* Short phones (360×740 and the like): even flowed, card 1's twelve bullets
+   fill the fixed box on their own, so the photo strip gives way to the text
+   on every card there. Taller phones keep it. */
+@media screen and (max-width: 767px) and (max-height: 800px) {
+	.sv_offer_media {
+		display: none;
+	}
+}/* Narrow phones: a quarter of the usual 2rem side padding on the card (the
+   panel's own inset still frames it), so the copy gets the width back as
+   fewer lines — card 1 in Greek needed it to fit the fixed box at 360px. */
+@media screen and (max-width: 479px) {
+	.sv_offer_card > .container {
+		padding-left: 0.5rem;
+		padding-right: 0.5rem;
+	}
+	.sv_offer_text {
+		padding-inline: 0;
+	}
+}/* Phones: the list's lead-in ("Included support may cover") starts the same
+   run of text as the flowed bullets instead of taking a line of its own. */
+@media screen and (max-width: 767px) {
+	.sv_offer_side {
+		display: block;
+	}
+	.sv_offer_list_label {
+		display: inline;
+		margin: 0 0.35em 0 0;
+	}
+	.sv_offer_lists {
+		display: inline;
+	}
+}
+/* Short phones: less air above and below the card's content. */
+@media screen and (max-width: 767px) and (max-height: 800px) {
+	.sv_offer_card_inner {
+		padding-block: 4px;
+	}
+}/* Very short phones (375×667 and below): the card's inner vertical spacing
+   tightens too, so card 1 in Greek still fits the fixed box. */
+@media screen and (max-width: 767px) and (max-height: 700px) {
+	.sv_offer_text {
+		padding-block: 0;
+	}
+	.sv_offer_title {
+		padding-bottom: 6px;
+	}
+	.sv_offer_desc {
+		margin-bottom: 6px;
 	}
 }

@@ -23,8 +23,18 @@
 	flex-flow: column;
 	justify-content: flex-start;
 	align-items: flex-start;
-	width: 17.625rem;
+	/* 24rem, not the template's 17.625rem: the Greek definitions are full
+	   paragraphs, and in the narrower column their long words left the
+	   justified lines full of gaps. hero-stack.js measures the block before
+	   sliding it to the centre line, so the width is free to change. */
+	width: 24rem;
 	display: flex;
+}
+/* Justified (.u-p1) — hyphenation keeps long Greek words from opening wide
+   gaps in the short lines. Needs the page's lang attribute (Layout.astro). */
+.vv_content .u-p1 {
+	-webkit-hyphens: auto;
+	hyphens: auto;
 }
 .vv_content_head {
 	grid-column-gap: 0.5rem;
@@ -43,8 +53,11 @@
 	.section_vv {
 		height: calc(var(--vh) * 100);
 	}
+	/* 18rem, not 11.75rem — same reason as the desktop width above; two of
+	   these side by side still fit a 768px tablet. Nothing in hero-stack.js
+	   moves these blocks below 992px, so this is plain layout. */
 	.vv_content {
-		width: 11.75rem;
+		width: 18rem;
 	}
 	.vv_content.one {
 		margin-top: -8rem;
@@ -54,6 +67,12 @@
 	}
 }
 @media screen and (max-width: 767px) {
+	/* Full width, one above the other: at the old half-width offset columns
+	   the Greek paragraphs ran to 25 lines and the second block fell off the
+	   bottom of the screen. */
+	.vv_content {
+		width: 100%;
+	}
 	.vv_content.one {
 		margin-top: 0;
 		margin-right: auto;
@@ -70,7 +89,7 @@
 }
 @media screen and (max-width: 479px) {
 	.vv_content {
-		width: 10.25rem;
+		width: 100%;
 	}
 	.vv_content.one {
 		order: -9999;

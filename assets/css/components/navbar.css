@@ -314,6 +314,7 @@
    fade-out to play, since display itself can't transition. */
 .navbar_brand,
 .navbar_menu,
+.navbar_lang,
 .navbar_bar_btn,
 .u-navbar::before {
 	transition:
@@ -322,6 +323,7 @@
 }
 .u-navbar.is-compact .navbar_brand,
 .u-navbar.is-compact .navbar_menu,
+.u-navbar.is-compact .navbar_lang,
 .u-navbar.is-compact .navbar_bar_btn {
 	opacity: 0;
 	visibility: hidden;
@@ -355,6 +357,7 @@
    than doubling up on screen. */
 .u-navbar.active .navbar_brand,
 .u-navbar.active .navbar_menu,
+.u-navbar.active .navbar_lang,
 .u-navbar.active .navbar_bar_btn,
 .u-navbar.active .u-menu-btn {
 	opacity: 0;
@@ -667,4 +670,69 @@
 	.menu2_nav_link {
 		font-size: 50px;
 	}
+}
+/* ===== Language switch (EL / EN) =====
+   In the bar: the centred menu's own glass box, shrunk to two codes. The
+   current language is gold and not dimmed. It fades with the rest of
+   .navbar_right in the compact state, like the grid button beside it. */
+.navbar_lang {
+	display: flex;
+	align-items: center;
+	padding: 3px;
+	border: 1px solid rgba(245, 242, 237, 0.3);
+	background: rgba(245, 242, 237, 0.18);
+	-webkit-backdrop-filter: blur(2px);
+	backdrop-filter: blur(2px);
+}
+.navbar_lang_link {
+	display: inline-block;
+	padding: 7px 10px;
+	color: var(--vv-off-white);
+	font-family: Jost, Arial, sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: 0.04em;
+	text-decoration: none;
+	opacity: 0.6;
+	transition: opacity 0.3s ease, color 0.3s ease;
+}
+.navbar_lang_link:hover,
+.navbar_lang_link[aria-current] {
+	opacity: 1;
+}
+.navbar_lang_link[aria-current] {
+	color: var(--vv-gold);
+}
+
+/* In the panel: under the link list's own bottom rule, fading in after the
+   last link's cascade (the sixth link's delay is 0.8s). */
+.menu2_lang {
+	display: flex;
+	gap: 28px;
+	padding-top: 32px;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+.menu2_area.is-open .menu2_lang {
+	opacity: 1;
+	transition: opacity 0.5s ease 0.9s;
+}
+.menu2_lang_link {
+	color: var(--vv-gray);
+	font-family: Jost, Arial, sans-serif;
+	font-size: 18px;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	text-decoration: none;
+	transition: color 0.3s ease;
+}
+.menu2_lang_link:hover,
+.menu2_lang_link[aria-current] {
+	color: var(--vv-charcoal);
+}
+.menu2_lang_link[aria-current] {
+	text-decoration: underline;
+	text-underline-offset: 6px;
+	text-decoration-thickness: 1px;
 }

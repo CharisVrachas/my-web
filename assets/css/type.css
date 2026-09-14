@@ -62,6 +62,8 @@
 .pillars_title,
 .as_story_heading,
 .pr_table_heading,
+.pr_details_heading,
+.local_heading,
 .ct_title,
 .services_item_title.u-h2-feature,
 .u-h5-feature {
@@ -90,6 +92,7 @@
 .pr_card_title,
 .pr_note_title,
 .pr_addon_title,
+.pr_details_title,
 .ct_info_title,
 .as_card_meta_text,
 .testimonial_author_name,
@@ -107,6 +110,7 @@
 .as_story_statement,
 .ct_lead,
 .pr_addons_cta,
+.pr_details_closing_text,
 .testimonial_quote {
 	font-family: Jost, Arial, sans-serif;
 	font-size: var(--type-lead);
@@ -118,6 +122,10 @@
 
 /* ----- TEXT: every paragraph, bullet and answer ------------------------- */
 .about_p,
+.whyus_intro_p,
+.local_text,
+.pr_details_text,
+.pr_details_list li,
 .vv_content .u-p1,
 .pillar_content p,
 .pillars_fifth_body,
@@ -180,6 +188,7 @@
 .footer_hours_label,
 .footer_copyright,
 .pr_card_badge,
+.pr_details_num,
 .sv_offer_list_label,
 .testimonial_author_role,
 .testimonial_author_place,

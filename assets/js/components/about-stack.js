@@ -65,6 +65,28 @@ function initAbout() {
 				updateAboutMask();
 				updatePillarsMask();
 
+				// The four interlaced paragraphs are position: absolute, so nothing in
+				// the layout reserves their height — a longer one (the Greek copy, or
+				// any copy on a narrower desktop) ran down into the fifth item below
+				// the grid. Measure how far the deepest one hangs past the fifth item's
+				// top and push the fifth down by exactly that, plus a small gap. Runs
+				// now and on every refreshInit, i.e. before ScrollTrigger measures the
+				// pin. .pillars_container is bottom-aligned (pillars.css), so the extra
+				// margin lifts the group into the empty space above the title rather
+				// than pushing the fifth item off the bottom of the screen.
+				const fifth = DOM.pillars.querySelector(".pillars_fifth");
+				const fitFifth = () => {
+					if (!fifth) return;
+					fifth.style.marginTop = "";
+					const deepest = Math.max(
+						...Array.from(DOM.pillars.querySelectorAll(".pillar_content"), (el) => el.getBoundingClientRect().bottom),
+					);
+					const overhang = Math.ceil(deepest + 16 - fifth.getBoundingClientRect().top);
+					if (overhang > 0) fifth.style.marginTop = `calc(0.25vw + ${overhang}px)`;
+				};
+				fitFifth();
+				ScrollTrigger.addEventListener("refreshInit", fitFifth);
+
 				const aboutWrapper = document.querySelector(".about_stack_wrapper");
 				let tl = gsap.timeline({
 					scrollTrigger: {
@@ -181,6 +203,11 @@ function initAbout() {
 						},
 					},
 				);
+
+				return () => {
+					ScrollTrigger.removeEventListener("refreshInit", fitFifth);
+					if (fifth) fifth.style.marginTop = "";
+				};
 			}
 
 			if (mobile) {

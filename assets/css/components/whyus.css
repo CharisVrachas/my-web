@@ -538,3 +538,30 @@
 	}
 
 }
+
+/* ===== Intro paragraphs under the heading =====
+   The client's two "why owners choose us" paragraphs, side by side under the
+   heading and above the pinned deck. Same character scrub as the heading
+   (data-reveal-text); type from type.css (TEXT). */
+.whyus_head_main {
+	min-width: 0;
+}
+.whyus_intro {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 2.5rem;
+	max-width: 64rem;
+	margin-top: 2rem;
+}
+.whyus_intro_p {
+	margin: 0;
+	color: var(--vv-off-white);
+	opacity: 0.8;
+}
+@media screen and (max-width: 767px) {
+	.whyus_intro {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.25rem;
+		margin-top: 1.5rem;
+	}
+}

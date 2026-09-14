@@ -377,3 +377,90 @@
 		font-size: 38px;
 	}
 }
+
+/* ===== Pricing approach (PricingDetails.astro) =====
+   The client's pricing text: three numbered blocks and a closing line with a
+   CTA, under the add-ons. Same charcoal ground, same gold hairlines and plus
+   icons (.pr_addon_icon) as the add-on lists above it. Type from type.css. */
+.pr_details {
+	background-color: var(--vv-charcoal);
+	padding: 0 0 90px;
+}
+.pr_details_head {
+	padding: 0 0.75rem;
+	margin-bottom: 48px;
+}
+.pr_details_heading {
+	margin: 0;
+	color: var(--vv-off-white);
+}
+.pr_details_grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 3rem;
+	padding: 0 0.75rem;
+}
+.pr_details_block {
+	padding-top: 28px;
+	border-top: 1px solid rgba(184, 154, 107, 0.2);
+}
+.pr_details_num {
+	display: block;
+	margin-bottom: 16px;
+	color: var(--vv-gold);
+}
+.pr_details_title {
+	margin: 0 0 1rem;
+	color: var(--vv-off-white);
+}
+.pr_details_text {
+	margin: 0 0 1rem;
+	color: var(--vv-off-white);
+	opacity: 0.75;
+}
+.pr_details_list {
+	list-style: none;
+	margin: 0 0 1rem;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+.pr_details_list li {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	color: var(--vv-off-white);
+	opacity: 0.85;
+}
+/* Centres the 20px icon on the first line of a wrapping bullet. */
+.pr_details_list .pr_addon_icon {
+	margin-top: calc((1.5em - 20px) / 2);
+}
+.pr_details_closing {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 2rem;
+	margin: 56px 0.75rem 0;
+	padding-top: 40px;
+	border-top: 1px solid rgba(184, 154, 107, 0.2);
+}
+.pr_details_closing_text {
+	margin: 0;
+	max-width: 52rem;
+	color: var(--vv-off-white);
+}
+.pr_details_closing .u-btn {
+	flex-shrink: 0;
+}
+@media screen and (max-width: 991px) {
+	.pr_details_grid {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 2.5rem;
+	}
+	.pr_details_closing {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+}

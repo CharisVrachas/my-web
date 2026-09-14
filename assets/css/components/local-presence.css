@@ -1,0 +1,72 @@
+/* "Local presence in Chania" (LocalPresence.astro) — between WhyUs and
+   Testimonials, on the same charcoal ground as both.
+
+   Spacing follows the rule the neighbours already share: WhyUs ends with no
+   padding-bottom of its own, and Testimonials' inset panel starts with no
+   margin above it (see whyus.css / testimonials.css), so this section's own
+   6rem top and bottom are the two boundary gaps. Type comes from type.css
+   (H2 for the heading, TEXT for the paragraphs). */
+.section_local {
+	position: relative;
+	background-color: var(--vv-charcoal);
+	padding: 6rem 0;
+}
+/* Wrapper, not the grid — .container's clearfix pseudo-elements become grid
+   items otherwise (same fix as every other section). */
+.local_grid {
+	display: grid;
+	grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+	column-gap: calc(100% / 12);
+	align-items: start;
+}
+.local_head {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 2.5rem;
+}
+.local_heading {
+	margin: 0;
+	color: var(--vv-off-white);
+}
+.local_media {
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	overflow: hidden;
+	border-radius: 16px;
+}
+/* Taller than its frame so the data-speed drift never shows an edge. */
+.local_media img {
+	display: block;
+	width: 100%;
+	height: 120%;
+	object-fit: cover;
+}
+.local_body {
+	padding-top: 0.5rem;
+}
+.local_text {
+	margin: 0;
+	color: var(--vv-off-white);
+	opacity: 0.8;
+}
+.local_text + .local_text {
+	margin-top: 1.5em;
+}
+/* The first paragraph is the section's thesis — full strength. */
+.local_text:first-child {
+	opacity: 1;
+}
+
+@media screen and (max-width: 991px) {
+	.section_local {
+		padding: 4.5rem 0;
+	}
+	.local_grid {
+		grid-template-columns: minmax(0, 1fr);
+		row-gap: 3rem;
+	}
+	.local_media {
+		aspect-ratio: 16 / 10;
+	}
+}
