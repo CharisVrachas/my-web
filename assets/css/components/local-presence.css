@@ -1,72 +1,233 @@
-/* "Local presence in Chania" (LocalPresence.astro) — between WhyUs and
-   Testimonials, on the same charcoal ground as both.
+/* "Local presence in Chania" (LocalPresence.astro) — Orisa's about-1 "Our
+   Journey" block (.block-journey: _sec6-home5.scss; .alt-portfolio-*:
+   _portfolio.scss), on this site's charcoal, without the dates column.
+   Orisa's own px are kept for the card overlay, the list rows and their
+   gaps; type comes from type.css (H2 heading, LEAD lead, H3 row titles and
+   card name, TEXT descriptions, LABEL badge).
 
    Spacing follows the rule the neighbours already share: WhyUs ends with no
    padding-bottom of its own, and Testimonials' inset panel starts with no
    margin above it (see whyus.css / testimonials.css), so this section's own
-   6rem top and bottom are the two boundary gaps. Type comes from type.css
-   (H2 for the heading, TEXT for the paragraphs). */
+   6rem top and bottom are the two boundary gaps. */
 .section_local {
 	position: relative;
 	background-color: var(--vv-charcoal);
 	padding: 6rem 0;
 }
-/* Wrapper, not the grid — .container's clearfix pseudo-elements become grid
-   items otherwise (same fix as every other section). */
-.local_grid {
+
+/* ===== Head row: Orisa's `row align-items-end pb-60` ===== */
+.local_head {
 	display: grid;
-	grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+	grid-template-columns: minmax(0, 7fr) auto;
+	gap: 2rem;
+	align-items: end;
+	padding-bottom: 60px;
+}
+.local_eyebrow {
+	margin-bottom: 10px;
+}
+.local_heading {
+	margin: 0 0 1rem;
+	color: var(--vv-off-white);
+}
+.local_lead {
+	margin: 0;
+	max-width: 44rem;
+	color: var(--vv-off-white);
+}
+.local_head_aside {
+	display: flex;
+	justify-content: flex-end;
+}
+
+/* ===== Body: Orisa's col-lg-4 card + col-lg-7 ms-auto pt-80 list ===== */
+.local_body {
+	display: grid;
+	grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
 	column-gap: calc(100% / 12);
 	align-items: start;
 }
-.local_head {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	gap: 2.5rem;
-}
-.local_heading {
-	margin: 0;
-	color: var(--vv-off-white);
-}
-.local_media {
-	width: 100%;
-	aspect-ratio: 4 / 3;
+
+/* The photo card — .alt-portfolio-item. */
+.local_card_thumb {
+	position: relative;
 	overflow: hidden;
+	aspect-ratio: 4 / 5;
+	margin-bottom: 15px;
 	border-radius: 16px;
 }
-/* Taller than its frame so the data-speed drift never shows an edge. */
-.local_media img {
+/* Orisa's bottom-half shade, so the overlay text reads over any photo. */
+.local_card_thumb::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	z-index: 1;
+	width: 100%;
+	height: 50%;
+	background: linear-gradient(180deg, rgba(35, 42, 53, 0) 11.93%, rgba(35, 42, 53, 0.8) 100%);
+	pointer-events: none;
+}
+.local_card_thumb img {
 	display: block;
 	width: 100%;
-	height: 120%;
+	height: 100%;
 	object-fit: cover;
 }
-.local_body {
-	padding-top: 0.5rem;
+/* .alt-portfolio-btn: parked 40% down, rising into place on hover while the
+   description fades in. */
+.local_card_overlay {
+	position: absolute;
+	left: 54px;
+	right: 80px;
+	bottom: 45px;
+	z-index: 2;
+	transform: translateY(40%);
+	transition: all 0.4s ease;
 }
-.local_text {
-	margin: 0;
+.local_card_badge {
+	display: inline-block;
+	padding: 4px 16px;
+	border: 1px solid rgba(245, 242, 237, 0.6);
+	border-radius: 50px;
 	color: var(--vv-off-white);
-	opacity: 0.8;
 }
-.local_text + .local_text {
-	margin-top: 1.5em;
+.local_card_title {
+	margin: 20px 0 0;
+	color: var(--vv-off-white);
 }
-/* The first paragraph is the section's thesis — full strength. */
-.local_text:first-child {
+.local_card_desc {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+	margin: 10px 0 0;
+	color: var(--vv-off-white);
+	opacity: 0;
+	visibility: hidden;
+	transition: all 0.4s ease;
+}
+.local_card:hover .local_card_overlay {
+	transform: translateY(0);
+}
+.local_card:hover .local_card_desc {
 	opacity: 1;
+	visibility: visible;
+}
+/* Touch screens never hover — show the risen state from the start. */
+@media (hover: none) {
+	.local_card_overlay {
+		transform: none;
+	}
+	.local_card_desc {
+		opacity: 1;
+		visibility: visible;
+	}
+}
+/* .alt-portfolio-content — the name bar under the photo. */
+.local_card_bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	border-radius: 16px;
+	background-color: #333c4b;
+}
+.local_card_name {
+	color: var(--vv-off-white);
+}
+.local_card_plus {
+	display: inline-flex;
+	color: var(--vv-gold);
 }
 
+/* The list — .journey-list, with the date column removed. */
+.local_list {
+	margin: 0;
+	padding: 80px 0 0;
+	list-style: none;
+}
+.local_item {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 24px 32px;
+	align-items: flex-start;
+	padding: 24px 0;
+	border-bottom: 1px solid rgba(245, 242, 237, 0.12);
+}
+.local_item:first-child {
+	padding-top: 0;
+}
+.local_item:last-child {
+	padding-bottom: 0;
+	border-bottom: none;
+}
+.local_item_body {
+	max-width: 85%;
+}
+.local_item_title {
+	margin: 0 0 6px;
+	color: var(--vv-off-white);
+}
+.local_item_desc {
+	margin: 0 0 40px;
+	color: rgba(245, 242, 237, 0.65);
+}
+.local_item:last-child .local_item_desc {
+	margin-bottom: 0;
+}
+.local_item_link {
+	display: inline-flex;
+	margin: -8px;
+	padding: 8px;
+	color: var(--vv-off-white);
+	transition: opacity 0.2s ease;
+}
+.local_item_link:hover {
+	opacity: 0.8;
+}
+.local_item_link svg {
+	display: block;
+}
+
+@media screen and (max-width: 1399px) {
+	.local_card_overlay {
+		left: 20px;
+		right: 10px;
+		bottom: 20px;
+	}
+}
 @media screen and (max-width: 991px) {
 	.section_local {
 		padding: 4.5rem 0;
 	}
-	.local_grid {
+	.local_head {
+		grid-template-columns: minmax(0, 1fr);
+		align-items: start;
+	}
+	.local_head_aside {
+		justify-content: flex-start;
+	}
+	.local_body {
 		grid-template-columns: minmax(0, 1fr);
 		row-gap: 3rem;
 	}
-	.local_media {
-		aspect-ratio: 16 / 10;
+	.local_card_thumb {
+		aspect-ratio: 4 / 3;
+	}
+	.local_list {
+		padding-top: 0;
+	}
+	.local_item_body {
+		max-width: 100%;
+	}
+}
+@media screen and (max-width: 767px) {
+	.local_item {
+		gap: 8px 16px;
+		padding: 20px 0;
+	}
+	.local_item_desc {
+		margin-bottom: 20px;
 	}
 }

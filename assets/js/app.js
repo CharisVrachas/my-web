@@ -6,6 +6,8 @@ function onReady() {
 	initAbout();
 	initServices();
 	initWhyUs();
+	// Home only — no-op elsewhere (guarded on [data-local]).
+	initLocalPresence();
 	initTestimonials();
 	// /services only — no-ops on the home page (guarded on [data-sv-stack]).
 	// Before initFooter() for the same reason as the sections above it: the
