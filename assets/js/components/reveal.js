@@ -31,31 +31,31 @@ function initReveal() {
 	initTitleFlip();
 }
 
-// The character reveal runs on headings only, at every width. Split across
-// every paragraph and bullet as well, a page hands ScrollTrigger a few thousand
-// elements to repaint on every scroll frame — /services measured 4051 targets,
-// /about 2254, the home page 1896 — and the scroll stuttered on exactly those
-// three, while the pages that stayed smooth (/pricing, /faq, /contact) all sat
-// under ~500. Body copy fades in as one block instead: one target rather than
-// one per letter, and the same treatment on every page and every screen.
+// The character reveal runs on titles, and only on titles, at every width.
+// Carried across paragraphs and bullets as well it did two things nobody
+// wanted. It handed ScrollTrigger a few thousand elements to repaint on every
+// scroll frame — /services measured 4051 targets, /about 2254, the home page
+// 1896, against under ~500 on the three pages that always scrolled smoothly —
+// and it left the reader's actual reading matter sitting faint until they had
+// scrolled it bright. Body copy is not animated at all now: solid from first
+// paint, matching /pricing, /faq and /contact.
 function isRevealTitle(el) {
 	return /^H[1-6]$/.test(el.tagName) || /_title\b/.test(el.className || "");
 }
 
-// What a reveal actually animates: a heading's characters, or the element
-// itself for body copy. A title that initTextScaleAnim() has already broken
-// into .at-letter-span letters reuses those rather than being split twice.
-function revealPieces(el, splitVars) {
-	if (!isRevealTitle(el)) return [el];
+// A title's characters. One that initTextScaleAnim() has already broken into
+// .at-letter-span letters reuses those rather than being split a second time.
+function titleChars(el, splitVars) {
 	const letters = el.querySelectorAll(".at-letter-span");
 	if (letters.length) return [...letters];
 	const split = new SplitText(el, splitVars);
 	return split.chars && split.chars.length ? split.chars : [el];
 }
 
-// Splits a heading to characters and scrubs them from 0.3 opacity / -7px to
-// solid as the heading crosses the viewport. Orisa's values exactly: start
-// "top 80%", end "top 20%", scrub 1, duration 0.7, stagger 0.2.
+// Splits a title to characters and scrubs them from 0.3 opacity to solid as it
+// crosses the viewport. Orisa's values: start "top 80%", end "top 20%", scrub
+// 1, duration 0.7, stagger 0.2. Anything else carrying the attribute — leads,
+// statements, closing lines — is left as it renders.
 function initRevealText(reduced) {
 	const targets = document.querySelectorAll("[data-reveal-text]");
 	if (!targets.length) return;
@@ -66,14 +66,16 @@ function initRevealText(reduced) {
 	}
 
 	targets.forEach((el) => {
-		const pieces = revealPieces(el, {
+		if (!isRevealTitle(el)) return;
+
+		const chars = titleChars(el, {
 			type: "lines,words,chars",
 			linesClass: "split-line",
 		});
 
-		gsap.set(pieces, { opacity: 0.3 });
+		gsap.set(chars, { opacity: 0.3 });
 
-		gsap.to(pieces, {
+		gsap.to(chars, {
 			opacity: 1,
 			duration: 0.7,
 			stagger: 0.2,
@@ -163,12 +165,13 @@ function createSvgBreak(wrap, scrollTrigger = {}) {
 
 // ===== Card decks: the one shared character reveal ========================
 // Every stacking card deck on the site (WhyUs, /services, /about, /faq) runs
-// the same reveal on its cards' text — Orisa's reveal-text (main.js block 16):
-// each character parked at 0.3 opacity / 7px left, brought up one after
-// another, scrubbed to scroll, from the first character on. Markup marks what
-// reveals with data-card-reveal (titles, paragraphs, bullet items), and every
-// deck script builds its reveal from these helpers — the same code and the
-// same pacing everywhere, not four look-alike copies.
+// the same reveal on its cards' titles — Orisa's reveal-text (main.js block
+// 16): each character parked at 0.3 opacity, brought up one after another,
+// scrubbed to scroll, from the first character on. Markup still marks titles,
+// paragraphs and bullet items with data-card-reveal, but only the titles are
+// animated (see isRevealTitle above); the rest is left solid. Every deck script
+// builds its reveal from these helpers — the same code and the same pacing
+// everywhere, not four look-alike copies.
 //
 // It can't be reveal.js's own [data-reveal-text] handling: that positions
 // each element's trigger from where it sits in the document, and the cards of
@@ -191,7 +194,8 @@ const CARD_REVEAL = { READ: 1, TRANS: 1 };
 function splitCardText(card) {
 	const chars = [];
 	card.querySelectorAll("[data-card-reveal]").forEach((el) => {
-		chars.push(...revealPieces(el, { type: "words,chars" }));
+		if (!isRevealTitle(el)) return;
+		chars.push(...titleChars(el, { type: "words,chars" }));
 	});
 	return chars;
 }
