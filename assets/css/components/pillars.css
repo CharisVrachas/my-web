@@ -470,6 +470,17 @@
 		text-align-last: center;
 	}
 }
+/* These paragraphs sit in a 255px column on a phone, uppercase at 12px — the
+   narrowest justified measure on the site, and the one where the word gaps
+   open widest. Ranged left below 768px, same breakpoint and same reason as
+   the body copy in base.css. The heading keeps its justify: that is what
+   holds each pillar's number against the opposite edge. */
+@media screen and (max-width: 767px) {
+	.pillar_content p {
+		text-align: start;
+		text-align-last: start;
+	}
+}
 /* Not part of the interlace — that layout only works in matched left/right
    pairs, and five don't pair evenly. Sits below the grid instead: centred,
    plain. .pillars_wrapper's own padding-bottom clears the deepest interlaced

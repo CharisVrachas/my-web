@@ -26,19 +26,26 @@ function initSmoother() {
 				allowNestedScroll: true,
 				type: "touch,pointer",
 			};
-			window.scrollNormalizer = ScrollTrigger.normalizeScroll(
-				isDesktop
-					? { ...normalizeScrollConfig, ignore: "textarea, input, select" }
-					: normalizeScrollConfig,
-			);
 			try {
+				// normalizeScroll passed to ScrollSmoother itself, not a separate
+				// ScrollTrigger.normalizeScroll() call — the two run as one
+				// coordinated system this way (paused()/kill() disable and
+				// re-enable the normalizer together; see ScrollSmoother.min.js).
+				// A standalone call created a second, uncoordinated scroll
+				// handler alongside the smoother's own, which is what was
+				// shaking/juddering the page mid-scroll on touch devices.
 				window.smoother = ScrollSmoother.create({
 					smooth: 1.5,
 					effects: true,
+					normalizeScroll: isDesktop
+						? { ...normalizeScrollConfig, ignore: "textarea, input, select" }
+						: normalizeScrollConfig,
 					onUpdate: () => {},
 				});
+				window.scrollNormalizer = window.smoother?.normalizer ?? null;
 			} catch (e) {
 				window.smoother = null;
+				window.scrollNormalizer = null;
 			}
 			ScrollTrigger.config({
 				ignoreMobileResize: true,

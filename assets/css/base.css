@@ -929,6 +929,22 @@ body {
 .about_p {
 	text-align-last: center;
 }
+/* Justification is a desktop-width effect. Over a phone-width column the same
+   sentence breaks into many short lines, and justification stretching every
+   line but the last blows the word gaps open — the same reason .hero_heading
+   drops it at this breakpoint (hero.css), and the "ugly word gaps" .about_p's
+   measure above was widened to avoid. text-align-last goes with it: a centred
+   last line under a ranged-left block reads as a mistake. Paragraph copy only
+   — .pillar_heading's own justify is load-bearing (it is what pushes each
+   pillar's number to the opposite edge of its single line). */
+@media screen and (max-width: 767px) {
+	.u-p1,
+	.history_conclusion_p,
+	.about_p {
+		text-align: start;
+		text-align-last: start;
+	}
+}
 
 /* ==========================================================================
    Visibility utilities — these are never overridden anywhere else.

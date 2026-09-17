@@ -277,5 +277,12 @@
 	}
 	.testimonial_quote {
 		font-size: 1.25rem;
+		/* The four-line clamp above buys equal card heights across a row. Below
+		   992px the slider shows one card at a time (testimonials.js's own
+		   breakpoints), so there is no row left to match — and over a phone's
+		   narrow measure a quote runs past four lines, which left the clamp
+		   silently eating the last line of every testimonial. */
+		-webkit-line-clamp: none;
+		max-height: none;
 	}
 }
