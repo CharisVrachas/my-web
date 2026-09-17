@@ -536,7 +536,17 @@
 	.whyus_card_copy {
 		padding: 1.5rem;
 	}
-
+}
+/* The photo takes what the card's text leaves it, and on a short phone that is
+   a band rather than a picture: measured 14-86px at 360x740 against the 13rem
+   the rule above allows, which reads as a smear under the bullet list. It
+   recovers on its own once there is room (97-145px at 375x812, the full 208px
+   at 412x915), so only the short end stands the photo down — the same call,
+   at the same 800px cutoff, that .sv_offer_media already makes on /services. */
+@media screen and (max-width: 767px) and (max-height: 800px) {
+	.whyus_card_media {
+		display: none;
+	}
 }
 
 /* ===== Intro paragraphs under the heading =====

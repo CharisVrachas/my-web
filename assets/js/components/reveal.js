@@ -31,6 +31,28 @@ function initReveal() {
 	initTitleFlip();
 }
 
+// The character reveal runs on headings only, at every width. Split across
+// every paragraph and bullet as well, a page hands ScrollTrigger a few thousand
+// elements to repaint on every scroll frame — /services measured 4051 targets,
+// /about 2254, the home page 1896 — and the scroll stuttered on exactly those
+// three, while the pages that stayed smooth (/pricing, /faq, /contact) all sat
+// under ~500. Body copy fades in as one block instead: one target rather than
+// one per letter, and the same treatment on every page and every screen.
+function isRevealTitle(el) {
+	return /^H[1-6]$/.test(el.tagName) || /_title\b/.test(el.className || "");
+}
+
+// What a reveal actually animates: a heading's characters, or the element
+// itself for body copy. A title that initTextScaleAnim() has already broken
+// into .at-letter-span letters reuses those rather than being split twice.
+function revealPieces(el, splitVars) {
+	if (!isRevealTitle(el)) return [el];
+	const letters = el.querySelectorAll(".at-letter-span");
+	if (letters.length) return [...letters];
+	const split = new SplitText(el, splitVars);
+	return split.chars && split.chars.length ? split.chars : [el];
+}
+
 // Splits a heading to characters and scrubs them from 0.3 opacity / -7px to
 // solid as the heading crosses the viewport. Orisa's values exactly: start
 // "top 80%", end "top 20%", scrub 1, duration 0.7, stagger 0.2.
@@ -44,18 +66,14 @@ function initRevealText(reduced) {
 	}
 
 	targets.forEach((el) => {
-		const split = new SplitText(el, {
+		const pieces = revealPieces(el, {
 			type: "lines,words,chars",
 			linesClass: "split-line",
 		});
 
-		if (!split.chars || !split.chars.length) return;
+		gsap.set(pieces, { opacity: 0.3 });
 
-		gsap.set(split.chars, { opacity: 0.3, x: -7 });
-
-		gsap.to(split.chars, {
-			x: 0,
-			y: 0,
+		gsap.to(pieces, {
 			opacity: 1,
 			duration: 0.7,
 			stagger: 0.2,
@@ -173,22 +191,21 @@ const CARD_REVEAL = { READ: 1, TRANS: 1 };
 function splitCardText(card) {
 	const chars = [];
 	card.querySelectorAll("[data-card-reveal]").forEach((el) => {
-		const letters = el.querySelectorAll(".at-letter-span");
-		if (letters.length) {
-			chars.push(...letters);
-			return;
-		}
-		const split = new SplitText(el, { type: "words,chars" });
-		if (split.chars) chars.push(...split.chars);
+		chars.push(...revealPieces(el, { type: "words,chars" }));
 	});
 	return chars;
 }
 
 // Parks a card's characters in reveal-text's start state — or sets them solid
 // for visitors who've asked for reduced motion.
+//
+// Opacity only. Orisa's version also parks each character 7px to the left and
+// slides it back, but a card clips to its own box with no left padding of its
+// own, so the first character of every line sat 7px outside that edge and was
+// shaved in half for as long as the reveal was parked or mid-scrub.
 function parkCardText(chars, reduced) {
 	if (!chars.length) return;
-	gsap.set(chars, reduced ? { opacity: 1, x: 0 } : { opacity: 0.3, x: -7 });
+	gsap.set(chars, { opacity: reduced ? 1 : 0.3 });
 }
 
 // Appends one card's READ stretch to a deck's scrubbed timeline. reveal-text's
@@ -206,7 +223,6 @@ function addCardReveal(timeline, chars, reduced) {
 	const step = READ / (chars.length + 2.5);
 	timeline.to(chars, {
 		opacity: 1,
-		x: 0,
 		duration: step * 3.5,
 		stagger: { each: step, from: "start" },
 		ease: "none",
@@ -220,7 +236,6 @@ function addInFlowCardReveal(card, chars, reduced) {
 	if (!chars.length || reduced) return;
 	gsap.to(chars, {
 		opacity: 1,
-		x: 0,
 		duration: 0.7,
 		stagger: 0.2,
 		ease: "none",
