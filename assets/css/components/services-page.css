@@ -550,6 +550,20 @@
 		align-items: flex-start;
 		gap: 0.75rem;
 	}
+	/* Give each card its own edges on a phone. At desktop widths the
+	   two-column split — copy on one side, photo on the other, inside the
+	   panel — is what reads as a card; stacked into a single column on the
+	   panel's own #232a35 there was nothing to tell one card from the
+	   background, so the deck came across as plain full-width text sliding
+	   about. A slightly lifted fill, a hairline and a radius put the shape
+	   back, and the slab behind (.sv_offer_card, same #232a35 as the panel)
+	   still covers the outgoing card underneath. */
+	.sv_offer_card_inner {
+		background-color: #2b3340;
+		border: 1px solid rgba(245, 242, 237, 0.09);
+		border-radius: 1.25rem;
+		padding-inline: 0.875rem;
+	}
 
 	/* A shorter photo on phones, since the type pass set bullets at the
 	   site-wide text size (16px, was 13px): card 1's twelve bullets ran 24px
@@ -590,11 +604,23 @@
 	.sv_offer_list li::after {
 		content: " ";
 	}
-}/* Short phones (360×740 and the like): even flowed, card 1's twelve bullets
-   fill the fixed box on their own, so the photo strip gives way to the text
-   on every card there. Taller phones keep it. */
-@media screen and (max-width: 767px) and (max-height: 800px) {
-	.sv_offer_media {
+	/* The flowed bullet run is the one block on this page that fills its card
+	   to the brim, and giving every card its own padding above cost it the
+	   last of the slack: 41px past the box at 360×740. Tightening the leading
+	   on that card alone buys it back — same 16px type as everywhere else,
+	   1.35 against type.css's 1.5 — which is cheaper than shrinking the type
+	   or taking the padding back off the card. */
+	.sv_offer_card_inner.has-lists .sv_offer_list li {
+		line-height: 1.35;
+	}
+	/* One card carries twelve bullets on top of its paragraphs, and on a phone
+	   that fills the fixed box on its own: measured against every phone height
+	   in range it has no room for a photo strip as well — 11px past the box at
+	   375×812 even with the tighter leading above. So that card goes without
+	   one here, and the other eight keep theirs. This used to be scoped to
+	   short viewports (max-height: 800px) and to drop the photo from all nine,
+	   which is what left the deck looking like plain text. */
+	.sv_offer_card_inner.has-lists .sv_offer_media {
 		display: none;
 	}
 }/* Narrow phones: a quarter of the usual 2rem side padding on the card (the
@@ -628,8 +654,19 @@
 		padding-block: 4px;
 	}
 }/* Very short phones (375×667 and below): the card's inner vertical spacing
-   tightens too, so card 1 in Greek still fits the fixed box. */
+   tightens too, so card 1 in Greek still fits the fixed box. The list card
+   also hands back most of the inline padding the card look gave it and takes
+   its bullet run down another notch — at 360×640 its copy is longer than the
+   box whatever else gives (it was already 9px over before that padding
+   existed), and 0.25rem with 1.3 leading measures to fit exactly. It keeps
+   the fill and the edge, so it still reads as a card. */
 @media screen and (max-width: 767px) and (max-height: 700px) {
+	.sv_offer_card_inner.has-lists {
+		padding-inline: 0.25rem;
+	}
+	.sv_offer_card_inner.has-lists .sv_offer_list li {
+		line-height: 1.3;
+	}
 	.sv_offer_text {
 		padding-block: 0;
 	}

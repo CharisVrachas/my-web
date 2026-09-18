@@ -234,15 +234,29 @@ function initAbout() {
 					);
 				});
 
+				// The reveal desktop gets out of its pinned timeline, rebuilt for a
+				// branch that has no pin to hang it on. .about_bg is two frames
+				// tall and anchored to the top here (about.css), so sliding it up
+				// by half its own height swaps the sky and archway at the top of
+				// the source photo for the part with the woman in it. Replaces a
+				// ±5% drift that read as a still picture on a phone.
+				//
+				// The window closes at "center center", not "bottom top": the
+				// slide plays out over the section's approach and has finished by
+				// the time it fills the screen, so she is in frame for as long as
+				// the copy is actually being read. Run to "bottom top" instead it
+				// would spread across the whole pass and only bring her in as the
+				// section left.
 				gsap.fromTo(
 					DOM.aboutBg,
-					{ yPercent: -5 },
+					{ yPercent: 0 },
 					{
-						yPercent: 5,
+						yPercent: -50,
+						ease: "none",
 						scrollTrigger: {
 							trigger: DOM.about,
 							start: "top bottom",
-							end: "bottom top",
+							end: "center center",
 							scrub: true,
 						},
 					},

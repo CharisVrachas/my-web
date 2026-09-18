@@ -170,29 +170,53 @@
 	.about_heading {
 		font-size: 2.1rem;
 	}
-	/* Desktop's object-position: 50% 0% (base rule above) is a top-anchored
-	   crop that only works alongside about-stack.js's own pinned tl.to()
-	   sliding .about_bg up -50% as you scroll — the top-of-frame sky/sea/
-	   archway view is the REST state, and that scroll tween is what reveals
-	   the woman lower in the source photo afterward. about-stack.js's mobile
-	   branch never runs that tween (no pin on mobile, just a small ±5%
-	   yPercent drift), so this section's box — full-bleed height, not the
-	   2x-tall + half-slid-up desktop version — was cropping the same
-	   top-anchored 50%/0% window forever: on a typical tall/narrow phone
-	   that's height-bound cover, so it's actually the HORIZONTAL 50% that
-	   was cutting her out (she sits left-of-centre in image-masters/about.jpg,
-	   not dead centre), and on wider/shorter viewports near this
-	   breakpoint's own top end it's the vertical 0% doing it instead (top of
-	   frame = sky, she's in the lower third). 30% 68% keeps the same crop
-	   point centred on roughly where she actually is in the source photo
-	   either way, so there is one static frame that includes her at every
-	   width in this range rather than a scroll effect this branch never
-	   plays. */
+	/* Two frames tall and anchored to the top, the same shape desktop uses,
+	   because the mobile branch now plays a reveal of its own: about-stack.js
+	   slides this up by half its height across the section's pass, so the
+	   sky/sea/archway at the top of the source photo is the rest state and
+	   scrolling brings the woman lower in the frame up into view. It used to
+	   be a single static frame cropped at 30% 68% — the one window that could
+	   include her at every width in this range — which was the right call only
+	   while this branch had no tween to play.
+
+	   Horizontal stays at 30%: she sits left-of-centre in
+	   image-masters/about.jpg, and at phone proportions this box is
+	   height-bound, so the horizontal figure is the one still doing a crop. */
 	.about_bg {
 		width: 100%;
-		height: 100%;
-		object-position: 30% 68%;
+		height: 200%;
+		object-position: 30% 0%;
 		transform: translate(0);
+	}
+	/* The copy sits straight on the photo here, and a grayscale frame leaves
+	   large near-white areas under it: measured 1.88:1 against the off-white
+	   type, and 1.02:1 over the brightest patches, which is no contrast at
+	   all. Desktop never needs a veil because .about_overlay is part of its
+	   own pinned transition to Pillars; this branch never runs that. So the
+	   top scrim above grows into a full-height one — same element, no second
+	   layer — keeping its dark band under the navbar and deepening through
+	   the text. */
+	/* No calc(var(--nav-logo-h) …) here, unlike the base rule above: that
+	   custom property is never actually defined anywhere in this codebase, so
+	   the calc is invalid at computed-value time and takes the whole
+	   declaration down with it — which is why the base rule's own scrim
+	   measures 0px tall and paints nothing. Plain lengths only. */
+	.about_container::after {
+		inset: 0;
+		height: 100%;
+		/* Lightest veil that still clears AA where the photo is brightest:
+		   sampled against the frame this section settles on, 0.46/0.54/0.58
+		   measures 4.75:1 at the worst pixel and 6.45:1 at the 99th percentile.
+		   A step lighter (0.44) drops to 4.14 and fails, so there is no more
+		   room to give the picture back. The 0.78 start keeps the dark band the
+		   navbar needs to sit against. */
+		background: linear-gradient(
+			to bottom,
+			rgba(0, 0, 0, 0.78) 0,
+			rgba(0, 0, 0, 0.46) 120px,
+			rgba(0, 0, 0, 0.54) 42%,
+			rgba(0, 0, 0, 0.58) 100%
+		);
 	}
 	.about_logo {
 		height: 3.08rem;

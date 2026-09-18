@@ -36,6 +36,9 @@ function onReady() {
 	initNavbar();
 	initNavCompact();
 	initHeadings();
+	// Last of the text passes: every splitter above has run, and this one only
+	// has to look at what they left behind (see reveal.js).
+	dropIsolatedTonos();
 	initNavScroll();
 	initPageTransition();
 	// initHistory() is only called once Lineage is ported — the script that

@@ -31,6 +31,27 @@ function initReveal() {
 	initTitleFlip();
 }
 
+// Greek capitals carry no accent, and lang="el" (Layout.astro) plus
+// text-transform: uppercase gets that right on its own — but only while the
+// browser can see the whole word. Every splitter on this site hands it one
+// character per element, and an isolated "ή" is the disjunctive "or", which
+// keeps its accent by rule: the ή inside "ακινήτων" was coming back as
+// "ΑΚΙΝΉΤΩΝ". No other vowel behaves this way (ά έ ί ό ύ ώ all drop the accent
+// even alone), and the diaeresis in "ΠΡΟΪΟΝ" is correct where it appears.
+//
+// Swapping the bare vowel for its unaccented self is enough — the browser
+// capitalises it from there — and the split pieces are aria-hidden behind the
+// element's own aria-label, so the original wording is what gets read out.
+// Runs after every splitter (see app.js), since it does not care which one
+// produced the element.
+function dropIsolatedTonos() {
+	document.querySelectorAll("body *").forEach((el) => {
+		if (el.firstElementChild || el.textContent !== "ή") return;
+		if (getComputedStyle(el).textTransform !== "uppercase") return;
+		el.textContent = "η";
+	});
+}
+
 // The character reveal runs on titles, and only on titles, at every width.
 // Carried across paragraphs and bullets as well it did two things nobody
 // wanted. It handed ScrollTrigger a few thousand elements to repaint on every
