@@ -180,10 +180,18 @@
 .has-dropdown:focus-within > .navbar_menu_link {
 	background-color: rgba(245, 242, 237, 0.2);
 }
-/* Orisa's .submenu reveal: scaleY from the top-left corner plus a fade,
-   0.5s. :focus-within alongside :hover so keyboard users tabbing onto
-   Services get the same list. 320px, not Orisa's 260px — the longest
-   service name here ("Review response and online reputation") needs it. */
+/* A fade and a short drop, NOT Orisa's scaleY-from-zero reveal. Scaling a box
+   of text open vertically squashes every glyph in it on the way: caught at
+   any point mid-transition the nine service names flatten into grey bars, and
+   at 0.5s there is a lot of "mid-transition" to catch — which is exactly what
+   "εμφανιζόταν crush, δες κάτι γραμμές" was. Reproduced by holding the panel
+   at scale(1, 0.55): the list renders as stacked smears. Opacity and a
+   translate cannot distort type, so the panel looks the same at every frame
+   as it does at rest. Shorter, too, so there is less of it to see.
+
+   :focus-within alongside :hover so keyboard users tabbing onto Services get
+   the same list. 320px, not Orisa's 260px — the longest service name here
+   ("Review response and online reputation") needs it. */
 .navbar_submenu {
 	position: absolute;
 	top: 120%;
@@ -202,15 +210,17 @@
 	box-shadow: 0 20px 30px -8px rgba(0, 0, 0, 0.35);
 	opacity: 0;
 	visibility: hidden;
-	transform: scale(1, 0);
-	transform-origin: 0 0;
-	transition: 0.5s;
+	transform: translateY(-8px);
+	transition:
+		opacity 0.25s ease,
+		transform 0.25s ease,
+		visibility 0.25s;
 }
 .navbar_menu_item:hover > .navbar_submenu,
 .navbar_menu_item:focus-within > .navbar_submenu {
 	opacity: 1;
 	visibility: visible;
-	transform: scale(1);
+	transform: translateY(0);
 }
 .navbar_submenu li {
 	margin: 0;
