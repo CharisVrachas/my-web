@@ -562,14 +562,16 @@
 		background-color: #2b3340;
 		border: 1px solid rgba(245, 242, 237, 0.09);
 		border-radius: 1.25rem;
-		padding-inline: 0.875rem;
+		padding: 1.5rem 1.25rem;
+		row-gap: 1rem;
 	}
 
-	/* A shorter photo on phones, since the type pass set bullets at the
-	   site-wide text size (16px, was 13px): card 1's twelve bullets ran 24px
-	   past its pinned box at 390×844 with the 7rem photo. */
+	/* No photo on a phone. Stacked above the copy it was a letterbox strip
+	   doing little for the card, and the space it took was the space the
+	   copy wanted — the card reads better as type on its own ground. The
+	   photos stay from 768px up, where they sit beside the copy. */
 	.sv_offer_media {
-		height: 5rem;
+		display: none;
 	}
 	.sv_ticker_item {
 		font-size: 16px;
@@ -604,24 +606,18 @@
 	.sv_offer_list li::after {
 		content: " ";
 	}
-	/* The flowed bullet run is the one block on this page that fills its card
-	   to the brim, and giving every card its own padding above cost it the
-	   last of the slack: 41px past the box at 360×740. Tightening the leading
-	   on that card alone buys it back — same 16px type as everywhere else,
-	   1.35 against type.css's 1.5 — which is cheaper than shrinking the type
-	   or taking the padding back off the card. */
+	/* One card carries twelve bullets on top of its paragraphs, and the deck
+	   hands every card the same fixed box — so that one cannot have the air
+	   the other eight just got: with their padding it sits 75px past the box
+	   at 360×740. It keeps the fill, the edge and the radius and gives up the
+	   spacing instead, which is the part no one can compare when the cards are
+	   never seen side by side. */
+	.sv_offer_card_inner.has-lists {
+		padding: 0.75rem;
+		row-gap: 0.625rem;
+	}
 	.sv_offer_card_inner.has-lists .sv_offer_list li {
 		line-height: 1.35;
-	}
-	/* One card carries twelve bullets on top of its paragraphs, and on a phone
-	   that fills the fixed box on its own: measured against every phone height
-	   in range it has no room for a photo strip as well — 11px past the box at
-	   375×812 even with the tighter leading above. So that card goes without
-	   one here, and the other eight keep theirs. This used to be scoped to
-	   short viewports (max-height: 800px) and to drop the photo from all nine,
-	   which is what left the deck looking like plain text. */
-	.sv_offer_card_inner.has-lists .sv_offer_media {
-		display: none;
 	}
 }/* Narrow phones: a quarter of the usual 2rem side padding on the card (the
    panel's own inset still frames it), so the copy gets the width back as
@@ -648,23 +644,18 @@
 		display: inline;
 	}
 }
-/* Short phones: less air above and below the card's content. */
-@media screen and (max-width: 767px) and (max-height: 800px) {
-	.sv_offer_card_inner {
-		padding-block: 4px;
-	}
-}/* Very short phones (375×667 and below): the card's inner vertical spacing
-   tightens too, so card 1 in Greek still fits the fixed box. The list card
-   also hands back most of the inline padding the card look gave it and takes
-   its bullet run down another notch — at 360×640 its copy is longer than the
-   box whatever else gives (it was already 9px over before that padding
-   existed), and 0.25rem with 1.3 leading measures to fit exactly. It keeps
-   the fill and the edge, so it still reads as a card. */
+/* This used to pull the card's vertical padding down to 4px on short phones,
+   which was what it took to fit a photo strip and the copy in the same box.
+   With no photo on a phone any more the room is there, and 4px was the
+   opposite of the air these cards wanted — the eight ordinary cards clear
+   their box by 100px or more at 360×640. The one bullet-heavy card sets its
+   own tighter padding above. *//* Very short phones (375×667 and below): the card's inner vertical spacing
+   tightens too, so card 1 in Greek still fits the fixed box. The bullet card
+   needs one more notch here: measured at 360×640 it fits exactly at 15px with
+   1.3 leading, against the 16px/1.35 it runs at on a taller phone. */
 @media screen and (max-width: 767px) and (max-height: 700px) {
-	.sv_offer_card_inner.has-lists {
-		padding-inline: 0.25rem;
-	}
 	.sv_offer_card_inner.has-lists .sv_offer_list li {
+		font-size: 15px;
 		line-height: 1.3;
 	}
 	.sv_offer_text {
